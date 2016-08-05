@@ -1,4 +1,5 @@
-_____ INTRODUCTION ______________________________
+# Introduction
+
 The udkm1Dsim toolbox is a collection of classes and routines 
 to simulate the structural dynamics and the according X-ray 
 diffraction response in one-dimensional sample structures after 
@@ -13,21 +14,23 @@ The resulting X-ray diffraction response is computed by dynamical
 X-ray theory. The udkm1Dsim toolbox is highly modular and allows 
 to introduce user-defined results at any step in the simulation procedure.
 
-_____ CITATION ______________________________
+# Citation
 
 Please cite the following article if you use the udkm1Dsim toolbox for your own publications:
 
 D. Schick, A. Bojahr, M. Herzog, R. Shayduk, C. von Korff Schmising & M. Bargheer,
 udkm1Dsim - A Simulation Toolkit for 1D Ultrafast Dynamics in Condensed Matter,
-Comput. Phys. Commun. 185, 651 (2014).
+[Comput. Phys. Commun. 185, 651 (2014)](http://doi.org/10.1016/j.cpc.2013.10.009) [preprint](http://www.udkm.physik.uni-potsdam.de/medien/udkm1Dsim/udkm1DsimManuscriptPrePrint.pdf).
 
-_____ INSTALLATION ______________________________
+# Installation
 
 Add the udkm1Dsim toolbox folder and all of its 
 subfolder to your MATLAB searchpath by excecuting 
 the command:
 
+```
    addpath(genpath('path2udkm1Dsim'));
+```
    
 In order to use the udkm1Dsim documentation
 before MATLAB 2013a (8.1) 
