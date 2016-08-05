@@ -19,7 +19,7 @@ u = units;
 const = constants;
 
 %% Set simulation parameters
-time            = (-5:0.1:50)*u.ps;         % the time we want to simulate
+time            = (-5:0.5:50)*u.ps;         % the time we want to simulate
 E               = 8047*u.eV;                % energy of X-rays
 sp              = 0.5;                      % polarization factor: 
                                             % 0 -> S; 0.5 -> mixed; 1 -> P

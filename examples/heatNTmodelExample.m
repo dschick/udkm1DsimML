@@ -53,7 +53,7 @@ propSRO.soundVel        = svSRO;                % sound velocity
 propSRO.optPenDepth     = 43.8*u.nm;            % optical penetration depth
 propSRO.thermCond       = {0,...                % electronic heat conductivity
                            0};                  % lattice heat conductivity [W/m K]
-propSRO.linThermExp     = {0*1.03e-5, ...         % electronic linear thermal expansion
+propSRO.linThermExp     = {1.03e-5, ...         % electronic linear thermal expansion
                            1.03e-5};            % lattice linear thermal expansion [1/K]
 propSRO.heatCapacity    = {@(T)(0.112.*T), ...
                            @(T)(455.2 - 2.1935e6./T.^2)} ;
@@ -121,7 +121,7 @@ excitation(2,:) = 0;          % time when the excitation happens
 excitation(3,:) = pulseWidth; % pulse width of the excitation
 
 % The resulting temperature profile is calculated in one line:
-[tempMap, deltaTempMap] = H.getTempMap(time,excitation,initTemp);
+tempMap = H.getTempMap(time,excitation,initTemp);
 
 %% Plot the temperatures of each subsystem
 figure(1)

@@ -79,8 +79,6 @@ time        = (-10:0.1:40)*u.ps;
 fluence     = 20*u.mJ/u.cm^2;
 initTemp    = 300*u.K;
 
-H.heatDiffusion = true;
-
 %% Excitation
 % Calculate the temperature map after instantaneous excitation at $t=0$.
 % For the phonon simulations also the differential temperature map 

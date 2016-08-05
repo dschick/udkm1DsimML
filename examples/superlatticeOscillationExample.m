@@ -17,14 +17,13 @@ u = units;
 const = constants;
 
 %% Set simulation parameters
-time            = (-1:0.01:2)*u.ps;        % the time we want to simulate
-E               = 500*u.eV;               % energy of X-rays
+time            = (-5:0.1:50)*u.ps;        % the time we want to simulate
+E               = 12000*u.eV;               % energy of X-rays
 sp              = 0;                        % polarization factor: 
                                             % 0 -> S; 0.5 -> mixed; 1 -> P
-qz              = (0.0:0.05:10)*u.ang^-1;% qz range
-theta           = (0:0.01:45)*u.deg;
+qz              = (3.1:0.0005:3.3)*u.ang^-1;% qz range
 initTemp        = 300*u.K;                  % initial temperature of the sample
-fluence         = 20*u.mJ/u.cm^2;
+fluence         = 30*u.mJ/u.cm^2;
 heatDiffusion   = false;                    % disable heat diffusion
 
 %% Initialize the Sample
@@ -100,17 +99,17 @@ STOsub.addAtom(Ti,0.5);
 
 %% Initialize the Sample Structure
 DL = structure('DL: 20xSRO + 38xSTO');
-DL.addSubStructure(SRO,12);
-DL.addSubStructure(STO,11);
+DL.addSubStructure(SRO,20);
+DL.addSubStructure(STO,38);
 
 S = structure('11xDL on STO');
 % add DL to the structure
-S.addSubStructure(DL,100);
-% S.addSubStructure(STOsub,1000);
+S.addSubStructure(DL,11);
+S.addSubStructure(STOsub,1000);
 % add a static substrate to the sample structure
 substrate = structure('STOsubstrate');
 substrate.addSubStructure(STOsub,1000000)% 
-% S.addSubstrate(substrate);
+S.addSubstrate(substrate);
 
 distances = S.getDistancesOfUnitCells(); % these are the distances of each unitCell from the surface
 
@@ -122,7 +121,7 @@ H.setCacheDir(cacheDir); % set the cache directory
 %% Calculate Temperature Pattern
 % Here calculate the temperature map and temperature difference map for the
 % given time, fluence and initial temperature.
-[tempMap, deltaTempMap] = H.getTempMap(time,fluence,initTemp);
+[tempMap deltaTempMap] = H.getTempMap(time,fluence,initTemp);
 %% Plot the Results of the Heat Simulations
 figure(1)
 % plot the temperature map
@@ -162,13 +161,12 @@ title('Strain [%]');
 disp('Initilaize dynamic XRD Simulation');
 D = XRDdyn(S,forceRecalc,E,sp); % set main parameters
 D.setCacheDir(cacheDir); % set the cache directory
-% D.setQz(qz); % set q_z range
-D.setQzByTheta(theta);
+D.setQz(qz); % set q_z range
 
 %% Homogeneous Dynamic XRD Simulations
 % Here we calculate the rocking curve for no strain at all for the full 
 % sample .
-[Rh, A] = D.homogeneousReflectivity(); % thats all
+[Rh A] = D.homogeneousReflectivity(); % thats all
 
 % define an instrumental function to convolute the result with:
 mu          = 0.1;
@@ -176,21 +174,21 @@ width       = 0.001*u.ang^-1;
 instFunc    = @(qz)(pseudo_voigt(qz,width,mu));
 
 % carry out the convolution with the instrumental function 
-% [Rhi, xc] = D.convWithInstrumentFunction(Rh,qz,instFunc);
+[Rhi xc] = D.convWithInstrumentFunction(Rh,qz,instFunc);
 
 % Plot the Results of the homogeneous Dynamic XRD Simulations
 figure(3)
-semilogy(theta/u.deg,D.getReflectivityFromMatrix(A{1}{1})*10, '-r', 'LineWidth', 1);
+semilogy(qz/u.ang^-1,D.getReflectivityFromMatrix(A{1}{1})*10, '-r', 'LineWidth', 1);
 hold on;
-semilogy(theta/u.deg,D.getReflectivityFromMatrix(A{1}{2})*10, '-b', 'LineWidth', 1); 
-semilogy(theta/u.deg,D.getReflectivityFromMatrix(A{2})*100, '-', 'Color',[0 0.5 0], 'LineWidth', 1);
-semilogy(theta/u.deg, D.getReflectivityFromMatrix(A{3}), '-k', 'LineWidth', 2);
+semilogy(qz/u.ang^-1,D.getReflectivityFromMatrix(A{1}{2})*10, '-b', 'LineWidth', 1); 
+semilogy(qz/u.ang^-1,D.getReflectivityFromMatrix(A{2})*100, '-', 'Color',[0 0.5 0], 'LineWidth', 1);
+semilogy(qz/u.ang^-1, Rhi, '-k', 'LineWidth', 2);
 hold off
-%axis([qz(1)/u.ang^-1 qz(end)/u.ang^-1 1e-5 1]);
+axis([qz(1)/u.ang^-1 qz(end)/u.ang^-1 1e-5 1]);
 set(gca,'YScale', 'log');
 grid off; box on;
 title('Homogeneous XRD');
-xlabel('theta [deg]'); 
+xlabel('q_z [Ang.^{-1}]'); 
 ylabel('Reflectivity');
 lh = legend('20xSRO','38xSTO', '1xDL', '11xDL + Substrate');
 set(lh, 'Location', 'NorthWest', 'FontSize', 10);
@@ -211,16 +209,13 @@ R = D.getInhomogeneousReflectivity(strainMap,strainVectors); % thats all
 %% Plot the Results of the Dynamic XRD Simulations
 
 % convolute with instrument function and temporal resolution first
-%RI = D.convWithInstrumentFunction(R,qz,instFunc);
-%RI = D.convWithTemporalResolution(RI,time,0.2*u.ps);
-
-RI = R;
+RI = D.convWithInstrumentFunction(R,qz,instFunc);
+RI = D.convWithTemporalResolution(RI,time,0.2*u.ps);
 
 figure(4)
-kk = surf(theta/u.deg,time/u.ps,log10(RI));
+kk = surf(qz/u.ang^-1,time/u.ps,log10(RI));
 set(kk, 'LineStyle', 'none');
-% axis([qz(1)/u.ang^-1 qz(end)/u.ang^-1 time(1)/u.ps time(end)/u.ps])
-axis([theta(1)/u.deg theta(end)/u.deg time(1)/u.ps time(end)/u.ps])
+axis([qz(1)/u.ang^-1 qz(end)/u.ang^-1 time(1)/u.ps time(end)/u.ps])
 box on; colorbar; colormap(fireice(256));
 caxis([-6 0]);
 xlabel('q_z [Ang^{-1}]'); 
@@ -230,9 +225,9 @@ set(gca, 'XMinorTick', 'on', 'YMinorTick', 'on', 'TickDir', 'out');
 
 %% Plot transient Rocking Curve
 figure(5)
-semilogy(theta/u.deg,RI(time == 0.55*u.ps, :), '-r', 'LineWidth', 2);hold on;
-semilogy(theta/u.deg,RI(time == -1*u.ps, :), '-k', 'LineWidth', 2);
-axis([theta(1)/u.deg theta(end)/u.deg 1e-5 1]);
+semilogy(qz/u.ang^-1,RI(time == 1.5*u.ps, :), '-r', 'LineWidth', 2);hold on;
+semilogy(qz/u.ang^-1,RI(time == -1*u.ps, :), '-k', 'LineWidth', 2);
+axis([qz(1)/u.ang^-1 qz(end)/u.ang^-1 1e-5 1]);
 grid off; box on;
 xlabel('q_z [Ang^{-1}]');
 ylabel('Reflectivity');
@@ -242,20 +237,20 @@ set(gca, 'XMinorTick', 'on', 'YMinorTick', 'on', 'TickDir', 'out');
 hold off;
 
 %% Plot Bragg Peak Intensity Oscillations
-% SL2 = sum(RI(:,qz > 3.195*u.ang^-1 & qz < 3.2*u.ang^-1),2);
-SL0 = sum(RI(:,theta > 7.6*u.deg & theta < 9.4*u.deg),2);
+SL2 = sum(RI(:,qz > 3.195*u.ang^-1 & qz < 3.2*u.ang^-1),2);
+SL0 = sum(RI(:,qz > 3.248*u.ang^-1 & qz < 3.256*u.ang^-1),2);
 
 figure(6)
 subplot(2,1,1);
-% plot(time/u.ps,SL2/SL2(time == -1*u.ps), '-b', 'LineWidth', 2);
-% axis([-2 22 0 1.1]);
-% title('Intensity SL 0');
-% ylabel('\Delta R / R_0');
-% set(gca, 'XMinorTick', 'on', 'YMinorTick', 'on', 'TickDir', 'out');
+plot(time/u.ps,SL2/SL2(time == -1*u.ps), '-b', 'LineWidth', 2);
+axis([-2 22 0 1.1]);
+title('Intensity SL 0');
+ylabel('\Delta R / R_0');
+set(gca, 'XMinorTick', 'on', 'YMinorTick', 'on', 'TickDir', 'out');
 
 subplot(2,1,2);
 plot(time/u.ps,SL0/SL0(time == -1*u.ps), '-b', 'LineWidth', 2);
-% axis([-2 22 0 50]);
+axis([-2 22 0 50]);
 title('Intensity SL +2');
 xlabel('Delay [ps]');
 ylabel('\Delta R / R_0');
