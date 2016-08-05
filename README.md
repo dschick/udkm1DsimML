@@ -3,16 +3,19 @@
 The udkm1Dsim toolbox is a collection of classes and routines 
 to simulate the structural dynamics and the according X-ray 
 diffraction response in one-dimensional sample structures after 
-ultrafast excitation. The toolbox provides the capabilities to 
-define arbitrary layered structures on the atomic level including 
-a rich database of element-specific physical properties. 
+ultrafast excitation. 
+The toolbox provides the capabilities to define arbitrary layered 
+structures on the atomic level including a rich database of 
+element-specific physical properties. 
 The excitation of ultrafast dynamics is represented by an 
 N-temperature-model which is commonly applied for ultrafast 
-optical excitations. Structural dynamics due to thermal stresses 
-are calculated by a linear-chain model of masses and springs. 
+optical excitations. 
+Structural dynamics due to thermal stresses are calculated by 
+a linear-chain model of masses and springs. 
 The resulting X-ray diffraction response is computed by dynamical 
-X-ray theory. The udkm1Dsim toolbox is highly modular and allows 
-to introduce user-defined results at any step in the simulation procedure.
+X-ray theory. 
+The udkm1Dsim toolbox is highly modular and allows to introduce 
+user-defined results at any step in the simulation procedure.
 
 # Citation
 
@@ -34,11 +37,11 @@ the command:
    
 In order to use the udkm1Dsim documentation
 before MATLAB 2013a (8.1) 
-    open the MATLAB Preferences from the File menu. 
-    Click Help, and then select the All Products button.
+    - open the MATLAB Preferences from the File menu. 
+    - click Help, and then select the All Products button.
 since MATLAB 2013a (8.1)
-    open the MATLAB Help and click on "Supplemental Software" on the lower 
-    left of the help start page
+    - open the MATLAB Help and click on "Supplemental Software" on the lower 
+      left of the help start page
 
 Open the MATLAB Product Help and open the udkm1Dsim
 toolbox documentation from the content listing.
