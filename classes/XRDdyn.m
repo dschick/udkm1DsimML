@@ -220,10 +220,17 @@ classdef XRDdyn < XRD
             N = size(strainMap,1); % time steps
             R = zeros(N,length(obj.qz));            
             
-            s = matlabpool('size'); % get the size of the matlabpool
-            if s == 0 % no matlabpool open
-                obj.dispMessage(['No matlab pool was opened in advance, so lets do it now with the default configuration!']);
-                matlabpool open;
+            if verLessThan('matlab', '8.5') % this is everything before MATLAB 2015a
+                s = matlabpool('size'); % get the size of the matlabpool
+                if s == 0 % no matlabpool open
+                    obj.dispMessage(['No matlab pool was opened in advance, so lets do it now with the default configuration!']);
+                    matlabpool open;
+                end%if
+            else % this is for everthing starting with MATLAB 2015a
+                if isempty(gcp('nocreate')) %s == 0 % no matlabpool open
+                    obj.dispMessage(['No matlab pool was opened in advance, so lets do it now with the default configuration!']);
+                    parpool;
+                end%if
             end%if
 
             % check for path of ParforProgMon class to add it to
