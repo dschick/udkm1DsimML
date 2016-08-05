@@ -1,0 +1,355 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Heat N-Temperature Model Example</title><meta name="generator" content="MATLAB 7.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-05-02"><meta name="DC.source" content="heatNTmodelExample.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+
+  </style></head><body><div class="content"><h1>Heat N-Temperature Model Example</h1><!--introduction--><p>In this example we show how to use the heat simulations in order to calculate the excitation of a sample and its according temperature evolution within the <img src="heatNTmodelExample_eq05153.png" alt="$N$">-Temperature-Model (NTM) for <img src="heatNTmodelExample_eq89277.png" alt="$N = 2$">. Here the first subsystem are the electrons and the second subsystem is the lattice.</p><p>Before we can start a heat simulation we need to build a sample structure. Be aware of that heat diffusion simulations can take a tremendous amount of time, especially for structures with a large number of unit cells.</p><p>For the NTM it is necessary that all unit cell properties which are relevant for the thermal simulations are input as cell arrays of length <img src="heatNTmodelExample_eq05153.png" alt="$N$">. We first disable heat diffusion within a subsystem by setting the corresponding thermal conduction parameters to zero. However, we have to set <i>heatDiffusion</i> to true to enable subsystem coupling.</p><p>Be sure to include all folders of the udkm1dsim toolbox to your MATLAB search path. Especially the <i>/parameters</i> and <i>/helpers</i> folders with all their subfolders.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Build a Sample Structure</a></li><li><a href="#3">SrRuO3 unit cell</a></li><li><a href="#4">Initialize Heat Simulation</a></li><li><a href="#5">Plot the temperatures of each subsystem</a></li><li><a href="#6">Plot the average electron and lattice temperature of the SRO layer</a></li></ul></div><p>here we clear the workspace and close all figures</p><pre class="codeinput">clear <span class="string">all</span>;
+close <span class="string">all</span>;
+<span class="comment">% these are some units and constants we can use later on</span>
+u            = units;
+const        = constants;
+</pre><h2>Build a Sample Structure<a name="2"></a></h2><pre class="codeinput"><span class="comment">% create atoms</span>
+O   = atomBase(<span class="string">'O'</span>);
+Ti  = atomBase(<span class="string">'Ti'</span>);
+Sr  = atomBase(<span class="string">'Sr'</span>);
+Ru  = atomBase(<span class="string">'Ru'</span>);
+Pb  = atomBase(<span class="string">'Pb'</span>);
+Zr  = atomBase(<span class="string">'Zr'</span>);
+
+<span class="comment">% c-axis lattice constants of the two materials</span>
+cSTOsub     = 3.905     *u.ang;
+cSRO        = 3.94897   *u.ang;
+<span class="comment">% sound velocities [nm/ps] of the materials</span>
+svSRO       = 6.312     *u.nm/u.ps;
+svSTO       = 7.800     *u.nm/u.ps;
+</pre><h2>SrRuO3 unit cell<a name="3"></a></h2><pre class="codeinput">propSRO.aAxis           = cSTOsub;              <span class="comment">% aAxis</span>
+propSRO.bAxis           = cSTOsub;              <span class="comment">% bAxis</span>
+propSRO.debWalFac       = 0;                    <span class="comment">% Debye-Waller factor</span>
+propSRO.soundVel        = svSRO;                <span class="comment">% sound velocity</span>
+propSRO.optPenDepth     = 43.8*u.nm;            <span class="comment">% optical penetration depth</span>
+propSRO.thermCond       = {0,<span class="keyword">...</span><span class="comment">                % electronic heat conductivity</span>
+                           0};                  <span class="comment">% lattice heat conductivity [W/m K]</span>
+propSRO.linThermExp     = {1.03e-5, <span class="keyword">...</span><span class="comment">         % electronic linear thermal expansion</span>
+                           1.03e-5};            <span class="comment">% lattice linear thermal expansion [1/K]</span>
+propSRO.heatCapacity    = {@(T)(0.112.*T), <span class="keyword">...</span>
+                           @(T)(455.2 - 2.1935e6./T.^2)} ;
+                                                <span class="comment">% electronic and lattice</span>
+                                                <span class="comment">% heat capacity [J/kg K]</span>
+propSRO.subSystemCoupling = {@(T)( 5e17*(T(2)-T(1)) ), <span class="keyword">...</span>
+                             @(T)( 5e17*(T(1)-T(2)) )};
+                                                <span class="comment">% energy flux between</span>
+                                                <span class="comment">% subsystems [W/m^3]</span>
+
+SRO = unitCell(<span class="string">'SRO'</span>,<span class="string">'SRO'</span>,cSRO,propSRO);
+SRO.addAtom(O,0);
+SRO.addAtom(Sr,0);
+SRO.addAtom(O,0.5);
+SRO.addAtom(O,0.5);
+SRO.addAtom(Ru,0.5);
+
+<span class="comment">% SrTiO3 substrate</span>
+propSTOsub.aAxis           = cSTOsub;           <span class="comment">% aAxis</span>
+propSTOsub.bAxis           = cSTOsub;           <span class="comment">% bAxis</span>
+propSTOsub.debWalFac       = 0;                 <span class="comment">% Debye-Waller factor</span>
+propSTOsub.soundVel        = svSTO;             <span class="comment">% sound velocity</span>
+propSTOsub.optPenDepth     = Inf;               <span class="comment">% optical penetration depth</span>
+propSTOsub.thermCond       = {0,<span class="keyword">...</span><span class="comment">             % electronic heat conductivity</span>
+                              0};               <span class="comment">% lattice heat conductivity [W/m K]</span>
+propSTOsub.linThermExp     = {1e-5, <span class="keyword">...</span><span class="comment">         % electronic linear thermal expansion</span>
+                              1e-5};            <span class="comment">% lattice linear thermal expansion [1/K]</span>
+propSTOsub.heatCapacity    = {@(T)(0.0248.*T), <span class="keyword">...</span>
+                              @(T)(733.73 - 6.531e6./T.^2)} ;
+                                                <span class="comment">% electronic and lattice</span>
+                                                <span class="comment">% heat capacity [J/kg K]</span>
+propSTOsub.subSystemCoupling = {@(T)( 5e17*(T(2)-T(1)) ), <span class="keyword">...</span>
+                                @(T)( 5e17*(T(1)-T(2)) )};
+                                                <span class="comment">% energy flux between</span>
+                                                <span class="comment">% subsystems [W/m^3]</span>
+
+STOsub = unitCell(<span class="string">'STOsub'</span>, <span class="string">'STOsub'</span>, cSTOsub, propSTOsub);
+STOsub.addAtom(O,0);
+STOsub.addAtom(Sr,0);
+STOsub.addAtom(O,0.5);
+STOsub.addAtom(O,0.5);
+STOsub.addAtom(Ti,0.5);
+
+<span class="comment">% build the structure</span>
+S = structure(<span class="string">'Single Layer'</span>);
+S.addSubStructure(SRO,100);     <span class="comment">% add 100 layers of SRO to sample</span>
+S.addSubStructure(STOsub,200);  <span class="comment">% add 250 layers of STO substrate</span>
+
+distances = S.getDistancesOfUnitCells();
+</pre><h2>Initialize Heat Simulation<a name="4"></a></h2><pre class="codeinput">cacheDir = <span class="string">'./cache'</span>;
+forceRecalc = false;
+
+H = heat(S,forceRecalc);
+H.setCacheDir(cacheDir); <span class="comment">% set the cache directory</span>
+H.heatDiffusion = true;  <span class="comment">% enable heat diffusion</span>
+
+time        = (-5:0.01:15)*u.ps;
+fluence     = 15*u.mJ/u.cm^2;
+pulseWidth  = 0.25*u.ps;
+initTemp    = 300*u.K;
+
+excitation(1,:) = fluence;    <span class="comment">% fluence</span>
+excitation(2,:) = 0;          <span class="comment">% time when the excitation happens</span>
+excitation(3,:) = pulseWidth; <span class="comment">% pulse width of the excitation</span>
+
+<span class="comment">% The resulting temperature profile is calculated in one line:</span>
+tempMap = H.getTempMap(time,excitation,initTemp);
+</pre><pre class="codeoutput">Calculating _heatDiffusion_ ...
+Elapsed time for _heatDiffusion_: 2.5895 seconds.
+Calculating _heatDiffusion_ for excitation 1 ...
+Elapsed time for _heatDiffusion_ with 1 excitation(s): 13.9289 seconds.
+Calculating _heatDiffusion_ ...
+Elapsed time for _heatDiffusion_: 9.7818 seconds.
+Elapsed time for _tempMap_: 26.5773 seconds.
+_tempMap_ saved to file .\cache\tempMap_88c28757751f2886eec20b6840480d4f_57256cb2459efe37ee9e6ba12efcb3bf.mat
+</pre><h2>Plot the temperatures of each subsystem<a name="5"></a></h2><pre class="codeinput">figure(1)
+subplot(2,1,1)
+kk = surf(distances/u.nm,time/u.ps,tempMap(:,:,1));
+set(kk, <span class="string">'LineStyle'</span>, <span class="string">'none'</span>);
+title(<span class="string">'Electron Temperature [K]'</span>);
+xlabel(<span class="string">'z [nm]'</span>); ylabel(<span class="string">'Delay [ps]'</span>);
+axis([distances(1)/u.nm distances(end)/u.nm time(1)/u.ps time(end)/u.ps])
+box; colorbar; colormap(jet(255));
+caxis([300 3000]);
+set(gca, <span class="string">'XMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'YMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'TickDir'</span>, <span class="string">'out'</span>);
+
+subplot(2,1,2)
+kk = surf(distances/u.nm,time/u.ps,tempMap(:,:,2));
+set(kk, <span class="string">'LineStyle'</span>, <span class="string">'none'</span>);
+title(<span class="string">'Lattice Temperature [K]'</span>);
+xlabel(<span class="string">'z [nm]'</span>); ylabel(<span class="string">'Delay [ps]'</span>);
+axis([distances(1)/u.nm distances(end)/u.nm time(1)/u.ps time(end)/u.ps])
+box; colorbar; colormap(jet(255));
+caxis([300 3000]);
+set(gca, <span class="string">'XMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'YMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'TickDir'</span>, <span class="string">'out'</span>);
+</pre><img vspace="5" hspace="5" src="heatNTmodelExample_01.png" alt=""> <h2>Plot the average electron and lattice temperature of the SRO layer<a name="6"></a></h2><pre class="codeinput">figure(2)
+plot(time/u.ps, mean(tempMap(:,S.getAllPositionsPerUniqueUnitCell{1},1),2), <span class="string">'-r'</span>, <span class="string">'LineWidth'</span>, 2);
+hold <span class="string">on</span>;
+plot(time/u.ps, mean(tempMap(:,S.getAllPositionsPerUniqueUnitCell{1},2),2), <span class="string">'-k'</span>, <span class="string">'LineWidth'</span>, 2);
+title(<span class="string">'Subsystem temperature'</span>);
+xlabel(<span class="string">'Delay [ps]'</span>);
+ylabel(<span class="string">'Temperature [K]'</span>);
+box <span class="string">on</span>; grid <span class="string">on</span>;
+ylim([0 3000]);
+set(gca, <span class="string">'XMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'YMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'TickDir'</span>, <span class="string">'out'</span>);
+legend(<span class="string">'T_{electrons}'</span>, <span class="string">'T_{lattice}'</span>);
+</pre><img vspace="5" hspace="5" src="heatNTmodelExample_02.png" alt=""> <p class="footer"><br>
+      Published with MATLAB&reg; 7.14<br></p></div><!--
+##### SOURCE BEGIN #####
+%% Heat N-Temperature Model Example
+% In this example we show how to use the heat simulations in order to
+% calculate the excitation of a sample and its according temperature
+% evolution within the $N$-Temperature-Model (NTM) for $N = 2$.
+% Here the first subsystem are the electrons and the second subsystem is
+% the lattice.
+%
+% Before we can start a heat simulation we need to build a sample
+% structure. Be aware of that heat diffusion simulations can take a
+% tremendous amount of time, especially for structures with a large number
+% of unit cells.
+%
+% For the NTM it is necessary that all unit cell properties
+% which are relevant for the thermal simulations are input as cell arrays
+% of length $N$. We first disable heat diffusion within a subsystem by
+% setting the corresponding thermal conduction parameters to zero.
+% However, we have to set _heatDiffusion_ to true to enable subsystem
+% coupling.
+%
+% Be sure to include all folders of the udkm1dsim toolbox to your MATLAB 
+% search path. Especially the _/parameters_ and _/helpers_ folders with all 
+% their subfolders.
+
+%%
+% here we clear the workspace and close all figures
+clear all;
+close all;
+% these are some units and constants we can use later on
+u            = units;
+const        = constants;
+%% Build a Sample Structure
+
+% create atoms
+O   = atomBase('O');
+Ti  = atomBase('Ti');
+Sr  = atomBase('Sr');
+Ru  = atomBase('Ru');
+Pb  = atomBase('Pb');
+Zr  = atomBase('Zr');
+
+% c-axis lattice constants of the two materials
+cSTOsub     = 3.905     *u.ang;
+cSRO        = 3.94897   *u.ang;
+% sound velocities [nm/ps] of the materials
+svSRO       = 6.312     *u.nm/u.ps;
+svSTO       = 7.800     *u.nm/u.ps;
+
+%% SrRuO3 unit cell
+propSRO.aAxis           = cSTOsub;              % aAxis
+propSRO.bAxis           = cSTOsub;              % bAxis
+propSRO.debWalFac       = 0;                    % Debye-Waller factor
+propSRO.soundVel        = svSRO;                % sound velocity
+propSRO.optPenDepth     = 43.8*u.nm;            % optical penetration depth
+propSRO.thermCond       = {0,...                % electronic heat conductivity
+                           0};                  % lattice heat conductivity [W/m K]
+propSRO.linThermExp     = {1.03e-5, ...         % electronic linear thermal expansion
+                           1.03e-5};            % lattice linear thermal expansion [1/K]
+propSRO.heatCapacity    = {@(T)(0.112.*T), ...
+                           @(T)(455.2 - 2.1935e6./T.^2)} ;
+                                                % electronic and lattice
+                                                % heat capacity [J/kg K]
+propSRO.subSystemCoupling = {@(T)( 5e17*(T(2)-T(1)) ), ...
+                             @(T)( 5e17*(T(1)-T(2)) )};
+                                                % energy flux between
+                                                % subsystems [W/m^3]
+
+SRO = unitCell('SRO','SRO',cSRO,propSRO);
+SRO.addAtom(O,0);
+SRO.addAtom(Sr,0);
+SRO.addAtom(O,0.5);
+SRO.addAtom(O,0.5);
+SRO.addAtom(Ru,0.5);
+
+% SrTiO3 substrate
+propSTOsub.aAxis           = cSTOsub;           % aAxis
+propSTOsub.bAxis           = cSTOsub;           % bAxis
+propSTOsub.debWalFac       = 0;                 % Debye-Waller factor
+propSTOsub.soundVel        = svSTO;             % sound velocity
+propSTOsub.optPenDepth     = Inf;               % optical penetration depth
+propSTOsub.thermCond       = {0,...             % electronic heat conductivity
+                              0};               % lattice heat conductivity [W/m K]
+propSTOsub.linThermExp     = {1e-5, ...         % electronic linear thermal expansion
+                              1e-5};            % lattice linear thermal expansion [1/K]
+propSTOsub.heatCapacity    = {@(T)(0.0248.*T), ...
+                              @(T)(733.73 - 6.531e6./T.^2)} ;
+                                                % electronic and lattice
+                                                % heat capacity [J/kg K]
+propSTOsub.subSystemCoupling = {@(T)( 5e17*(T(2)-T(1)) ), ...
+                                @(T)( 5e17*(T(1)-T(2)) )};
+                                                % energy flux between
+                                                % subsystems [W/m^3]
+                                         
+STOsub = unitCell('STOsub', 'STOsub', cSTOsub, propSTOsub);
+STOsub.addAtom(O,0);
+STOsub.addAtom(Sr,0);
+STOsub.addAtom(O,0.5);
+STOsub.addAtom(O,0.5);
+STOsub.addAtom(Ti,0.5);
+
+% build the structure
+S = structure('Single Layer');
+S.addSubStructure(SRO,100);     % add 100 layers of SRO to sample
+S.addSubStructure(STOsub,200);  % add 250 layers of STO substrate
+
+distances = S.getDistancesOfUnitCells();
+%% Initialize Heat Simulation
+cacheDir = './cache';
+forceRecalc = false; 
+
+H = heat(S,forceRecalc);
+H.setCacheDir(cacheDir); % set the cache directory
+H.heatDiffusion = true;  % enable heat diffusion
+
+time        = (-5:0.01:15)*u.ps;
+fluence     = 15*u.mJ/u.cm^2;
+pulseWidth  = 0.25*u.ps;
+initTemp    = 300*u.K;
+
+excitation(1,:) = fluence;    % fluence
+excitation(2,:) = 0;          % time when the excitation happens
+excitation(3,:) = pulseWidth; % pulse width of the excitation
+
+% The resulting temperature profile is calculated in one line:
+tempMap = H.getTempMap(time,excitation,initTemp);
+
+%% Plot the temperatures of each subsystem
+figure(1)
+subplot(2,1,1)
+kk = surf(distances/u.nm,time/u.ps,tempMap(:,:,1));
+set(kk, 'LineStyle', 'none');
+title('Electron Temperature [K]'); 
+xlabel('z [nm]'); ylabel('Delay [ps]');
+axis([distances(1)/u.nm distances(end)/u.nm time(1)/u.ps time(end)/u.ps])
+box; colorbar; colormap(jet(255));
+caxis([300 3000]);
+set(gca, 'XMinorTick', 'on', 'YMinorTick', 'on', 'TickDir', 'out');
+
+subplot(2,1,2)
+kk = surf(distances/u.nm,time/u.ps,tempMap(:,:,2));
+set(kk, 'LineStyle', 'none');
+title('Lattice Temperature [K]'); 
+xlabel('z [nm]'); ylabel('Delay [ps]');
+axis([distances(1)/u.nm distances(end)/u.nm time(1)/u.ps time(end)/u.ps])
+box; colorbar; colormap(jet(255));
+caxis([300 3000]);
+set(gca, 'XMinorTick', 'on', 'YMinorTick', 'on', 'TickDir', 'out');
+
+
+%% Plot the average electron and lattice temperature of the SRO layer
+figure(2)
+plot(time/u.ps, mean(tempMap(:,S.getAllPositionsPerUniqueUnitCell{1},1),2), '-r', 'LineWidth', 2);
+hold on;
+plot(time/u.ps, mean(tempMap(:,S.getAllPositionsPerUniqueUnitCell{1},2),2), '-k', 'LineWidth', 2);
+title('Subsystem temperature');
+xlabel('Delay [ps]');
+ylabel('Temperature [K]');
+box on; grid on;
+ylim([0 3000]);
+set(gca, 'XMinorTick', 'on', 'YMinorTick', 'on', 'TickDir', 'out');
+legend('T_{electrons}', 'T_{lattice}');
+##### SOURCE END #####
+--></body></html>

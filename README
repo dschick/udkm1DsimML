@@ -1,0 +1,23 @@
+_____ INSTALLATION ______________________________
+
+Add the udkm1Dsim toolbox folder and all of its 
+subfolder to your MATLAB searchpath by excecuting 
+the command:
+
+   addpath(genpath('path2udkm1Dsim'));
+   
+In order to use the udkm1Dsim documentation
+before MATLAB 2013a (8.1) 
+    open the MATLAB Preferences from the File menu. 
+    Click Help, and then select the All Products button.
+since MATLAB 2013a (8.1)
+    open the MATLAB Help and click on "Supplemental Software" on the lower 
+    left of the help start page
+
+Open the MATLAB Product Help and open the udkm1Dsim
+toolbox documentation from the content listing.
+Follow the Getting Started to get familar with the 
+simulation workflow.
+
+In order to run the example files change your current 
+MATLAB directory to 'path2udkm1Dsim/examples/'.

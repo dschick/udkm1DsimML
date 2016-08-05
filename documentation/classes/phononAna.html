@@ -1,0 +1,555 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>phononAna</title><meta name="generator" content="MATLAB 7.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-07-31"><meta name="DC.source" content="phononAna.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+
+  </style></head><body><div class="content"><h1>phononAna</h1><!--introduction--><p>The phononAna class simulates phonon dynamics on a 1D sample structure.</p><p>Copyright (c) 2013, Daniel Schick, Andr&eacute; Bojahr, Marc Herzog, Roman Shayduk, Clemens von Korff Schmising All rights reserved.</p><p>License: BSD (use/copy/change/redistribute on own risk, mention the authors)</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Classdef</a></li><li><a href="#2">Properties</a></li><li><a href="#3">Methods</a></li><li><a href="#4">Constructor</a></li><li><a href="#5">Display</a></li><li><a href="#6">getStrainMap</a></li><li><a href="#7">calcStrainMap</a></li><li><a href="#8">solveEigenproblem</a></li><li><a href="#9">getEnergyPerEigenmode</a></li><li><a href="#12">References</a></li></ul></div><h2>Classdef<a name="1"></a></h2><p>Each phononAna instance and all inherited class objects are inherted from the phonon class which follows handle semantics. Hence a copy of such object will not copy the object itself, but only a handle to that object.</p><pre class="codeinput"><span class="keyword">classdef</span> phononAna &lt; phonon
+</pre><h2>Properties<a name="2"></a></h2><pre class="codeinput">    properties (SetAccess=public,GetAccess=public)
+    <span class="keyword">end</span><span class="comment">%properties</span>
+</pre><h2>Methods<a name="3"></a></h2><pre class="codeinput">    methods
+</pre><h2>Constructor<a name="4"></a></h2><p>Is executed each time an instance of this class is created. Only the <i>structure</i> input is obligatory.</p><pre class="codeinput">        <span class="keyword">function</span> obj = phononAna(structure,varargin)
+            obj = obj@phonon(structure,varargin{:});
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>Display<a name="5"></a></h2><p>This method is called to display informations of the instance.</p><pre class="codeinput">        <span class="keyword">function</span> disp(obj)
+            disp(<span class="string">'Analytical phonon simulation properties:'</span>);
+            <span class="comment">% call the parent display method</span>
+            disp@phonon(obj);
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>getStrainMap<a name="6"></a></h2><p>Returns a <i>strainMap</i> for the sample structure. If no <i>strainMap</i> is saved it is caluclated.</p><pre class="codeinput">        <span class="keyword">function</span> [strainMap X V A B sticksSubSystems] = getStrainMap(obj,time,tempMap,deltaTempMap)
+            <span class="comment">% create a unique hash</span>
+            hash = obj.getHash(time,tempMap,deltaTempMap);
+            <span class="comment">% create the file name to look for</span>
+            filename = fullfile(obj.cacheDir, [<span class="string">'strainMapAna_'</span> hash <span class="string">'.mat'</span>]);
+            <span class="keyword">if</span> exist(filename,<span class="string">'file'</span>) &amp;&amp; ~obj.forceRecalc
+                <span class="comment">% file exists so load it</span>
+                load(filename);
+                obj.dispMessage([<span class="string">'_strainMap_ loaded from file '</span> filename]);
+            <span class="keyword">else</span>
+                <span class="comment">% file does not exist so calculate and save</span>
+                [strainMap X V A B sticksSubSystems] = obj.calcStrainMap(time,tempMap,deltaTempMap);
+                save(filename, <span class="string">'strainMap'</span>, <span class="string">'X'</span>, <span class="string">'V'</span>, <span class="string">'A'</span>, <span class="string">'B'</span>, <span class="string">'sticksSubSystems'</span>);
+                obj.dispMessage([<span class="string">'_strainMap_ saved to file '</span> filename]);
+            <span class="keyword">end</span><span class="comment">%if</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>calcStrainMap<a name="7"></a></h2><p>Calculates the <i>strainMap</i> of the sample structure for a given <i>tempMap</i> and <i>deltaTempMap</i> and <i>time</i> vector. Further details are given in Ref. [1]. Within the linear chain of <img src="phononAna_eq05153.png" alt="$N$"> masses (<img src="phononAna_eq12824.png" alt="$m_i$">) at position <img src="phononAna_eq10222.png" alt="$z_i$"> coupled with spring constants <img src="phononAna_eq39054.png" alt="$k_i$"> one can formulate the differential equation of motion as follow:</p><p><img src="phononAna_eq23173.png" alt="$$ m_i\ddot{x}_i = -k_i(x_i-x_{i-1})-k_{i+1}(x_i-x_{i+1}) +&#xA;F_i^{heat}(t) $$"></p><p>Since we only consider nearest-neighbor interaction one can write:</p><p><img src="phononAna_eq69507.png" alt="$$ \ddot{x}_i = \sum_{n=1}^N \kappa_{i,n} x_n = \Delta_i(t) $$"></p><p>Here <img src="phononAna_eq14379.png" alt="$x_i(t) = z_i(t)-z_i^0$"> is the shift of each unit cell, <img src="phononAna_eq07391.png" alt="$F_i^{heat}(t)$"> is the external force (thermal stress) of each unit cell and <img src="phononAna_eq67253.png" alt="$\kappa_{i,i} = -(k_i + k_{i+1})/m_i$">, and <img src="phononAna_eq94173.png" alt="$\kappa_{i,i+1} = \kappa_{i+1,i} = k_{i+1}/m_i$">.</p><p><img src="phononAna_eq34953.png" alt="$k_i = m_i\, v_i^2/c_i^2$"> is the spring constant and <img src="phononAna_eq34929.png" alt="$c_i$"> and <img src="phononAna_eq00599.png" alt="$v_i$"> are the lattice <img src="phononAna_eq27869.png" alt="$c$">-axis and longitudinal sound velocity of each unit cell respectively. One can rewrite the homogeneous differential equation in matrix form to obtain the general solution</p><p><img src="phononAna_eq49727.png" alt="$$ \frac{d^2}{dt^2} X = K\, X $$"></p><p>Here <img src="phononAna_eq63816.png" alt="$X = (x_1 \ldots x_N)$"> and <img src="phononAna_eq14888.png" alt="$K$"> is the tri-diagonal matrix of <img src="phononAna_eq51177.png" alt="$\kappa$"> which is real and symmetric. The differential equation can be solved with the ansatz:</p><p><img src="phononAna_eq02351.png" alt="$$ X(t) = \sum_j \Xi_j \, (A_j \cos(\omega_j \, t) + B_j \sin(\omega_j \, t)) $$"></p><p>where <img src="phononAna_eq01636.png" alt="$\Xi_j = (\xi_1^j \ldots \xi_N^j)$"> are the eigenvectors of the matrix <img src="phononAna_eq14888.png" alt="$K$">. Thus by solving the Eigenproblem for <img src="phononAna_eq14888.png" alt="$K$"> one gets the eigenvecotrs <img src="phononAna_eq05931.png" alt="$\Xi_j$"> and the eigenfrequencies <img src="phononAna_eq56128.png" alt="$\omega_j$">. From the initial conditions</p><p><img src="phononAna_eq60670.png" alt="$$ X(0) = \sum_j \Xi_j \, A_j = \Xi \, A \qquad V(0) = \dot{X}(0)&#xA;        = \sum_j \Xi_j \, \omega_j\, B_j = \Xi \, \omega \, B $$"></p><p>one can determine the real coefficient vecots <img src="phononAna_eq31461.png" alt="$A$"> and <img src="phononAna_eq73617.png" alt="$B$"> in order to calculate <img src="phononAna_eq26951.png" alt="$X(t)$"> and <img src="phononAna_eq39679.png" alt="$V(t)$"> using the ansatz:</p><p><img src="phononAna_eq34058.png" alt="$$ A = \Xi \setminus X(0) \qquad B = (\Xi \setminus V(0)) ./ \omega $$"></p><p>The external force is implemented as spacer sticks which are inserted into the springs and hence the unit cells have a new equillibrium  positions <img src="phononAna_eq89687.png" alt="$z_i(\infty) = z_i^\infty$">. Thus we can do a coordination transformation:</p><p><img src="phononAna_eq93467.png" alt="$$ z_i(t) = z_i^0 + x_i(t) = z_i^\infty + x_i^\infty(t) $$"></p><p>and</p><p><img src="phononAna_eq12062.png" alt="$$ x_i^\infty(t) = z_i^0 - z_i^\infty + x_i(t) $$"></p><p>with the initial condition <img src="phononAna_eq23642.png" alt="$x_i(0) = 0$"> the becomes</p><p><img src="phononAna_eq97576.png" alt="$$ x_i^\infty(0) = z_i^0 - z_i^\infty = \sum_{j = i+1}^N l_j $$"></p><p><img src="phononAna_eq86467.png" alt="$x_i^\infty(0)$"> is the new initial condition after the excitation where <img src="phononAna_eq31549.png" alt="$l_i$"> is the length of the i-th spacer stick. The spacer sticks are calculated from the temperature change and the linear thermal expansion coefficients. The actual strain <img src="phononAna_eq60505.png" alt="$\epsilon_i(t)$"> of each unit cell is calculates as follows:</p><p><img src="phononAna_eq30627.png" alt="$$ \epsilon_i(t) = [ \Delta x_i(t) + l_i) ] / c_i $$"></p><p>with <img src="phononAna_eq27224.png" alt="$\Delta x_i = x_i - x_{i-1}$">. The stick <img src="phononAna_eq31549.png" alt="$l_i$"> have to be added here, because <img src="phononAna_eq01017.png" alt="$x_i$"> has been transformed into the new coordinate system <img src="phononAna_eq10541.png" alt="$x_i^\infty$">.</p><pre class="codeinput">        <span class="keyword">function</span> [strainMap X V A B sticksSubSystems] = calcStrainMap(obj,time,tempMap,deltaTempMap)
+            tic
+            <span class="comment">% initialize</span>
+            N = obj.S.getNumberOfUnitCells; <span class="comment">% nb of unit cells</span>
+            M = length(time);               <span class="comment">% nb of time steps</span>
+
+            time0       = time(1); <span class="comment">% initial time</span>
+            cAxises     = obj.S.getUnitCellPropertyVector(<span class="string">'cAxis'</span>);
+            X           = zeros(M,N); <span class="comment">% shifts of the unitCells</span>
+            V           = zeros(M,N); <span class="comment">% velocities of the unitCells</span>
+            A           = zeros(M,N); <span class="comment">% coefficient vector for eigenwert solution</span>
+            B           = zeros(M,N); <span class="comment">% coefficient vector for eigenwert solution</span>
+            strainMap   = zeros(M,N); <span class="comment">% the restulting strain pattern of the unitCells</span>
+
+            <span class="comment">% check tempMaps</span>
+            [tempMap, deltaTempMap] = obj.checkTempMaps(tempMap,deltaTempMap,time);
+
+            <span class="comment">% calculate the sticks due to heat expansion first for all time</span>
+            <span class="comment">% steps</span>
+            obj.dispMessage(<span class="string">'Calculating linear thermal expansion ...'</span>);
+            [sticks, sticksSubSystems] = obj.calcSticksFromTempMap(tempMap,deltaTempMap);
+
+            <span class="keyword">if</span> obj.onlyheat
+                <span class="comment">% no coherent dynamics so calculate the strain directly</span>
+                strainMap = sticks./repmat(cAxises',size(sticks,1),1);
+            <span class="keyword">else</span>
+                <span class="comment">% solve the eigenproblem for the structure to obtains the</span>
+                <span class="comment">% eigenvectors Xi and eigenfreqeuencies omega for the N</span>
+                <span class="comment">% coupled differential equations</span>
+                [Xi, omega] = obj.solveEigenproblem();
+
+                <span class="comment">% calculate the actual strain pattern with the solution of the</span>
+                <span class="comment">% eigenproblem and the external force (sticks, thermal stress)</span>
+                obj.dispMessage(<span class="string">'Calculating _strainMap_ ...'</span>);
+                obj.progressBar(<span class="string">'Please wait... '</span>);
+                <span class="comment">% traverse time</span>
+                <span class="keyword">for</span> i=1:M
+                    obj.progressBar(i/M*100); <span class="comment">% plot the progress</span>
+
+                    dt = time(i)-time0; <span class="comment">% this is the time step</span>
+
+                    <span class="comment">% calculate the current shift X and velocity V of all</span>
+                    <span class="comment">% unitCells using the ansatz</span>
+                    X(i,:)  = Xi*(         A(i,:)'.*cos(omega*dt) + B(i,:)'.*sin(omega*dt));
+                    V(i,:)  = Xi*(omega.*(-A(i,:)'.*sin(omega*dt) + B(i,:)'.*cos(omega*dt)));
+                    <span class="comment">% remember the velocities and shifts as ic for the next</span>
+                    <span class="comment">% time step</span>
+                    X0      = X(i,:)';
+                    V0      = V(i,:)';
+
+                    <span class="comment">% the strain can only be calculated for N-1 unitCells, so</span>
+                    <span class="comment">% we neglect the last one</span>
+                    <span class="keyword">if</span> i &gt; 1
+                        strainMap(i,1:N-1) = (diff(X(i,:),1,2)+sticks(i-1,1:N-1))./cAxises(1:N-1)';
+                    <span class="keyword">else</span>
+                        <span class="comment">% initial sticks are zero</span>
+                        strainMap(i,1:N-1) =  diff(X(i,:),1,2)./cAxises(1:N-1)';
+                    <span class="keyword">end</span><span class="comment">%if</span>
+
+                    <span class="comment">% calculate everything for the next step</span>
+                    <span class="keyword">if</span> i &lt; M <span class="comment">% check, if there is a next step</span>
+                        <span class="keyword">if</span> find(deltaTempMap(i,:)) <span class="comment">% there is a temperature change</span>
+                            time0 = time(i); <span class="comment">% set new initial time</span>
+
+                            <span class="comment">% determining the shifts due to inserted sticks</span>
+                            <span class="comment">% as new ininital conditions</span>
+                            <span class="keyword">if</span> i &gt; 1
+                                temp = flipud(cumsum(flipud(sticks(i,:)'-sticks(i-1,:)')));
+                            <span class="keyword">else</span>
+                                <span class="comment">% initial sticks are zero</span>
+                                temp = flipud(cumsum(flipud(sticks(i,:)')));
+                            <span class="keyword">end</span><span class="comment">%if</span>
+                            X0 = X0 + vertcat(temp(2:end),0);
+
+                            <span class="comment">% determining the cofficient vectors A and B of</span>
+                            <span class="comment">% the general solution of X(t) using the inital</span>
+                            <span class="comment">% conditions X0 and V0</span>
+                            A(i+1,:) = ( Xi\X0);
+                            B(i+1,:) = ((Xi\V0)./omega)';
+                        <span class="keyword">else</span>
+                            <span class="comment">% no temperature change, so keep the current As,</span>
+                            <span class="comment">% Bs, and sticks</span>
+                            A(i+1,:) = A(i,:);
+                            B(i+1,:) = B(i,:);
+                        <span class="keyword">end</span><span class="comment">%if</span>
+                    <span class="keyword">end</span><span class="comment">%if</span>
+                <span class="keyword">end</span><span class="comment">%for</span>
+                obj.progressBar(<span class="string">''</span>);
+            <span class="keyword">end</span>
+            obj.dispMessage(<span class="string">'Elapsed time for _strainMap_:'</span>,toc);
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>solveEigenproblem<a name="8"></a></h2><p>Creates the real and symmetric <img src="phononAna_eq14888.png" alt="$K$"> matrix (<img src="phononAna_eq71755.png" alt="$N \times N$">) of spring constants <img src="phononAna_eq39054.png" alt="$k_i$"> and masses <img src="phononAna_eq12824.png" alt="$m_i$"> and calculates the eigenvectors <img src="phononAna_eq05931.png" alt="$\Xi_j$"> and eigenfrequencies <img src="phononAna_eq56128.png" alt="$\omega_j$"> for the matrix which are used to calculate the <i>strainMap</i> of the structure. If the result has been save to file, load it from there.</p><pre class="codeinput">        <span class="keyword">function</span> [Xi,omega] = solveEigenproblem(obj)
+            <span class="comment">% create the file name to look for</span>
+            filename = fullfile(obj.cacheDir, [<span class="string">'eigenValues_'</span> obj.S.getHash(<span class="string">'phonon'</span>) <span class="string">'.mat'</span>]);
+            <span class="keyword">if</span> exist(filename,<span class="string">'file'</span>) &amp;&amp; ~obj.forceRecalc
+                <span class="comment">% file exists so load it</span>
+                load(filename);
+                obj.dispMessage([<span class="string">'_eigenValues_ loaded from file '</span> filename]);
+            <span class="keyword">else</span>
+                <span class="comment">% no file - so lets calculate everything</span>
+                tic
+                obj.dispMessage(<span class="string">'Calculating _eigenValues_ ...'</span>);
+                <span class="comment">% initialize</span>
+                N       = obj.S.getNumberOfUnitCells; <span class="comment">% nb of unit cells</span>
+                K       = zeros(N,N); <span class="comment">%Initializing three-diagonal springs-masses matrix.</span>
+                omega   = zeros(N,1); <span class="comment">%Initializing a vector for eigenfrequencies</span>
+
+                masses       = obj.S.getUnitCellPropertyVector(<span class="string">'mass'</span>); <span class="comment">% get masses vector</span>
+                springConsts = obj.S.getUnitCellPropertyVector(<span class="string">'springConst'</span>); <span class="comment">% get the first order springs vector</span>
+                springConsts = vertcat(0, springConsts(:,1)); <span class="comment">% set the first spring free</span>
+
+                <span class="keyword">for</span> i=1:N <span class="comment">%Defining main diagonal.</span>
+                    K(i,i)=-(springConsts(i)+springConsts(i+1))/masses(i);
+                <span class="keyword">end</span><span class="comment">%for</span>
+
+                <span class="keyword">for</span> i=2:N <span class="comment">%Defining the two other diagonals. Nearest neightbour interaction.</span>
+                    K(i,i-1) = springConsts(i)/masses(i);
+                    K(i-1,i) = springConsts(i)/masses(i-1);
+                <span class="keyword">end</span><span class="comment">%for</span>
+
+                <span class="comment">% Determining the eigenvectors and the eigenvalues</span>
+                [Xi,lambda] = eig(K);
+
+                <span class="keyword">for</span> i=1:N <span class="comment">% calculate the eigenfrequencies from the eigenvalues</span>
+                    omega(i)=sqrt(-lambda(i,i));
+                <span class="keyword">end</span><span class="comment">%for</span>
+
+                obj.dispMessage(<span class="string">'Elapsed time for _eigenValues_:'</span>,toc);
+                <span class="comment">% save the result to file</span>
+                save(filename,<span class="string">'Xi'</span>, <span class="string">'omega'</span>);
+                obj.dispMessage([<span class="string">'_eigenValues_ saved to file '</span> filename]);
+            <span class="keyword">end</span><span class="comment">%if</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>getEnergyPerEigenmode<a name="9"></a></h2><p>Returns the energy per Eigenmode of the coherent phonons of the 1D sample sorted and unsorted.</p><p><img src="phononAna_eq27436.png" alt="$$ E_j = \frac{1}{2} (A^2_j + B^2_j)\, \omega_j^2\, m_j \, \| \Xi_j\|^2 $$"></p><p>Frequencies are in [Hz] and energy per mode in [J].</p><pre class="codeinput">        <span class="keyword">function</span> [omegaSort ESort omega E] = getEnergyPerEigenmode(obj,A,B)
+            <span class="comment">% initialize</span>
+            N       = obj.S.getNumberOfUnitCells; <span class="comment">% nb of unit cells</span>
+            M       = size(A,1); <span class="comment">% nb of time steps</span>
+            E       = zeros(M,N);
+            ESort   = zeros(M,N);
+            masses  = obj.S.getUnitCellPropertyVector(<span class="string">'mass'</span>); <span class="comment">% mass vector of unitCells</span>
+
+            <span class="comment">% get the eigenVectors and eigenFrequencies</span>
+            [Xi,omega] = obj.solveEigenproblem();
+
+            <span class="comment">% sort the frequencies and remeber the permutation of indicies</span>
+            [omegaSort sortIndex] = sort(omega);
+
+            <span class="comment">% traverse time</span>
+            <span class="keyword">for</span> i=1:M
+                <span class="comment">% calculate the energy for the jth mode</span>
+                E(i,:) = 0.5 * (A(i,:)'.^2 + B(i,:)'.^2).* omega(:).^2.*masses(:) .* sum(Xi.^2,1)';
+                <span class="comment">% sort the energies according to the frequencies</span>
+                ESort(i,:) = E(i,sortIndex);
+            <span class="keyword">end</span><span class="comment">%for</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><pre class="codeinput">    <span class="keyword">end</span><span class="comment">%methods</span>
+</pre><pre class="codeinput"><span class="keyword">end</span><span class="comment">%classdef</span>
+</pre><h2>References<a name="12"></a></h2><div><ol><li>M. Herzog, D. Schick, P. Gaal, R. Shayduk, C. von Korff Schmising &amp; M. Bargheer (2011). <i>Analysis of ultrafast X-ray diffraction data in a linear-chain model of the lattice dynamics</i>. Applied Physics A, 106(3), 489&#8211;499. doi:10.1007/s00339-011-6719-z</li></ol></div><p class="footer"><br>
+      Published with MATLAB&reg; 7.14<br></p></div><!--
+##### SOURCE BEGIN #####
+%% phononAna
+% The phononAna class simulates phonon dynamics on a 1D sample structure.
+%
+% Copyright (c) 2013, Daniel Schick, André Bojahr, Marc Herzog, Roman Shayduk, Clemens von Korff Schmising
+% All rights reserved.
+%
+% License: BSD (use/copy/change/redistribute on own risk, mention the authors)
+
+%% Classdef
+% Each phononAna instance and all inherited class objects are inherted from 
+% the phonon class which follows handle semantics. 
+% Hence a copy of such object will not copy the object itself,
+% but only a handle to that object.
+classdef phononAna < phonon
+    %% Properties
+    properties (SetAccess=public,GetAccess=public)
+    end%properties
+    %% Methods
+    methods
+        %% Constructor
+        % Is executed each time an instance of this class is created. Only
+        % the _structure_ input is obligatory.
+        function obj = phononAna(structure,varargin)
+            obj = obj@phonon(structure,varargin{:});
+        end%function
+        
+        %% Display
+        % This method is called to display informations of the instance.
+        function disp(obj)
+            disp('Analytical phonon simulation properties:');
+            % call the parent display method
+            disp@phonon(obj);
+        end%function        
+                
+        %% getStrainMap
+        % Returns a _strainMap_ for the sample structure. If no _strainMap_
+        % is saved it is caluclated.
+        function [strainMap X V A B sticksSubSystems] = getStrainMap(obj,time,tempMap,deltaTempMap)
+            % create a unique hash
+            hash = obj.getHash(time,tempMap,deltaTempMap);
+            % create the file name to look for
+            filename = fullfile(obj.cacheDir, ['strainMapAna_' hash '.mat']);
+            if exist(filename,'file') && ~obj.forceRecalc
+                % file exists so load it 
+                load(filename);
+                obj.dispMessage(['_strainMap_ loaded from file ' filename]);
+            else
+                % file does not exist so calculate and save
+                [strainMap X V A B sticksSubSystems] = obj.calcStrainMap(time,tempMap,deltaTempMap);
+                save(filename, 'strainMap', 'X', 'V', 'A', 'B', 'sticksSubSystems');
+                obj.dispMessage(['_strainMap_ saved to file ' filename]);
+            end%if
+        end%function
+        
+        %% calcStrainMap
+        % Calculates the _strainMap_ of the sample structure for a given 
+        % _tempMap_ and _deltaTempMap_ and _time_ vector. Further details 
+        % are given in Ref. [1]. Within the linear chain of $N$ masses 
+        % ($m_i$) at position $z_i$ coupled with spring constants $k_i$ one 
+        % can formulate the differential equation of motion as follow:
+        %
+        % $$ m_i\ddot{x}_i = -k_i(x_i-x_{i-1})-k_{i+1}(x_i-x_{i+1}) +
+        % F_i^{heat}(t) $$
+        %
+        % Since we only consider nearest-neighbor interaction one can
+        % write:
+        %
+        % $$ \ddot{x}_i = \sum_{n=1}^N \kappa_{i,n} x_n = \Delta_i(t) $$
+        %
+        % Here $x_i(t) = z_i(t)-z_i^0$ is the shift of each unit cell,
+        % $F_i^{heat}(t)$ is the external force (thermal stress) of each 
+        % unit cell and $\kappa_{i,i} = -(k_i + k_{i+1})/m_i$, and 
+        % $\kappa_{i,i+1} = \kappa_{i+1,i} = k_{i+1}/m_i$.
+        %
+        % $k_i = m_i\, v_i^2/c_i^2$ is the spring constant and $c_i$ and
+        % $v_i$ are the lattice $c$-axis and longitudinal sound velocity of
+        % each unit cell respectively.
+        % One can rewrite the homogeneous differential equation in matrix 
+        % form to obtain the general solution
+        %
+        % $$ \frac{d^2}{dt^2} X = K\, X $$
+        %
+        % Here $X = (x_1 \ldots x_N)$ and $K$ is the
+        % tri-diagonal matrix of $\kappa$ which is real and symmetric.
+        % The differential equation can be solved with the ansatz:
+        %
+        % $$ X(t) = \sum_j \Xi_j \, (A_j \cos(\omega_j \, t) + B_j \sin(\omega_j \, t)) $$
+        %
+        % where $\Xi_j = (\xi_1^j \ldots \xi_N^j)$ are the eigenvectors of
+        % the matrix $K$. Thus by solving the Eigenproblem for $K$ one 
+        % gets the eigenvecotrs $\Xi_j$ and the eigenfrequencies $\omega_j$.
+        % From the initial conditions
+        %
+        % $$ X(0) = \sum_j \Xi_j \, A_j = \Xi \, A \qquad V(0) = \dot{X}(0) 
+        %         = \sum_j \Xi_j \, \omega_j\, B_j = \Xi \, \omega \, B $$
+        %
+        % one can determine the real coefficient vecots $A$ and $B$ in 
+        % order to calculate $X(t)$ and $V(t)$ using the ansatz:
+        %
+        % $$ A = \Xi \setminus X(0) \qquad B = (\Xi \setminus V(0)) ./ \omega $$
+        %
+        % The external force is implemented as spacer sticks which are
+        % inserted into the springs and hence the unit cells have a new 
+        % equillibrium  positions $z_i(\infty) = z_i^\infty$. Thus we can 
+        % do a coordination transformation:
+        %
+        % $$ z_i(t) = z_i^0 + x_i(t) = z_i^\infty + x_i^\infty(t) $$
+        %
+        % and
+        %
+        % $$ x_i^\infty(t) = z_i^0 - z_i^\infty + x_i(t) $$
+        %
+        % with the initial condition $x_i(0) = 0$ the becomes
+        %
+        % $$ x_i^\infty(0) = z_i^0 - z_i^\infty = \sum_{j = i+1}^N l_j $$
+        %
+        % $x_i^\infty(0)$ is the new initial condition after the excitation
+        % where $l_i$ is the length of the i-th spacer stick. The spacer 
+        % sticks are calculated from the temperature change and the linear 
+        % thermal expansion coefficients. 
+        % The actual strain $\epsilon_i(t)$ of each unit cell is calculates 
+        % as follows:
+        % 
+        % $$ \epsilon_i(t) = [ \Delta x_i(t) + l_i) ] / c_i $$
+        %
+        % with $\Delta x_i = x_i - x_{i-1}$. The stick $l_i$ have to be
+        % added here, because $x_i$ has been transformed into the new
+        % coordinate system $x_i^\infty$.
+        function [strainMap X V A B sticksSubSystems] = calcStrainMap(obj,time,tempMap,deltaTempMap)
+            tic
+            % initialize
+            N = obj.S.getNumberOfUnitCells; % nb of unit cells
+            M = length(time);               % nb of time steps
+            
+            time0       = time(1); % initial time
+            cAxises     = obj.S.getUnitCellPropertyVector('cAxis');
+            X           = zeros(M,N); % shifts of the unitCells
+            V           = zeros(M,N); % velocities of the unitCells
+            A           = zeros(M,N); % coefficient vector for eigenwert solution
+            B           = zeros(M,N); % coefficient vector for eigenwert solution
+            strainMap   = zeros(M,N); % the restulting strain pattern of the unitCells
+            
+            % check tempMaps
+            [tempMap, deltaTempMap] = obj.checkTempMaps(tempMap,deltaTempMap,time);
+            
+            % calculate the sticks due to heat expansion first for all time
+            % steps
+            obj.dispMessage('Calculating linear thermal expansion ...');
+            [sticks, sticksSubSystems] = obj.calcSticksFromTempMap(tempMap,deltaTempMap);
+                        
+            if obj.onlyheat
+                % no coherent dynamics so calculate the strain directly
+                strainMap = sticks./repmat(cAxises',size(sticks,1),1);
+            else
+                % solve the eigenproblem for the structure to obtains the
+                % eigenvectors Xi and eigenfreqeuencies omega for the N 
+                % coupled differential equations
+                [Xi, omega] = obj.solveEigenproblem();
+            
+                % calculate the actual strain pattern with the solution of the
+                % eigenproblem and the external force (sticks, thermal stress) 
+                obj.dispMessage('Calculating _strainMap_ ...');
+                obj.progressBar('Please wait... ');
+                % traverse time
+                for i=1:M
+                    obj.progressBar(i/M*100); % plot the progress
+
+                    dt = time(i)-time0; % this is the time step
+
+                    % calculate the current shift X and velocity V of all 
+                    % unitCells using the ansatz
+                    X(i,:)  = Xi*(         A(i,:)'.*cos(omega*dt) + B(i,:)'.*sin(omega*dt));
+                    V(i,:)  = Xi*(omega.*(-A(i,:)'.*sin(omega*dt) + B(i,:)'.*cos(omega*dt)));
+                    % remember the velocities and shifts as ic for the next
+                    % time step
+                    X0      = X(i,:)';
+                    V0      = V(i,:)';
+
+                    % the strain can only be calculated for N-1 unitCells, so
+                    % we neglect the last one
+                    if i > 1
+                        strainMap(i,1:N-1) = (diff(X(i,:),1,2)+sticks(i-1,1:N-1))./cAxises(1:N-1)';
+                    else
+                        % initial sticks are zero
+                        strainMap(i,1:N-1) =  diff(X(i,:),1,2)./cAxises(1:N-1)';
+                    end%if
+
+                    % calculate everything for the next step
+                    if i < M % check, if there is a next step
+                        if find(deltaTempMap(i,:)) % there is a temperature change
+                            time0 = time(i); % set new initial time                       
+                            
+                            % determining the shifts due to inserted sticks
+                            % as new ininital conditions
+                            if i > 1
+                                temp = flipud(cumsum(flipud(sticks(i,:)'-sticks(i-1,:)')));
+                            else
+                                % initial sticks are zero
+                                temp = flipud(cumsum(flipud(sticks(i,:)')));
+                            end%if
+                            X0 = X0 + vertcat(temp(2:end),0);
+
+                            % determining the cofficient vectors A and B of
+                            % the general solution of X(t) using the inital
+                            % conditions X0 and V0
+                            A(i+1,:) = ( Xi\X0);
+                            B(i+1,:) = ((Xi\V0)./omega)';
+                        else
+                            % no temperature change, so keep the current As,
+                            % Bs, and sticks
+                            A(i+1,:) = A(i,:);
+                            B(i+1,:) = B(i,:);
+                        end%if
+                    end%if
+                end%for
+                obj.progressBar('');
+            end
+            obj.dispMessage('Elapsed time for _strainMap_:',toc);
+        end%function
+        
+        %% solveEigenproblem
+        % Creates the real and symmetric $K$ matrix ($N \times N$) of 
+        % spring constants $k_i$ and masses $m_i$ and calculates the 
+        % eigenvectors $\Xi_j$ and eigenfrequencies $\omega_j$ for the 
+        % matrix which are used to calculate the _strainMap_ of the
+        % structure.
+        % If the result has been save to file, load it from there.
+        function [Xi,omega] = solveEigenproblem(obj)
+            % create the file name to look for
+            filename = fullfile(obj.cacheDir, ['eigenValues_' obj.S.getHash('phonon') '.mat']);
+            if exist(filename,'file') && ~obj.forceRecalc
+                % file exists so load it 
+                load(filename);
+                obj.dispMessage(['_eigenValues_ loaded from file ' filename]);
+            else
+                % no file - so lets calculate everything
+                tic
+                obj.dispMessage('Calculating _eigenValues_ ...');
+                % initialize
+                N       = obj.S.getNumberOfUnitCells; % nb of unit cells
+                K       = zeros(N,N); %Initializing three-diagonal springs-masses matrix.
+                omega   = zeros(N,1); %Initializing a vector for eigenfrequencies
+                
+                masses       = obj.S.getUnitCellPropertyVector('mass'); % get masses vector
+                springConsts = obj.S.getUnitCellPropertyVector('springConst'); % get the first order springs vector
+                springConsts = vertcat(0, springConsts(:,1)); % set the first spring free
+               
+                for i=1:N %Defining main diagonal.
+                    K(i,i)=-(springConsts(i)+springConsts(i+1))/masses(i);
+                end%for
+
+                for i=2:N %Defining the two other diagonals. Nearest neightbour interaction.
+                    K(i,i-1) = springConsts(i)/masses(i);
+                    K(i-1,i) = springConsts(i)/masses(i-1);
+                end%for
+                
+                % Determining the eigenvectors and the eigenvalues
+                [Xi,lambda] = eig(K);
+    
+                for i=1:N % calculate the eigenfrequencies from the eigenvalues
+                    omega(i)=sqrt(-lambda(i,i));
+                end%for
+                
+                obj.dispMessage('Elapsed time for _eigenValues_:',toc);
+                % save the result to file
+                save(filename,'Xi', 'omega');
+                obj.dispMessage(['_eigenValues_ saved to file ' filename]);
+            end%if
+        end%function
+                
+        %% getEnergyPerEigenmode
+        % Returns the energy per Eigenmode of the coherent phonons of
+        % the 1D sample sorted and unsorted.
+        %
+        % $$ E_j = \frac{1}{2} (A^2_j + B^2_j)\, \omega_j^2\, m_j \, \| \Xi_j\|^2 $$
+        %
+        % Frequencies are in [Hz] and energy per mode in [J].
+        function [omegaSort ESort omega E] = getEnergyPerEigenmode(obj,A,B)
+            % initialize
+            N       = obj.S.getNumberOfUnitCells; % nb of unit cells
+            M       = size(A,1); % nb of time steps
+            E       = zeros(M,N);
+            ESort   = zeros(M,N);
+            masses  = obj.S.getUnitCellPropertyVector('mass'); % mass vector of unitCells
+            
+            % get the eigenVectors and eigenFrequencies
+            [Xi,omega] = obj.solveEigenproblem(); 
+            
+            % sort the frequencies and remeber the permutation of indicies
+            [omegaSort sortIndex] = sort(omega);            
+            
+            % traverse time
+            for i=1:M
+                % calculate the energy for the jth mode
+                E(i,:) = 0.5 * (A(i,:)'.^2 + B(i,:)'.^2).* omega(:).^2.*masses(:) .* sum(Xi.^2,1)';
+                % sort the energies according to the frequencies
+                ESort(i,:) = E(i,sortIndex);
+            end%for
+        end%function
+    end%methods
+end%classdef
+
+%% References
+%
+% # M. Herzog, D. Schick, P. Gaal, R. Shayduk, C. von Korff Schmising & M.
+% Bargheer (2011). _Analysis of ultrafast X-ray diffraction data in a 
+% linear-chain model of the lattice dynamics_. Applied Physics A, 106(3), 
+% 489–499. doi:10.1007/s00339-011-6719-z
+##### SOURCE END #####
+--></body></html>

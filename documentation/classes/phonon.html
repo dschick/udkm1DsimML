@@ -1,0 +1,407 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>phonon</title><meta name="generator" content="MATLAB 7.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-07-31"><meta name="DC.source" content="phonon.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+
+  </style></head><body><div class="content"><h1>phonon</h1><!--introduction--><p>The phonon class simulates phonon dynamics on a 1D sample structure. Besides the 1D structure it holds various simulation parameters and provides several general helper functions.</p><p>Copyright (c) 2013, Daniel Schick, Andr&eacute; Bojahr, Marc Herzog, Roman Shayduk, Clemens von Korff Schmising All rights reserved.</p><p>License: BSD (use/copy/change/redistribute on own risk, mention the authors)</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Classdef</a></li><li><a href="#2">Properties</a></li><li><a href="#3">Methods</a></li><li><a href="#4">Constructor</a></li><li><a href="#5">Display</a></li><li><a href="#6">getHash</a></li><li><a href="#7">getAllStrainsPerUniqueUnitCell</a></li><li><a href="#8">getReducedStrainsPerUniqueUnitCell</a></li><li><a href="#9">checkTempMaps</a></li><li><a href="#10">calcSticksFromTempMap</a></li></ul></div><h2>Classdef<a name="1"></a></h2><p>Each phonon instance and all inherited class objects follow handle semantics. Hence a copy of such object will not copy the object itself, but only a handle to that object.</p><pre class="codeinput"><span class="keyword">classdef</span> phonon &lt; simulation
+</pre><h2>Properties<a name="2"></a></h2><pre class="codeinput">    properties (SetAccess=public,GetAccess=public)
+        onlyheat = false;       <span class="comment">% BOOLEAN if true, phonon dynamics are not</span>
+                                <span class="comment">% calculated and only heat expansion is</span>
+                                <span class="comment">% taken into account</span>
+    <span class="keyword">end</span><span class="comment">%properties</span>
+</pre><h2>Methods<a name="3"></a></h2><pre class="codeinput">    methods
+</pre><h2>Constructor<a name="4"></a></h2><p>Is executed each time an instance of this class is created. Only the <i>structure</i> and <i>forceRecalc</i> inputs are obligatory.</p><pre class="codeinput">        <span class="keyword">function</span> obj = phonon(structure,forceRecalc,varargin)
+            obj = obj@simulation(structure,forceRecalc,varargin{3:end});
+            <span class="comment">% initialize input parser and define defaults and validators</span>
+            p = inputParser;
+            p.KeepUnmatched = true;
+            p.addOptional(<span class="string">'onlyheat'</span>, false, @islogical);
+            <span class="comment">% parse the input</span>
+            p.parse(varargin{:});
+            <span class="comment">% assign parser results to object properties</span>
+            obj.onlyheat    = p.Results.onlyheat;
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>Display<a name="5"></a></h2><p>This method is called to display informations of the instance.</p><pre class="codeinput">        <span class="keyword">function</span> disp(obj)
+            disp([<span class="string">'only heat            : '</span> bool2str(obj.onlyheat)]);
+            <span class="comment">% call the parent display method</span>
+            disp@simulation(obj);
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>getHash<a name="6"></a></h2><p>Returns a unique hash for all heat simulation parameters.</p><pre class="codeinput">        <span class="keyword">function</span> hash = getHash(obj,time,tempMap,deltaTempMap)
+            <span class="comment">% reduce size of tempMap and deltaTempMap when they have more</span>
+            <span class="comment">% than 1e6 elements, since dataHash-function will be to slow</span>
+            <span class="comment">% otherwise</span>
+            <span class="keyword">if</span> numel(tempMap) &gt; 1e6
+                tempMap = reshape(tempMap,1,numel(tempMap));
+                tempMap = tempMap(1:1e6);
+
+                deltaTempMap = reshape(deltaTempMap,1,numel(deltaTempMap));
+                deltaTempMap = deltaTempMap(1:1e6);
+            <span class="keyword">end</span><span class="comment">%if</span>
+            hash = [obj.S.getHash(<span class="string">'phonon'</span>) <span class="string">'_'</span> dataHash({time tempMap deltaTempMap obj.onlyheat})];
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>getAllStrainsPerUniqueUnitCell<a name="7"></a></h2><p>Returns a cell array with all strains per unique unit cell that are given by the input <i>strainMap</i>.</p><pre class="codeinput">        <span class="keyword">function</span> strains = getAllStrainsPerUniqueUnitCell(obj,strainMap)
+            <span class="comment">% get the position indices of all unique unit cells in the</span>
+            <span class="comment">% sample structure</span>
+            Pos = obj.S.getAllPositionsPerUniqueUnitCell();
+            <span class="comment">% initalize</span>
+            strains = cell(length(Pos),1);
+            <span class="comment">% traverse all unique unitCells</span>
+            <span class="keyword">for</span> i = 1:length(Pos)
+                temp        = strainMap(:,Pos{i});
+                strains{i}  = sort(unique(reshape(temp,numel(temp),1)));
+            <span class="keyword">end</span><span class="comment">%for</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>getReducedStrainsPerUniqueUnitCell<a name="8"></a></h2><p>Returns a cell array with all strains per unique unit cell that are given by the input <i>strainMap</i>, BUT with a reduced number. The reduction is done by equally spacing the strains between the min and max strain with a given number <img src="phonon_eq05153.png" alt="$N$">. <img src="phonon_eq05153.png" alt="$N$"> can be also a vector of the length(<img src="phonon_eq05153.png" alt="$N$">) = <img src="phonon_eq53292.png" alt="$M$">, where <img src="phonon_eq53292.png" alt="$M$"> is the number of unique unit cells.</p><pre class="codeinput">        <span class="keyword">function</span> strains = getReducedStrainsPerUniqueUnitCell(obj,strainMap,N)
+            <span class="comment">% if no N is given we use 100 as default</span>
+            <span class="keyword">if</span> nargin &lt; 3
+                N = 100;
+            <span class="keyword">end</span><span class="comment">%if</span>
+            <span class="comment">% initialize</span>
+            allStrains  = obj.getAllStrainsPerUniqueUnitCell(strainMap);
+            M           = length(allStrains); <span class="comment">% Nb. of unique unit cells</span>
+            strains     = cell(M,1);
+
+            <span class="keyword">if</span> length(N) == 1
+                N = N*ones(M,1);
+            <span class="keyword">elseif</span> length(N) ~= M
+                error(<span class="string">'The dimension of N must be either 1 or the number of unique unit cells in the structure!'</span>);
+            <span class="keyword">end</span><span class="comment">%if</span>
+
+            <span class="comment">% traverse all unique unitCells</span>
+            <span class="keyword">for</span> i = 1:length(allStrains)
+                minStrain   = min(allStrains{i});
+                maxStrain   = max(allStrains{i});
+                strains{i}  = sort(unique([0 linspace(minStrain,maxStrain,N(i))]))';
+            <span class="keyword">end</span><span class="comment">%for</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>checkTempMaps<a name="9"></a></h2><p>Returns the corrected <i>deltaTempMap</i> for the <i>strainMap</i> calculation and checks <i>tempMap</i> and <i>deltaTempMap</i> for the correct dimensions.</p><pre class="codeinput">        <span class="keyword">function</span> [tempMap, deltaTempMap] = checkTempMaps(obj,tempMap,deltaTempMap,time)
+            N = obj.S.getNumberOfUnitCells; <span class="comment">% nb of unit cells</span>
+            M = length(time);               <span class="comment">% nb of time steps</span>
+            K = obj.S.numSubSystems;        <span class="comment">% nb of subsystems</span>
+
+            <span class="comment">% check size of deltaTempMap</span>
+            <span class="keyword">if</span> K == 1
+                <span class="keyword">if</span> isequal(size(deltaTempMap),[1 N])
+                    temp                = deltaTempMap;
+                    deltaTempMap        = zeros(M,N);
+                    deltaTempMap(1,:)   = temp;
+                <span class="keyword">elseif</span> size(deltaTempMap,1) ~= M || size(deltaTempMap,2) ~= N
+                    error(<span class="string">'The given temperature difference map does not have the dimension M x N, where M is the number of time steps and N the number of unitCells!'</span>);
+                <span class="keyword">end</span><span class="comment">%if</span>
+            <span class="keyword">else</span>
+                <span class="keyword">if</span> isequal(size(deltaTempMap),[1 N K])
+                    temp                = deltaTempMap;
+                    deltaTempMap        = zeros(M,N,K);
+                    deltaTempMap(1,:,:) = temp;
+                <span class="keyword">elseif</span> size(deltaTempMap,1) ~= M || size(deltaTempMap,2) ~= N || size(deltaTempMap,3) ~= K
+                    error(<span class="string">'The given temperature difference map does not have the dimension M x N, where M is the number of time steps and N the number of unitCells and K is the number of subsystems!'</span>);
+                <span class="keyword">end</span><span class="comment">%if</span>
+            <span class="keyword">end</span><span class="comment">%if</span>
+
+            <span class="keyword">if</span> size(tempMap) ~= size(deltaTempMap)
+                error(<span class="string">'The temperature map does not have the same size as the temperature difference map!'</span>);
+            <span class="keyword">end</span><span class="comment">%if</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>calcSticksFromTempMap<a name="10"></a></h2><p>Calculates the sticks to insert into the unit cell springs which model the external force (thermal stress). The length of <img src="phonon_eq31549.png" alt="$l_i$"> of the i-th spacer stick is calculated from the temperature-dependent linear thermal expansion <img src="phonon_eq30806.png" alt="$\alpha(T)$"> of the unit cell:</p><p><img src="phonon_eq98319.png" alt="$$ \alpha(T) = \frac{1}{L} \frac{d L}{d T} $$"></p><p>which results after integration in</p><p><img src="phonon_eq22677.png" alt="$$ l = \Delta L = L_1 \exp(A(T_2) - A(T_1)) - L_1 $$"></p><p>where <img src="phonon_eq99117.png" alt="$A(T)$"> is the integrated lin. therm. expansion coefficient in respect to the temperature <img src="phonon_eq57315.png" alt="$T$">. The indices 1 and 2 indicate the initial and final state.</p><pre class="codeinput">        <span class="keyword">function</span> [sticks, sticksSubSystems] = calcSticksFromTempMap(obj,tempMap,deltaTempMap)
+            N = obj.S.getNumberOfUnitCells; <span class="comment">% nb of unit cells</span>
+            K = obj.S.numSubSystems;        <span class="comment">% nb of subsystems</span>
+            M = size(tempMap,1);            <span class="comment">% nb of time steps</span>
+
+            cAxises         = obj.S.getUnitCellPropertyVector(<span class="string">'cAxis'</span>);
+            intLinThermExps = obj.S.getUnitCellPropertyVector(<span class="string">'intLinThermExp'</span>); <span class="comment">% integrated linear thermal expansion function</span>
+            intAlphaT0      = zeros(N,K); <span class="comment">% evaluated initial integrated linear thermal expansion from T1 to T2</span>
+            intAlphaT       = zeros(N,K); <span class="comment">% evaluated integrated linear thermal expansion from T1 to T2</span>
+            sticks          = zeros(M,N); <span class="comment">% the sticks inserted in the unit cells</span>
+            sticksSubSystems= zeros(M,N,K); <span class="comment">% the sticks for each thermodynamic subsystem</span>
+
+            <span class="comment">% calculate initial integrated linear thermal expansion from T1 to T2</span>
+            <span class="comment">% traverse subsystems</span>
+            <span class="keyword">for</span> j=1:K
+                intAlphaT0(:,j) = cellfun(@feval,intLinThermExps(:,j),num2cell(squeeze(tempMap(1,:,j))'-squeeze(deltaTempMap(1,:,j))'));
+            <span class="keyword">end</span><span class="comment">%for</span>
+
+            <span class="comment">% calculate sticks for all subsytsems for all time steps</span>
+            <span class="comment">% traverse time</span>
+            <span class="keyword">for</span> i=1:M
+                <span class="keyword">if</span> find(deltaTempMap(i,:)) <span class="comment">% there is a temperature change</span>
+                    <span class="comment">% Calculate new sticks from the integrated linear</span>
+                    <span class="comment">% thermal expansion from initial temperature to</span>
+                    <span class="comment">% current temperature for each subsystem</span>
+                    <span class="comment">% traverse subsystems</span>
+                    <span class="keyword">for</span> j=1:K
+                        intAlphaT(:,j) = cellfun(@feval,intLinThermExps(:,j),num2cell(squeeze(tempMap(i,:,j))'));
+                    <span class="keyword">end</span><span class="comment">%for</span>
+
+                    <span class="comment">% calculate the length of the sticks of each subsystem and sum</span>
+                    <span class="comment">% them up</span>
+                    sticksSubSystems(i,:,:) = repmat(cAxises,1,K) .*exp(intAlphaT-intAlphaT0)-repmat(cAxises,1,K);
+                    sticks(i,:)             = sum(sticksSubSystems(i,:,:),3)';
+                <span class="keyword">else</span> <span class="comment">% no temperature change, so keep the current sticks</span>
+                    <span class="keyword">if</span> i &gt; 1
+                        sticksSubSystems(i,:,:) = sticksSubSystems(i-1,:,:);
+                        sticks(i,:)             = sticks(i-1,:);
+                    <span class="keyword">end</span><span class="comment">%if</span>
+                <span class="keyword">end</span><span class="comment">%if</span>
+            <span class="keyword">end</span><span class="comment">%for</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><pre class="codeinput">    <span class="keyword">end</span><span class="comment">%methods</span>
+</pre><pre class="codeinput"><span class="keyword">end</span><span class="comment">%classdef</span>
+</pre><p class="footer"><br>
+      Published with MATLAB&reg; 7.14<br></p></div><!--
+##### SOURCE BEGIN #####
+%% phonon
+% The phonon class simulates phonon dynamics on a 1D sample structure.
+% Besides the 1D structure it holds various simulation parameters and
+% provides several general helper functions.
+%
+% Copyright (c) 2013, Daniel Schick, André Bojahr, Marc Herzog, Roman Shayduk, Clemens von Korff Schmising
+% All rights reserved.
+%
+% License: BSD (use/copy/change/redistribute on own risk, mention the authors)
+
+%% Classdef
+% Each phonon instance and all inherited class objects follow handle
+% semantics. Hence a copy of such object will not copy the object itself,
+% but only a handle to that object.
+classdef phonon < simulation
+    %% Properties
+    properties (SetAccess=public,GetAccess=public)
+        onlyheat = false;       % BOOLEAN if true, phonon dynamics are not 
+                                % calculated and only heat expansion is 
+                                % taken into account
+    end%properties
+    %% Methods
+    methods
+        %% Constructor
+        % Is executed each time an instance of this class is created. Only
+        % the _structure_ and _forceRecalc_ inputs are obligatory.
+        function obj = phonon(structure,forceRecalc,varargin)
+            obj = obj@simulation(structure,forceRecalc,varargin{3:end});
+            % initialize input parser and define defaults and validators
+            p = inputParser;
+            p.KeepUnmatched = true;
+            p.addOptional('onlyheat', false, @islogical);
+            % parse the input
+            p.parse(varargin{:});
+            % assign parser results to object properties
+            obj.onlyheat    = p.Results.onlyheat;
+        end%function
+        
+        %% Display
+        % This method is called to display informations of the instance.
+        function disp(obj)
+            disp(['only heat            : ' bool2str(obj.onlyheat)]);
+            % call the parent display method
+            disp@simulation(obj);
+        end%function
+        
+        %% getHash
+        % Returns a unique hash for all heat simulation parameters.
+        function hash = getHash(obj,time,tempMap,deltaTempMap)
+            % reduce size of tempMap and deltaTempMap when they have more 
+            % than 1e6 elements, since dataHash-function will be to slow
+            % otherwise
+            if numel(tempMap) > 1e6
+                tempMap = reshape(tempMap,1,numel(tempMap));
+                tempMap = tempMap(1:1e6);
+                
+                deltaTempMap = reshape(deltaTempMap,1,numel(deltaTempMap));
+                deltaTempMap = deltaTempMap(1:1e6);
+            end%if          
+            hash = [obj.S.getHash('phonon') '_' dataHash({time tempMap deltaTempMap obj.onlyheat})];
+        end%function
+               
+        %% getAllStrainsPerUniqueUnitCell
+        % Returns a cell array with all strains per unique unit cell that
+        % are given by the input _strainMap_.
+        function strains = getAllStrainsPerUniqueUnitCell(obj,strainMap)
+            % get the position indices of all unique unit cells in the
+            % sample structure
+            Pos = obj.S.getAllPositionsPerUniqueUnitCell();
+            % initalize
+            strains = cell(length(Pos),1);
+            % traverse all unique unitCells
+            for i = 1:length(Pos)
+                temp        = strainMap(:,Pos{i});
+                strains{i}  = sort(unique(reshape(temp,numel(temp),1)));
+            end%for
+        end%function
+        
+        %% getReducedStrainsPerUniqueUnitCell
+        % Returns a cell array with all strains per unique unit cell that
+        % are given by the input _strainMap_, BUT with a reduced number. The
+        % reduction is done by equally spacing the strains between the min
+        % and max strain with a given number $N$.
+        % $N$ can be also a vector of the length($N$) = $M$, where $M$ is 
+        % the number of unique unit cells.
+        function strains = getReducedStrainsPerUniqueUnitCell(obj,strainMap,N)
+            % if no N is given we use 100 as default
+            if nargin < 3
+                N = 100;
+            end%if
+            % initialize
+            allStrains  = obj.getAllStrainsPerUniqueUnitCell(strainMap);
+            M           = length(allStrains); % Nb. of unique unit cells
+            strains     = cell(M,1);           
+            
+            if length(N) == 1
+                N = N*ones(M,1);                
+            elseif length(N) ~= M
+                error('The dimension of N must be either 1 or the number of unique unit cells in the structure!');
+            end%if
+            
+            % traverse all unique unitCells
+            for i = 1:length(allStrains)
+                minStrain   = min(allStrains{i});
+                maxStrain   = max(allStrains{i});
+                strains{i}  = sort(unique([0 linspace(minStrain,maxStrain,N(i))]))';
+            end%for
+        end%function
+        
+        %% checkTempMaps
+        % Returns the corrected _deltaTempMap_ for the _strainMap_ 
+        % calculation and checks _tempMap_ and _deltaTempMap_ for the 
+        % correct dimensions.
+        function [tempMap, deltaTempMap] = checkTempMaps(obj,tempMap,deltaTempMap,time)
+            N = obj.S.getNumberOfUnitCells; % nb of unit cells
+            M = length(time);               % nb of time steps
+            K = obj.S.numSubSystems;        % nb of subsystems
+            
+            % check size of deltaTempMap
+            if K == 1
+                if isequal(size(deltaTempMap),[1 N])
+                    temp                = deltaTempMap;
+                    deltaTempMap        = zeros(M,N);
+                    deltaTempMap(1,:)   = temp;
+                elseif size(deltaTempMap,1) ~= M || size(deltaTempMap,2) ~= N
+                    error('The given temperature difference map does not have the dimension M x N, where M is the number of time steps and N the number of unitCells!');
+                end%if
+            else
+                if isequal(size(deltaTempMap),[1 N K])
+                    temp                = deltaTempMap;
+                    deltaTempMap        = zeros(M,N,K);
+                    deltaTempMap(1,:,:) = temp;
+                elseif size(deltaTempMap,1) ~= M || size(deltaTempMap,2) ~= N || size(deltaTempMap,3) ~= K
+                    error('The given temperature difference map does not have the dimension M x N, where M is the number of time steps and N the number of unitCells and K is the number of subsystems!');
+                end%if
+            end%if
+            
+            if size(tempMap) ~= size(deltaTempMap)
+                error('The temperature map does not have the same size as the temperature difference map!');
+            end%if
+        end%function
+        
+        %% calcSticksFromTempMap
+        % Calculates the sticks to insert into the unit cell springs which
+        % model the external force (thermal stress). The length of $l_i$ 
+        % of the i-th spacer stick is calculated from the
+        % temperature-dependent linear thermal expansion $\alpha(T)$ of 
+        % the unit cell:
+        %
+        % $$ \alpha(T) = \frac{1}{L} \frac{d L}{d T} $$
+        % 
+        % which results after integration in
+        %
+        % $$ l = \Delta L = L_1 \exp(A(T_2) - A(T_1)) - L_1 $$
+        %
+        % where $A(T)$ is the integrated lin. therm. expansion
+        % coefficient in respect to the temperature $T$. The indices 1 and
+        % 2 indicate the initial and final state.
+        function [sticks, sticksSubSystems] = calcSticksFromTempMap(obj,tempMap,deltaTempMap)
+            N = obj.S.getNumberOfUnitCells; % nb of unit cells
+            K = obj.S.numSubSystems;        % nb of subsystems
+            M = size(tempMap,1);            % nb of time steps
+            
+            cAxises         = obj.S.getUnitCellPropertyVector('cAxis');            
+            intLinThermExps = obj.S.getUnitCellPropertyVector('intLinThermExp'); % integrated linear thermal expansion function
+            intAlphaT0      = zeros(N,K); % evaluated initial integrated linear thermal expansion from T1 to T2
+            intAlphaT       = zeros(N,K); % evaluated integrated linear thermal expansion from T1 to T2
+            sticks          = zeros(M,N); % the sticks inserted in the unit cells
+            sticksSubSystems= zeros(M,N,K); % the sticks for each thermodynamic subsystem
+            
+            % calculate initial integrated linear thermal expansion from T1 to T2
+            % traverse subsystems
+            for j=1:K
+                intAlphaT0(:,j) = cellfun(@feval,intLinThermExps(:,j),num2cell(squeeze(tempMap(1,:,j))'-squeeze(deltaTempMap(1,:,j))'));
+            end%for
+            
+            % calculate sticks for all subsytsems for all time steps
+            % traverse time
+            for i=1:M
+                if find(deltaTempMap(i,:)) % there is a temperature change
+                    % Calculate new sticks from the integrated linear 
+                    % thermal expansion from initial temperature to 
+                    % current temperature for each subsystem                        
+                    % traverse subsystems
+                    for j=1:K
+                        intAlphaT(:,j) = cellfun(@feval,intLinThermExps(:,j),num2cell(squeeze(tempMap(i,:,j))'));
+                    end%for
+
+                    % calculate the length of the sticks of each subsystem and sum
+                    % them up 
+                    sticksSubSystems(i,:,:) = repmat(cAxises,1,K) .*exp(intAlphaT-intAlphaT0)-repmat(cAxises,1,K);
+                    sticks(i,:)             = sum(sticksSubSystems(i,:,:),3)';
+                else % no temperature change, so keep the current sticks
+                    if i > 1
+                        sticksSubSystems(i,:,:) = sticksSubSystems(i-1,:,:);
+                        sticks(i,:)             = sticks(i-1,:);
+                    end%if
+                end%if
+            end%for            
+        end%function        
+    end%methods
+end%classdef
+##### SOURCE END #####
+--></body></html>

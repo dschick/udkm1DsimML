@@ -1,0 +1,541 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Superlattice Oscillations</title><meta name="generator" content="MATLAB 7.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-05-02"><meta name="DC.source" content="superlatticeOscillationExample.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+
+  </style></head><body><div class="content"><h1>Superlattice Oscillations</h1><!--introduction--><p>In this example a superlattice (SL) structure of 11 DL consisting of 20 SRO layers and 38 STO layers on a STO substrate are excited by a single ultrashort laser pulse. The excitation of an optical SL phonon mode results in the intensity oscillation of according Bragg peaks.</p><p>The simulation can be compared to the experiments given in Ref. [1].</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">general setting</a></li><li><a href="#2">Set simulation parameters</a></li><li><a href="#3">Initialize the Sample</a></li><li><a href="#4">Initialize the atoms of the Sample Structure</a></li><li><a href="#5">Initialize the unitCells of the Sample</a></li><li><a href="#6">SRO layer</a></li><li><a href="#7">STO layer</a></li><li><a href="#8">STO substrate</a></li><li><a href="#9">Initialize the Sample Structure</a></li><li><a href="#10">Initialize the Heat Diffusion Simulation</a></li><li><a href="#11">Calculate Temperature Pattern</a></li><li><a href="#12">Plot the Results of the Heat Simulations</a></li><li><a href="#13">Initialize the Phonon Dynamics Simulation</a></li><li><a href="#14">Calculate Strain Pattern</a></li><li><a href="#15">Plot the Results of the Phonon Dynamics Simulations</a></li><li><a href="#16">Initilaize dynamic XRD Simulation</a></li><li><a href="#17">Homogeneous Dynamic XRD Simulations</a></li><li><a href="#18">Inhomogeneous Dynamic XRD Simulations</a></li><li><a href="#20">Plot the Results of the Dynamic XRD Simulations</a></li><li><a href="#21">Plot transient Rocking Curve</a></li><li><a href="#22">Plot Bragg Peak Intensity Oscillations</a></li><li><a href="#24">References</a></li></ul></div><h2>general setting<a name="1"></a></h2><pre class="codeinput">close <span class="string">all</span>; <span class="comment">% close all previous figures</span>
+clear <span class="string">all</span>; <span class="comment">% clear the previous workspace</span>
+cacheDir = <span class="string">'./cache'</span>; <span class="comment">% set the cache folder</span>
+forceRecalc = false;   <span class="comment">% force the simulations to recalc</span>
+
+<span class="comment">% define units and constants objects</span>
+u = units;
+const = constants;
+</pre><h2>Set simulation parameters<a name="2"></a></h2><pre class="codeinput">time            = (-5:0.1:50)*u.ps;        <span class="comment">% the time we want to simulate</span>
+E               = 12000*u.eV;               <span class="comment">% energy of X-rays</span>
+sp              = 0;                        <span class="comment">% polarization factor:</span>
+                                            <span class="comment">% 0 -&gt; S; 0.5 -&gt; mixed; 1 -&gt; P</span>
+qz              = (3.1:0.0005:3.3)*u.ang^-1;<span class="comment">% qz range</span>
+initTemp        = 300*u.K;                  <span class="comment">% initial temperature of the sample</span>
+fluence         = 30*u.mJ/u.cm^2;
+heatDiffusion   = false;                    <span class="comment">% disable heat diffusion</span>
+</pre><h2>Initialize the Sample<a name="3"></a></h2><pre class="codeinput">disp(<span class="string">'Initialize sample ...'</span>);
+</pre><pre class="codeoutput">Initialize sample ...
+</pre><h2>Initialize the atoms of the Sample Structure<a name="4"></a></h2><pre class="codeinput">O  = atomBase(<span class="string">'O'</span>);
+Ti = atomBase(<span class="string">'Ti'</span>);
+Sr = atomBase(<span class="string">'Sr'</span>);
+Ru = atomBase(<span class="string">'Ru'</span>);
+</pre><h2>Initialize the unitCells of the Sample<a name="5"></a></h2><p>lattice constants in Angstrom</p><pre class="codeinput">cSTOsub     = 3.905     *u.ang;
+cSTO        = 3.921     *u.ang;
+cSRO        = 3.9493    *u.ang;
+
+<span class="comment">% sound velocities [nm/ps]</span>
+svSRO       = 6.312     *u.nm/u.ps;
+svSTO       = 7.900     *u.nm/u.ps;
+</pre><h2>SRO layer<a name="6"></a></h2><pre class="codeinput">propSRO.aAxis           = cSTOsub;              <span class="comment">% aAxis</span>
+propSRO.bAxis           = cSTOsub;              <span class="comment">% bAxis</span>
+propSRO.debWalFac       = 0;                    <span class="comment">% Debye-Waller factor</span>
+propSRO.soundVel        = svSRO;                <span class="comment">% sound velocity</span>
+propSRO.optPenDepth     = 52*u.nm;              <span class="comment">% optical penetration depth [nm]</span>
+propSRO.thermCond       = 5.72*u.W/(u.m *u.K);  <span class="comment">% heat conductivity [W/m K]</span>
+propSRO.linThermExp     = 1.03e-5;              <span class="comment">% linear thermal expansion</span>
+propSRO.heatCapacity    = 464.419;              <span class="comment">% heat capacity [J /kg K]</span>
+
+SRO = unitCell(<span class="string">'SRO'</span>,<span class="string">'SRO'</span>,cSRO,propSRO);
+SRO.addAtom(O,0);
+SRO.addAtom(Sr,0);
+SRO.addAtom(O,0.5);
+SRO.addAtom(O,0.5);
+SRO.addAtom(Ru,0.5);
+</pre><h2>STO layer<a name="7"></a></h2><pre class="codeinput">propSTO.aAxis           = cSTOsub;                  <span class="comment">% aAxis</span>
+propSTO.bAxis           = cSTOsub;                  <span class="comment">% bAxis</span>
+propSTO.debWalFac       = 0;                        <span class="comment">% Debye-Waller factor</span>
+propSTO.soundVel        = svSTO;                    <span class="comment">% sound velocity</span>
+propSTO.optPenDepth     = Inf;                      <span class="comment">% optical penetration depth</span>
+propSTO.thermCond       = 12*u.W/(u.m *u.K);        <span class="comment">% heat conductivity</span>
+propSTO.linThermExp     = 1e-5;                     <span class="comment">% linear thermal expansion</span>
+propSTO.heatCapacity    = @(T)(733.73 + 0.0248.*T - 6.531e6./T.^2);
+                                                <span class="comment">% heat capacity [J/kg K]</span>
+
+STO = unitCell(<span class="string">'STO'</span>, <span class="string">'STO'</span>, cSTO, propSTO);
+STO.addAtom(O,0);
+STO.addAtom(Sr,0);
+STO.addAtom(O,0.5);
+STO.addAtom(O,0.5);
+STO.addAtom(Ti,0.5);
+</pre><h2>STO substrate<a name="8"></a></h2><pre class="codeinput">propSTOsub.aAxis           = cSTOsub;           <span class="comment">% aAxis</span>
+propSTOsub.bAxis           = cSTOsub;           <span class="comment">% bAxis</span>
+propSTOsub.debWalFac       = 0;                 <span class="comment">% Debye-Waller factor</span>
+propSTOsub.soundVel        = svSTO;             <span class="comment">% sound velocity</span>
+propSTOsub.optPenDepth     = Inf;               <span class="comment">% optical penetration depth [nm]</span>
+propSTOsub.thermCond       = 12*u.W/(u.m *u.K); <span class="comment">% heat conductivity [W/m K]</span>
+propSTOsub.linThermExp     = 1e-5;              <span class="comment">% linear thermal expansion</span>
+propSTOsub.heatCapacity    = @(T)(733.73 + 0.0248.*T - 6.531e6./T.^2);
+                                                <span class="comment">% heat capacity [J/kg K]</span>
+STOsub = unitCell(<span class="string">'STOsub'</span>, <span class="string">'STOsub'</span>, cSTOsub, propSTOsub);
+STOsub.addAtom(O,0);
+STOsub.addAtom(Sr,0);
+STOsub.addAtom(O,0.5);
+STOsub.addAtom(O,0.5);
+STOsub.addAtom(Ti,0.5);
+</pre><h2>Initialize the Sample Structure<a name="9"></a></h2><pre class="codeinput">DL = structure(<span class="string">'DL: 20xSRO + 38xSTO'</span>);
+DL.addSubStructure(SRO,20);
+DL.addSubStructure(STO,38);
+
+S = structure(<span class="string">'11xDL on STO'</span>);
+<span class="comment">% add DL to the structure</span>
+S.addSubStructure(DL,11);
+S.addSubStructure(STOsub,1000);
+<span class="comment">% add a static substrate to the sample structure</span>
+substrate = structure(<span class="string">'STOsubstrate'</span>);
+substrate.addSubStructure(STOsub,1000000)<span class="comment">%</span>
+S.addSubstrate(substrate);
+
+distances = S.getDistancesOfUnitCells(); <span class="comment">% these are the distances of each unitCell from the surface</span>
+</pre><h2>Initialize the Heat Diffusion Simulation<a name="10"></a></h2><p>Provide the sample structure for the heat simulation.</p><pre class="codeinput">H = heat(S,forceRecalc,heatDiffusion);
+H.setCacheDir(cacheDir); <span class="comment">% set the cache directory</span>
+</pre><h2>Calculate Temperature Pattern<a name="11"></a></h2><p>Here calculate the temperature map and temperature difference map for the given time, fluence and initial temperature.</p><pre class="codeinput">[tempMap deltaTempMap] = H.getTempMap(time,fluence,initTemp);
+</pre><pre class="codeoutput">Elapsed time for _temperatureAfterDeltaExcitation_: 1.4286 seconds.
+Elapsed time for _tempMap_: 1.4974 seconds.
+_tempMap_ saved to file .\cache\tempMap_cbf8e8e4e0b077d77d631e1296acb699_658b02e965befb1696e5792edfaa9390.mat
+</pre><h2>Plot the Results of the Heat Simulations<a name="12"></a></h2><pre class="codeinput">figure(1)
+<span class="comment">% plot the temperature map</span>
+kk = surf(distances/u.nm,time/u.ps,tempMap);
+set(kk, <span class="string">'LineStyle'</span>, <span class="string">'none'</span>);
+xlabel(<span class="string">'z [nm]'</span>);
+ylabel(<span class="string">'Delay [ps]'</span>);
+title(<span class="string">'Temperature [K]'</span>);
+set(gca, <span class="string">'XMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'YMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'TickDir'</span>, <span class="string">'out'</span>);
+axis([distances(1)/u.nm distances(end)/u.nm time(1)/u.ps time(end)/u.ps]);
+box <span class="string">on</span>; colorbar(<span class="string">'Location'</span>, <span class="string">'EastOutside'</span>); colormap <span class="string">jet(255)</span>;
+</pre><img vspace="5" hspace="5" src="superlatticeOscillationExample_01.png" alt=""> <h2>Initialize the Phonon Dynamics Simulation<a name="13"></a></h2><p>Provide the sample structure for the phonon dynamics simulation</p><pre class="codeinput">P = phononNum(S,forceRecalc);
+P.setCacheDir(cacheDir); <span class="comment">% set the cache directory</span>
+</pre><h2>Calculate Strain Pattern<a name="14"></a></h2><p>Here we calculate the strain map for the given temperature, and temperature difference map and the time vector.</p><pre class="codeinput">strainMap = P.getStrainMap(time,tempMap,deltaTempMap);
+</pre><pre class="codeoutput">Calculating linear thermal expansion ...
+Calculating coherent dynamics with ODE solver ...
+ODE integration: 100%    [..................................................]
+Elapsed time for _strainMap_: 13.3814 seconds.
+_strainMap_ saved to file .\cache\strainMapNum_2d712ea569062ed49f12be2c2130e404_79ca70d39d2774d7b4c38c8d6b2fbabd.mat
+</pre><h2>Plot the Results of the Phonon Dynamics Simulations<a name="15"></a></h2><pre class="codeinput">figure(2);
+kk = surf(distances/u.nm,time/u.ps,100*strainMap);
+set(kk, <span class="string">'FaceColor'</span>, <span class="string">'interp'</span>, <span class="string">'LineStyle'</span>, <span class="string">'none'</span>);
+set(gca, <span class="string">'XMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'YMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'TickDir'</span>, <span class="string">'out'</span>);
+axis([distances(1)/u.nm distances(end)/u.nm time(1)/u.ps time(end)/u.ps])
+caxis([-100*max(max(strainMap)) 100*max(max(strainMap))]);
+colormap <span class="string">fireice(255)</span>;
+colorbar(<span class="string">'location'</span>, <span class="string">'EastOutside'</span>);
+xlabel(<span class="string">'z [nm]'</span>);
+ylabel(<span class="string">'Delay [ps]'</span>);
+title(<span class="string">'Strain [%]'</span>);
+</pre><img vspace="5" hspace="5" src="superlatticeOscillationExample_02.png" alt=""> <h2>Initilaize dynamic XRD Simulation<a name="16"></a></h2><pre class="codeinput">disp(<span class="string">'Initilaize dynamic XRD Simulation'</span>);
+D = XRDdyn(S,forceRecalc,E,sp); <span class="comment">% set main parameters</span>
+D.setCacheDir(cacheDir); <span class="comment">% set the cache directory</span>
+D.setQz(qz); <span class="comment">% set q_z range</span>
+</pre><pre class="codeoutput">Initilaize dynamic XRD Simulation
+</pre><h2>Homogeneous Dynamic XRD Simulations<a name="17"></a></h2><p>Here we calculate the rocking curve for no strain at all for the full sample .</p><pre class="codeinput">[Rh A] = D.homogeneousReflectivity(); <span class="comment">% thats all</span>
+
+<span class="comment">% define an instrumental function to convolute the result with:</span>
+mu          = 0.1;
+width       = 0.001*u.ang^-1;
+instFunc    = @(qz)(pseudo_voigt(qz,width,mu));
+
+<span class="comment">% carry out the convolution with the instrumental function</span>
+[Rhi xc] = D.convWithInstrumentFunction(Rh,qz,instFunc);
+
+<span class="comment">% Plot the Results of the homogeneous Dynamic XRD Simulations</span>
+figure(3)
+semilogy(qz/u.ang^-1,D.getReflectivityFromMatrix(A{1}{1})*10, <span class="string">'-r'</span>, <span class="string">'LineWidth'</span>, 1);
+hold <span class="string">on</span>;
+semilogy(qz/u.ang^-1,D.getReflectivityFromMatrix(A{1}{2})*10, <span class="string">'-b'</span>, <span class="string">'LineWidth'</span>, 1);
+semilogy(qz/u.ang^-1,D.getReflectivityFromMatrix(A{2})*100, <span class="string">'-'</span>, <span class="string">'Color'</span>,[0 0.5 0], <span class="string">'LineWidth'</span>, 1);
+semilogy(qz/u.ang^-1, Rhi, <span class="string">'-k'</span>, <span class="string">'LineWidth'</span>, 2);
+hold <span class="string">off</span>
+axis([qz(1)/u.ang^-1 qz(end)/u.ang^-1 1e-5 1]);
+set(gca,<span class="string">'YScale'</span>, <span class="string">'log'</span>);
+grid <span class="string">off</span>; box <span class="string">on</span>;
+title(<span class="string">'Homogeneous XRD'</span>);
+xlabel(<span class="string">'q_z [Ang.^{-1}]'</span>);
+ylabel(<span class="string">'Reflectivity'</span>);
+lh = legend(<span class="string">'20xSRO'</span>,<span class="string">'38xSTO'</span>, <span class="string">'1xDL'</span>, <span class="string">'11xDL + Substrate'</span>);
+set(lh, <span class="string">'Location'</span>, <span class="string">'NorthWest'</span>, <span class="string">'FontSize'</span>, 10);
+set(gca, <span class="string">'Ydir'</span>, <span class="string">'normal'</span>, <span class="string">'XMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'YMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'TickDir'</span>, <span class="string">'out'</span>);
+</pre><pre class="codeoutput">Calculating _homogenousReflectivity_ ...
+Elapsed time for _homogenousReflectivity_: 0.10222 seconds.
+</pre><img vspace="5" hspace="5" src="superlatticeOscillationExample_03.png" alt=""> <h2>Inhomogeneous Dynamic XRD Simulations<a name="18"></a></h2><p>Now we calculate the inhomogeneous dynamic XRD simulation for each time step each single strain for each unit cell in the sample</p><p>Calculate all strains that should be applied to all unique types of unit cells in the sample structure in order to save computational time.</p><pre class="codeinput">strainVectors = P.getReducedStrainsPerUniqueUnitCell(strainMap,100);
+
+R = D.getInhomogeneousReflectivity(strainMap,strainVectors); <span class="comment">% thats all</span>
+</pre><pre class="codeoutput">Caclulate all _refTransMatricies_ ...
+Elapsed time for _refTransMatricies_: 1.1611 seconds.
+_refTransMatrices_ saved to file .\cache\allRefTransMatrices_d58ad0ccb553dec8ccf525662296db67_e916b092c486d06f38fe2fe5f247ebff.mat
+Calculating _inhomogenousReflectivity_ ...
+Elapsed time for _inhomogeneousReflectivity_: 57.8719 seconds.
+_inhomogeneousReflectivity_ saved to file .\cache\inhomogeneousReflectivityDyn_d58ad0ccb553dec8ccf525662296db67_2d096894958c643f7db41129e4c87db1.mat
+</pre><h2>Plot the Results of the Dynamic XRD Simulations<a name="20"></a></h2><pre class="codeinput"><span class="comment">% convolute with instrument function and temporal resolution first</span>
+RI = D.convWithInstrumentFunction(R,qz,instFunc);
+RI = D.convWithTemporalResolution(RI,time,0.2*u.ps);
+
+figure(4)
+kk = surf(qz/u.ang^-1,time/u.ps,log10(RI));
+set(kk, <span class="string">'LineStyle'</span>, <span class="string">'none'</span>);
+axis([qz(1)/u.ang^-1 qz(end)/u.ang^-1 time(1)/u.ps time(end)/u.ps])
+box <span class="string">on</span>; colorbar; colormap(fireice(256));
+caxis([-6 0]);
+xlabel(<span class="string">'q_z [Ang^{-1}]'</span>);
+ylabel(<span class="string">'Delay [ps]'</span>);
+title(<span class="string">'Transient X-ray Reflectivity'</span>);
+set(gca, <span class="string">'XMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'YMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'TickDir'</span>, <span class="string">'out'</span>);
+</pre><img vspace="5" hspace="5" src="superlatticeOscillationExample_04.png" alt=""> <h2>Plot transient Rocking Curve<a name="21"></a></h2><pre class="codeinput">figure(5)
+semilogy(qz/u.ang^-1,RI(time == 1.5*u.ps, :), <span class="string">'-r'</span>, <span class="string">'LineWidth'</span>, 2);hold <span class="string">on</span>;
+semilogy(qz/u.ang^-1,RI(time == -1*u.ps, :), <span class="string">'-k'</span>, <span class="string">'LineWidth'</span>, 2);
+axis([qz(1)/u.ang^-1 qz(end)/u.ang^-1 1e-5 1]);
+grid <span class="string">off</span>; box <span class="string">on</span>;
+xlabel(<span class="string">'q_z [Ang^{-1}]'</span>);
+ylabel(<span class="string">'Reflectivity'</span>);
+title(<span class="string">'Rocking Curves'</span>);
+legend(<span class="string">'t &lt; 0'</span>, <span class="string">'t = 1.5 ps'</span>);
+set(gca, <span class="string">'XMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'YMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'TickDir'</span>, <span class="string">'out'</span>);
+hold <span class="string">off</span>;
+</pre><img vspace="5" hspace="5" src="superlatticeOscillationExample_05.png" alt=""> <h2>Plot Bragg Peak Intensity Oscillations<a name="22"></a></h2><pre class="codeinput">SL2 = sum(RI(:,qz &gt; 3.195*u.ang^-1 &amp; qz &lt; 3.2*u.ang^-1),2);
+SL0 = sum(RI(:,qz &gt; 3.248*u.ang^-1 &amp; qz &lt; 3.256*u.ang^-1),2);
+
+figure(6)
+subplot(2,1,1);
+plot(time/u.ps,SL2/SL2(time == -1*u.ps), <span class="string">'-b'</span>, <span class="string">'LineWidth'</span>, 2);
+axis([-2 22 0 1.1]);
+title(<span class="string">'Intensity SL 0'</span>);
+ylabel(<span class="string">'\Delta R / R_0'</span>);
+set(gca, <span class="string">'XMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'YMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'TickDir'</span>, <span class="string">'out'</span>);
+
+subplot(2,1,2);
+plot(time/u.ps,SL0/SL0(time == -1*u.ps), <span class="string">'-b'</span>, <span class="string">'LineWidth'</span>, 2);
+axis([-2 22 0 50]);
+title(<span class="string">'Intensity SL +2'</span>);
+xlabel(<span class="string">'Delay [ps]'</span>);
+ylabel(<span class="string">'\Delta R / R_0'</span>);
+set(gca, <span class="string">'XMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'YMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'TickDir'</span>, <span class="string">'out'</span>);
+</pre><pre class="codeinput">disp(<span class="string">'finished'</span>);
+</pre><pre class="codeoutput">finished
+</pre><img vspace="5" hspace="5" src="superlatticeOscillationExample_06.png" alt=""> <h2>References<a name="24"></a></h2><div><ol><li>M. Herzog, D. Schick, W. Leitenberger, R. Shayduk, R. M. van der Veen, C. J. Milne, S. L. Johnson, et al. (2012). <i>Tailoring interference and nonlinear manipulation of femtosecond x-rays</i>. New Journal of Physics, 14(1), 13004. doi:10.1088/1367-2630/14/1/013004</li></ol></div><p class="footer"><br>
+      Published with MATLAB&reg; 7.14<br></p></div><!--
+##### SOURCE BEGIN #####
+%% Superlattice Oscillations
+% In this example a superlattice (SL) structure of 11 DL consisting of 20 
+% SRO layers and 38 STO layers on a STO substrate are excited by a single
+% ultrashort laser pulse. The excitation of an optical SL phonon mode
+% results in the intensity oscillation of according Bragg peaks.
+%
+% The simulation can be compared to the experiments given in Ref. [1].
+
+%% general setting
+close all; % close all previous figures
+clear all; % clear the previous workspace
+cacheDir = './cache'; % set the cache folder
+forceRecalc = false;   % force the simulations to recalc
+
+% define units and constants objects
+u = units;
+const = constants;
+
+%% Set simulation parameters
+time            = (-5:0.1:50)*u.ps;        % the time we want to simulate
+E               = 12000*u.eV;               % energy of X-rays
+sp              = 0;                        % polarization factor: 
+                                            % 0 -> S; 0.5 -> mixed; 1 -> P
+qz              = (3.1:0.0005:3.3)*u.ang^-1;% qz range
+initTemp        = 300*u.K;                  % initial temperature of the sample
+fluence         = 30*u.mJ/u.cm^2;
+heatDiffusion   = false;                    % disable heat diffusion
+
+%% Initialize the Sample
+disp('Initialize sample ...');
+
+%% Initialize the atoms of the Sample Structure
+O  = atomBase('O');
+Ti = atomBase('Ti');
+Sr = atomBase('Sr');
+Ru = atomBase('Ru');
+
+%% Initialize the unitCells of the Sample
+% lattice constants in Angstrom
+cSTOsub     = 3.905     *u.ang;
+cSTO        = 3.921     *u.ang;
+cSRO        = 3.9493    *u.ang;
+
+% sound velocities [nm/ps]
+svSRO       = 6.312     *u.nm/u.ps;
+svSTO       = 7.900     *u.nm/u.ps;
+
+%%% SRO layer
+propSRO.aAxis           = cSTOsub;              % aAxis
+propSRO.bAxis           = cSTOsub;              % bAxis
+propSRO.debWalFac       = 0;                    % Debye-Waller factor
+propSRO.soundVel        = svSRO;                % sound velocity
+propSRO.optPenDepth     = 52*u.nm;              % optical penetration depth [nm]
+propSRO.thermCond       = 5.72*u.W/(u.m *u.K);  % heat conductivity [W/m K]
+propSRO.linThermExp     = 1.03e-5;              % linear thermal expansion
+propSRO.heatCapacity    = 464.419;              % heat capacity [J /kg K]
+
+SRO = unitCell('SRO','SRO',cSRO,propSRO);
+SRO.addAtom(O,0);
+SRO.addAtom(Sr,0);
+SRO.addAtom(O,0.5);
+SRO.addAtom(O,0.5);
+SRO.addAtom(Ru,0.5);
+
+%%% STO layer
+propSTO.aAxis           = cSTOsub;                  % aAxis
+propSTO.bAxis           = cSTOsub;                  % bAxis
+propSTO.debWalFac       = 0;                        % Debye-Waller factor
+propSTO.soundVel        = svSTO;                    % sound velocity
+propSTO.optPenDepth     = Inf;                      % optical penetration depth
+propSTO.thermCond       = 12*u.W/(u.m *u.K);        % heat conductivity
+propSTO.linThermExp     = 1e-5;                     % linear thermal expansion
+propSTO.heatCapacity    = @(T)(733.73 + 0.0248.*T - 6.531e6./T.^2);
+                                                % heat capacity [J/kg K]
+
+STO = unitCell('STO', 'STO', cSTO, propSTO);
+STO.addAtom(O,0);
+STO.addAtom(Sr,0);
+STO.addAtom(O,0.5);
+STO.addAtom(O,0.5);
+STO.addAtom(Ti,0.5);
+
+%%% STO substrate
+propSTOsub.aAxis           = cSTOsub;           % aAxis
+propSTOsub.bAxis           = cSTOsub;           % bAxis
+propSTOsub.debWalFac       = 0;                 % Debye-Waller factor
+propSTOsub.soundVel        = svSTO;             % sound velocity
+propSTOsub.optPenDepth     = Inf;               % optical penetration depth [nm]
+propSTOsub.thermCond       = 12*u.W/(u.m *u.K); % heat conductivity [W/m K]
+propSTOsub.linThermExp     = 1e-5;              % linear thermal expansion
+propSTOsub.heatCapacity    = @(T)(733.73 + 0.0248.*T - 6.531e6./T.^2);
+                                                % heat capacity [J/kg K]
+STOsub = unitCell('STOsub', 'STOsub', cSTOsub, propSTOsub);
+STOsub.addAtom(O,0);
+STOsub.addAtom(Sr,0);
+STOsub.addAtom(O,0.5);
+STOsub.addAtom(O,0.5);
+STOsub.addAtom(Ti,0.5);
+
+%% Initialize the Sample Structure
+DL = structure('DL: 20xSRO + 38xSTO');
+DL.addSubStructure(SRO,20);
+DL.addSubStructure(STO,38);
+
+S = structure('11xDL on STO');
+% add DL to the structure
+S.addSubStructure(DL,11);
+S.addSubStructure(STOsub,1000);
+% add a static substrate to the sample structure
+substrate = structure('STOsubstrate');
+substrate.addSubStructure(STOsub,1000000)% 
+S.addSubstrate(substrate);
+
+distances = S.getDistancesOfUnitCells(); % these are the distances of each unitCell from the surface
+
+%% Initialize the Heat Diffusion Simulation
+% Provide the sample structure for the heat simulation.
+H = heat(S,forceRecalc,heatDiffusion);
+H.setCacheDir(cacheDir); % set the cache directory
+
+%% Calculate Temperature Pattern
+% Here calculate the temperature map and temperature difference map for the
+% given time, fluence and initial temperature.
+[tempMap deltaTempMap] = H.getTempMap(time,fluence,initTemp);
+%% Plot the Results of the Heat Simulations
+figure(1)
+% plot the temperature map
+kk = surf(distances/u.nm,time/u.ps,tempMap);
+set(kk, 'LineStyle', 'none');
+xlabel('z [nm]'); 
+ylabel('Delay [ps]');
+title('Temperature [K]');
+set(gca, 'XMinorTick', 'on', 'YMinorTick', 'on', 'TickDir', 'out');
+axis([distances(1)/u.nm distances(end)/u.nm time(1)/u.ps time(end)/u.ps]);
+box on; colorbar('Location', 'EastOutside'); colormap jet(255);
+
+%% Initialize the Phonon Dynamics Simulation
+% Provide the sample structure for the phonon dynamics simulation
+P = phononNum(S,forceRecalc);
+P.setCacheDir(cacheDir); % set the cache directory
+
+%% Calculate Strain Pattern
+% Here we calculate the strain map for the given temperature, and 
+% temperature difference map and the time vector.
+strainMap = P.getStrainMap(time,tempMap,deltaTempMap);
+
+%% Plot the Results of the Phonon Dynamics Simulations
+figure(2);
+kk = surf(distances/u.nm,time/u.ps,100*strainMap);
+set(kk, 'FaceColor', 'interp', 'LineStyle', 'none');
+set(gca, 'XMinorTick', 'on', 'YMinorTick', 'on', 'TickDir', 'out');
+axis([distances(1)/u.nm distances(end)/u.nm time(1)/u.ps time(end)/u.ps])
+caxis([-100*max(max(strainMap)) 100*max(max(strainMap))]);
+colormap fireice(255);
+colorbar('location', 'EastOutside');
+xlabel('z [nm]');
+ylabel('Delay [ps]');
+title('Strain [%]');
+
+%% Initilaize dynamic XRD Simulation
+disp('Initilaize dynamic XRD Simulation');
+D = XRDdyn(S,forceRecalc,E,sp); % set main parameters
+D.setCacheDir(cacheDir); % set the cache directory
+D.setQz(qz); % set q_z range
+
+%% Homogeneous Dynamic XRD Simulations
+% Here we calculate the rocking curve for no strain at all for the full 
+% sample .
+[Rh A] = D.homogeneousReflectivity(); % thats all
+
+% define an instrumental function to convolute the result with:
+mu          = 0.1;
+width       = 0.001*u.ang^-1;
+instFunc    = @(qz)(pseudo_voigt(qz,width,mu));
+
+% carry out the convolution with the instrumental function 
+[Rhi xc] = D.convWithInstrumentFunction(Rh,qz,instFunc);
+
+% Plot the Results of the homogeneous Dynamic XRD Simulations
+figure(3)
+semilogy(qz/u.ang^-1,D.getReflectivityFromMatrix(A{1}{1})*10, '-r', 'LineWidth', 1);
+hold on;
+semilogy(qz/u.ang^-1,D.getReflectivityFromMatrix(A{1}{2})*10, '-b', 'LineWidth', 1); 
+semilogy(qz/u.ang^-1,D.getReflectivityFromMatrix(A{2})*100, '-', 'Color',[0 0.5 0], 'LineWidth', 1);
+semilogy(qz/u.ang^-1, Rhi, '-k', 'LineWidth', 2);
+hold off
+axis([qz(1)/u.ang^-1 qz(end)/u.ang^-1 1e-5 1]);
+set(gca,'YScale', 'log');
+grid off; box on;
+title('Homogeneous XRD');
+xlabel('q_z [Ang.^{-1}]'); 
+ylabel('Reflectivity');
+lh = legend('20xSRO','38xSTO', '1xDL', '11xDL + Substrate');
+set(lh, 'Location', 'NorthWest', 'FontSize', 10);
+set(gca, 'Ydir', 'normal', 'XMinorTick', 'on', 'YMinorTick', 'on', 'TickDir', 'out');
+
+%% Inhomogeneous Dynamic XRD Simulations
+% Now we calculate the inhomogeneous dynamic XRD simulation for each time
+% step each single strain for each unit cell in the sample
+
+%%% 
+% Calculate all strains that should be applied to all 
+% unique types of unit cells in the sample structure in order to save
+% computational time.
+strainVectors = P.getReducedStrainsPerUniqueUnitCell(strainMap,100);
+
+R = D.getInhomogeneousReflectivity(strainMap,strainVectors); % thats all
+
+%% Plot the Results of the Dynamic XRD Simulations
+
+% convolute with instrument function and temporal resolution first
+RI = D.convWithInstrumentFunction(R,qz,instFunc);
+RI = D.convWithTemporalResolution(RI,time,0.2*u.ps);
+
+figure(4)
+kk = surf(qz/u.ang^-1,time/u.ps,log10(RI));
+set(kk, 'LineStyle', 'none');
+axis([qz(1)/u.ang^-1 qz(end)/u.ang^-1 time(1)/u.ps time(end)/u.ps])
+box on; colorbar; colormap(fireice(256));
+caxis([-6 0]);
+xlabel('q_z [Ang^{-1}]'); 
+ylabel('Delay [ps]');
+title('Transient X-ray Reflectivity');
+set(gca, 'XMinorTick', 'on', 'YMinorTick', 'on', 'TickDir', 'out');
+
+%% Plot transient Rocking Curve
+figure(5)
+semilogy(qz/u.ang^-1,RI(time == 1.5*u.ps, :), '-r', 'LineWidth', 2);hold on;
+semilogy(qz/u.ang^-1,RI(time == -1*u.ps, :), '-k', 'LineWidth', 2);
+axis([qz(1)/u.ang^-1 qz(end)/u.ang^-1 1e-5 1]);
+grid off; box on;
+xlabel('q_z [Ang^{-1}]');
+ylabel('Reflectivity');
+title('Rocking Curves');
+legend('t < 0', 't = 1.5 ps');
+set(gca, 'XMinorTick', 'on', 'YMinorTick', 'on', 'TickDir', 'out');
+hold off;
+
+%% Plot Bragg Peak Intensity Oscillations
+SL2 = sum(RI(:,qz > 3.195*u.ang^-1 & qz < 3.2*u.ang^-1),2);
+SL0 = sum(RI(:,qz > 3.248*u.ang^-1 & qz < 3.256*u.ang^-1),2);
+
+figure(6)
+subplot(2,1,1);
+plot(time/u.ps,SL2/SL2(time == -1*u.ps), '-b', 'LineWidth', 2);
+axis([-2 22 0 1.1]);
+title('Intensity SL 0');
+ylabel('\Delta R / R_0');
+set(gca, 'XMinorTick', 'on', 'YMinorTick', 'on', 'TickDir', 'out');
+
+subplot(2,1,2);
+plot(time/u.ps,SL0/SL0(time == -1*u.ps), '-b', 'LineWidth', 2);
+axis([-2 22 0 50]);
+title('Intensity SL +2');
+xlabel('Delay [ps]');
+ylabel('\Delta R / R_0');
+set(gca, 'XMinorTick', 'on', 'YMinorTick', 'on', 'TickDir', 'out');
+
+%%%
+disp('finished');
+
+%% References
+%
+% # M. Herzog, D. Schick, W. Leitenberger, R. Shayduk, R. M. van der Veen, 
+% C. J. Milne, S. L. Johnson, et al. (2012). _Tailoring interference and 
+% nonlinear manipulation of femtosecond x-rays_. New Journal of Physics, 
+% 14(1), 13004. doi:10.1088/1367-2630/14/1/013004
+##### SOURCE END #####
+--></body></html>

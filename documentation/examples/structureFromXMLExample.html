@@ -1,0 +1,263 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Structure From XML Example</title><meta name="generator" content="MATLAB 7.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-05-02"><meta name="DC.source" content="structureFromXMLExample.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+
+  </style></head><body><div class="content"><h1>Structure From XML Example</h1><!--introduction--><p>In this example we show how to build a sample structure from a given XML file. The use of XML files allows to easily exchange sample structures and have a clean code for the upcoming simulations.</p><p>Be sure to include all folders of the udkm1dsim toolbox to your MATLAB search path. Especially the <i>/parameters</i> and <i>/helpers</i> folders with all their subfolders.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Content of Structure XML File</a></li><li><a href="#3">Load the Sample Structure</a></li><li><a href="#6">More Structure Methods</a></li></ul></div><p>here we clear the workspace and close all figures</p><pre class="codeinput">clear <span class="string">all</span>;
+close <span class="string">all</span>;
+<span class="comment">% these are some units and constants we can use later on</span>
+u            = units;
+const        = constants;
+</pre><h2>Content of Structure XML File<a name="2"></a></h2><p>First of all we display the content of the XML file. You should read the comments in the file carefully. Generally, building structures in a MATLAB script or from an XML file is not much different.</p><pre class="codeinput">type(<span class="string">'sample.xml'</span>);
+</pre><pre class="codeoutput">
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;!-- You have to provide all constants in SI units. --&gt;
+&lt;!-- The ordering of the attributes does not matter, but they are case sensitive! --&gt;
+&lt;sample name="Sample From XML"&gt;
+    &lt;!-- initilize atoms and mixed atoms --&gt;
+    &lt;atoms&gt;
+        &lt;!-- required: symbol - optional: ID, ionicty --&gt;
+        &lt;atom symbol="O" /&gt; 
+        &lt;atom symbol="Sr"   ID="Sr" /&gt;
+        &lt;atom symbol="Ti"   ionicity="0" /&gt;
+        &lt;atom symbol="Ru"   ID="Ru" ionicity="0" /&gt;
+        &lt;atom symbol="Pb" /&gt;
+        &lt;atom symbol="Zr" /&gt;
+        &lt;!-- required: symbol - optinal: ID, name --&gt;
+        &lt;atomMixed symbol="ZT" ID="ZT" name="Zircon-Titan 0.2 0.8"&gt;
+            &lt;!-- required: ID, fraction --&gt;
+            &lt;atom ID="Zr" fraction="0.2" /&gt;
+            &lt;atom ID="Ti" fraction="0.8" /&gt;
+        &lt;/atomMixed&gt;
+    &lt;/atoms&gt;
+    &lt;!-- build the unit cells --&gt;
+	&lt;unitCells&gt;
+        &lt;!-- required: name, ID, cAxis - optinal: aAxis, bAxis, debWalFac, soundVel, optPenDepth, thermCond. linThermExp, heatCapCoeffs --&gt;
+		&lt;unitCell name="SRO" ID="SRO" cAxis="3.948e-10" aAxis="3.905e-10" bAxis="3.905e-10" debWalFac="0" soundVel="6312" optPenDepth="43.8e-9" thermCond="5.72" linThermExp="@(T)(-4.16e-6+5.86e-8.*T-7.78e-11.*T.^2+3.41e-14.*T.^3)" heatCapacity="@(T)(455.2 + 0.112.*T - 2.1935e6./T.^2)"&gt;
+            &lt;!-- add atoms at relative positions --&gt;
+			&lt;atom ID="O"    position="0" /&gt;
+            &lt;atom ID="Sr"   position="0" /&gt;
+            &lt;atom ID="O"    position="0.5" /&gt;
+            &lt;atom ID="O"    position="0.5" /&gt;
+            &lt;atom ID="Ru"   position="0.5" /&gt;
+		&lt;/unitCell&gt;
+        &lt;unitCell name="PZT" ID="PZT" cAxis="4.1315e-10" aAxis="3.905e-10" bAxis="3.905e-10" debWalFac="0" soundVel="4145" optPenDepth="Inf" thermCond="1" linThermExp="-1.5e-5" heatCapacity="@(T)(733.73 + 0.0248.*T - 6.531e6./T.^2)"&gt;
+			&lt;atom ID="O"    position="0" /&gt;
+            &lt;atom ID="Pb"   position="@(strain)(0.089888*sqrt((strain+0.0414)/0.0414))"/&gt;
+            &lt;atom ID="O"    position="0.5" /&gt;
+            &lt;atom ID="O"    position="0.5" /&gt;
+            &lt;atom ID="ZT"   position="@(strain)(0.5*(strain+1)+0.057375*sqrt((strain+0.0414)/0.0414))" /&gt;
+		&lt;/unitCell&gt;
+        &lt;unitCell name="STOsub" ID="STOsub" cAxis="3.905e-10" aAxis="3.905e-10" bAxis="3.905e-10" debWalFac="0" soundVel="7800" optPenDepth="Inf" thermCond="12" linThermExp="1e-5" heatCapacity="@(T)(733.73 + 0.0248.*T - 6.531e6./T.^2)"&gt;
+			&lt;!-- required: ID, position - optinal: handle --&gt;
+            &lt;atom ID="O"    position="0" /&gt;
+            &lt;atom ID="Sr"   position="0" /&gt;
+            &lt;atom ID="O"    position="0.5" /&gt;
+            &lt;atom ID="O"    position="0.5" /&gt;
+            &lt;atom ID="Ti"   position="0.5" /&gt;
+		&lt;/unitCell&gt;
+	&lt;/unitCells&gt;
+    &lt;!-- build the structure out of substructres and layers --&gt;
+    &lt;structure&gt;
+        &lt;!-- required: N , unitCellID / name --&gt;
+        &lt;!-- substructures can be either unit cells or a structure itself --&gt;
+        &lt;substructure name="double layer" N="5"&gt;
+            &lt;substructure unitCellID="PZT" N="7" /&gt;
+            &lt;substructure unitCellID="SRO" N="9" /&gt;
+        &lt;/substructure&gt;
+        &lt;substructure unitCellID="SRO" N="100" /&gt;
+        &lt;substructure unitCellID="STOsub" N="200" /&gt;
+    &lt;/structure&gt;
+    &lt;!-- add a static substrate to the sample structure --&gt;
+    &lt;!-- required: unitCellID, N --&gt;
+    &lt;substrate unitCellID="STOsub" N="100000" /&gt;
+&lt;/sample&gt;
+</pre><h2>Load the Sample Structure<a name="3"></a></h2><p>The name of the structure is overwritten from the XML file. So the only necessary parameter is the path to the XML file we want to load.</p><pre class="codeinput">S = structure(<span class="string">''</span>, <span class="string">'./sample.xml'</span>);
+</pre><pre class="codeoutput">Building Sample: Sample From XML from File
+Loading Atoms into Workspace...
+... Atoms loaded!
+Loading UnitCells into Workspace...
+... UnitCells loaded!
+Building Substructures ...
+... Substructures built!
+Substrate added!
+</pre><p>display the properties of the structure and visualize</p><pre class="codeinput">S.disp();
+</pre><pre class="codeoutput">Structure properties:
+Name  : Sample From XML
+Length: 149.81 nm
+----
+SubStructure 5 times:
+	Structure properties:
+	Name  : double layer
+	Length: 6.45 nm
+	----
+	7 times PZT: 2.89 nm
+	9 times SRO: 3.55 nm
+	----
+100 times SRO: 39.48 nm
+200 times STOsub: 78.10 nm
+----
+Substrate:
+----
+100000 times STOsub: 39050.00 nm
+</pre><pre class="codeinput">S.visualize();
+</pre><img vspace="5" hspace="5" src="structureFromXMLExample_01.png" alt=""> <h2>More Structure Methods<a name="6"></a></h2><p>In order to access the different unit cells in the structure we can first display the internal nummeration of the unit cells in the structure:</p><pre class="codeinput">disp(S.getUniqueUnitCells);
+</pre><pre class="codeoutput">    'PZT'       [1x1 unitCell]
+    'SRO'       [1x1 unitCell]
+    'STOsub'    [1x1 unitCell]
+
+</pre><p>Now we can also retrieve all positions per unique unit cell in the structure by simply asking for the cell array:</p><pre class="codeinput">Pos = S.getAllPositionsPerUniqueUnitCell();
+
+<span class="comment">% Each cell of this array is linked to the above retrieved unique unit</span>
+<span class="comment">% cells. Accordingly the first entry gives all positions of the PZT unit</span>
+<span class="comment">% cell in the structure:</span>
+disp(Pos{1});
+</pre><pre class="codeoutput">     1
+     2
+     3
+     4
+     5
+     6
+     7
+    17
+    18
+    19
+    20
+    21
+    22
+    23
+    33
+    34
+    35
+    36
+    37
+    38
+    39
+    49
+    50
+    51
+    52
+    53
+    54
+    55
+    65
+    66
+    67
+    68
+    69
+    70
+    71
+
+</pre><p>You can easily access the properties of a unit cell by its index by simply typing:</p><pre class="codeinput">disp(S.getUnitCellHandle(10).name);
+disp([<span class="string">'mass: '</span> num2str(S.getUnitCellHandle(10).mass/u.kg) <span class="string">' kg'</span>]);
+</pre><pre class="codeoutput">SRO
+mass: 3.9303e-25 kg
+</pre><p class="footer"><br>
+      Published with MATLAB&reg; 7.14<br></p></div><!--
+##### SOURCE BEGIN #####
+%% Structure From XML Example
+% In this example we show how to build a sample structure from a given XML
+% file. The use of XML files allows to easily exchange sample structures
+% and have a clean code for the upcoming simulations.
+%
+% Be sure to include all folders of the udkm1dsim toolbox to your MATLAB 
+% search path. Especially the _/parameters_ and _/helpers_ folders with all 
+% their subfolders.
+
+%%
+% here we clear the workspace and close all figures
+clear all;
+close all;
+% these are some units and constants we can use later on
+u            = units;
+const        = constants;
+
+%% Content of Structure XML File
+% First of all we display the content of the XML file. You should read the
+% comments in the file carefully. Generally, building structures in a
+% MATLAB script or from an XML file is not much different.
+type('sample.xml');
+%% Load the Sample Structure
+% The name of the structure is overwritten from the XML file. So the only
+% necessary parameter is the path to the XML file we want to load.
+S = structure('', './sample.xml');
+%%
+% display the properties of the structure and visualize
+S.disp();
+%%
+S.visualize();
+
+%% More Structure Methods
+% In order to access the different unit cells in the structure we can first
+% display the internal nummeration of the unit cells in the structure:
+disp(S.getUniqueUnitCells);
+
+%%
+% Now we can also retrieve all positions per unique unit cell in the
+% structure by simply asking for the cell array:
+Pos = S.getAllPositionsPerUniqueUnitCell();
+
+% Each cell of this array is linked to the above retrieved unique unit
+% cells. Accordingly the first entry gives all positions of the PZT unit
+% cell in the structure:
+disp(Pos{1});
+
+%%
+% You can easily access the properties of a unit cell by its index by 
+% simply typing:
+disp(S.getUnitCellHandle(10).name);
+disp(['mass: ' num2str(S.getUnitCellHandle(10).mass/u.kg) ' kg']);
+##### SOURCE END #####
+--></body></html>

@@ -1,0 +1,196 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>atomMixed</title><meta name="generator" content="MATLAB 7.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-07-31"><meta name="DC.source" content="atomMixed.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+
+  </style></head><body><div class="content"><h1>atomMixed</h1><!--introduction--><p>The atomMixed class is sub class of atomBase and enables mixed atoms for certain alloys and stochiometric mixtures. All properties of the included sub-atoms of class atomBase are averaged and weighted with their stochiometric ratio</p><p>Copyright (c) 2013, Daniel Schick, Andr&eacute; Bojahr, Marc Herzog, Roman Shayduk, Clemens von Korff Schmising All rights reserved.</p><p>License: BSD (use/copy/change/redistribute on own risk, mention the authors)</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Classdef</a></li><li><a href="#2">Properties</a></li><li><a href="#3">Methods</a></li><li><a href="#4">Constructor</a></li><li><a href="#5">addAtom</a></li><li><a href="#6">Display</a></li><li><a href="#7">getAtomicFormFactor</a></li><li><a href="#8">getCMAtomicFormFactor</a></li></ul></div><h2>Classdef<a name="1"></a></h2><p>The atomMixture class inherited from atomBase</p><pre class="codeinput"><span class="keyword">classdef</span> atomMixed &lt; atomBase
+</pre><h2>Properties<a name="2"></a></h2><pre class="codeinput">    properties (SetAccess=public,GetAccess=public)
+        atoms       = {};   <span class="comment">% CELL ARRAY of atoms and fractions</span>
+        numAtoms    = 0;    <span class="comment">% INTEGER number of atoms in AtomMixed</span>
+    <span class="keyword">end</span><span class="comment">%properties</span>
+</pre><h2>Methods<a name="3"></a></h2><pre class="codeinput">    methods
+</pre><h2>Constructor<a name="4"></a></h2><p>Is executed each time an instance of this class is created. Only the <i>symbol</i> input is obligatory.</p><pre class="codeinput">        <span class="keyword">function</span> obj = atomMixed(symbol,varargin)
+            <span class="comment">% initialize input parser and define defaults and validators</span>
+            p = inputParser;
+            p.addRequired(<span class="string">'symbol'</span>        , @ischar);
+            p.addOptional(<span class="string">'ID'</span>    , symbol, @ischar);
+            p.addOptional(<span class="string">'name'</span>  , symbol, @ischar);
+            <span class="comment">% parse the input</span>
+            p.parse(symbol,varargin{:});
+            <span class="comment">% assign parser results to object properties</span>
+            <span class="comment">% execute the super-class constructor here</span>
+            obj = obj@atomBase(p.Results.symbol,p.Results.ID);
+            obj.name = p.Results.name;
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>addAtom<a name="5"></a></h2><p>Add a atomBase instance with its stochiometric fraction to the atomMixed instance</p><pre class="codeinput">        <span class="keyword">function</span> addAtom(obj,atom,fraction)
+            obj.atoms(end+1,:) =  {atom fraction};
+            obj.numAtoms = obj.numAtoms + 1;
+            <span class="comment">% calculate the mixed atomic properties of the atomMixed</span>
+            <span class="comment">% instance</span>
+            obj.atomicNumberZ    = obj.atomicNumberZ     + fraction*   atom.atomicNumberZ;
+            obj.massNumberA      = obj.massNumberA       + fraction*   atom.massNumberA;
+            obj.mass             = obj.mass              + fraction*   atom.mass;
+            obj.ionicity         = obj.ionicity          + fraction*   atom.ionicity;
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>Display<a name="6"></a></h2><p>This method is called to display informations of the instance.</p><pre class="codeinput">        <span class="keyword">function</span> disp(obj)
+            <span class="comment">% display the properties of the atom</span>
+            disp@atomBase(obj);
+            disp([num2str(obj.numAtoms) <span class="string">' Constituents:'</span>]);
+            <span class="keyword">for</span> i = 1:obj.numAtoms
+                fprintf(<span class="string">'\t %s \t %3.2f%%\n'</span>, obj.atoms{i,1}.name, obj.atoms{i,2}*100);
+            <span class="keyword">end</span><span class="comment">%for</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>getAtomicFormFactor<a name="7"></a></h2><p>Returns the mixed energy dependent atomic form factor.</p><pre class="codeinput">        <span class="keyword">function</span> f = getAtomicFormFactor(obj,E)
+            f = 0;
+            <span class="keyword">for</span> j = 1:obj.numAtoms
+                f = f + obj.atoms{j,1}.getAtomicFormFactor(E) * obj.atoms{j,2};
+            <span class="keyword">end</span><span class="comment">%for</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>getCMAtomicFormFactor<a name="8"></a></h2><p>Returns the mixed energy and angle dependent atomic form factor.</p><pre class="codeinput">        <span class="keyword">function</span> f = getCMAtomicFormFactor(obj,E,qz)
+            f = 0;
+            <span class="keyword">for</span> j = 1:obj.numAtoms
+                f = f + obj.atoms{j,1}.getCMAtomicFormFactor(E,qz) * obj.atoms{j,2};
+            <span class="keyword">end</span><span class="comment">%for</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><pre class="codeinput">    <span class="keyword">end</span><span class="comment">%methods</span>
+</pre><pre class="codeinput"><span class="keyword">end</span><span class="comment">%classdef</span>
+</pre><p class="footer"><br>
+      Published with MATLAB&reg; 7.14<br></p></div><!--
+##### SOURCE BEGIN #####
+%% atomMixed
+% The atomMixed class is sub class of atomBase and enables mixed atoms for
+% certain alloys and stochiometric mixtures. All properties of the included
+% sub-atoms of class atomBase are averaged and weighted with their
+% stochiometric ratio
+%
+% Copyright (c) 2013, Daniel Schick, André Bojahr, Marc Herzog, Roman Shayduk, Clemens von Korff Schmising
+% All rights reserved.
+%
+% License: BSD (use/copy/change/redistribute on own risk, mention the authors)
+
+%% Classdef
+% The atomMixture class inherited from atomBase
+classdef atomMixed < atomBase
+    %% Properties
+    properties (SetAccess=public,GetAccess=public)
+        atoms       = {};   % CELL ARRAY of atoms and fractions
+        numAtoms    = 0;    % INTEGER number of atoms in AtomMixed
+    end%properties
+    
+    %% Methods
+    methods
+        %% Constructor
+        % Is executed each time an instance of this class is created. Only
+        % the _symbol_ input is obligatory. 
+        function obj = atomMixed(symbol,varargin)
+            % initialize input parser and define defaults and validators
+            p = inputParser;
+            p.addRequired('symbol'        , @ischar);
+            p.addOptional('ID'    , symbol, @ischar);
+            p.addOptional('name'  , symbol, @ischar);
+            % parse the input
+            p.parse(symbol,varargin{:});
+            % assign parser results to object properties
+            % execute the super-class constructor here
+            obj = obj@atomBase(p.Results.symbol,p.Results.ID);
+            obj.name = p.Results.name;
+        end%function
+        
+        %% addAtom
+        % Add a atomBase instance with its stochiometric fraction to the
+        % atomMixed instance
+        function addAtom(obj,atom,fraction)
+            obj.atoms(end+1,:) =  {atom fraction};
+            obj.numAtoms = obj.numAtoms + 1;
+            % calculate the mixed atomic properties of the atomMixed
+            % instance
+            obj.atomicNumberZ    = obj.atomicNumberZ     + fraction*   atom.atomicNumberZ;
+            obj.massNumberA      = obj.massNumberA       + fraction*   atom.massNumberA;
+            obj.mass             = obj.mass              + fraction*   atom.mass;
+            obj.ionicity         = obj.ionicity          + fraction*   atom.ionicity;
+        end%function
+        
+        %% Display
+        % This method is called to display informations of the instance.
+        function disp(obj)
+            % display the properties of the atom
+            disp@atomBase(obj);
+            disp([num2str(obj.numAtoms) ' Constituents:']);
+            for i = 1:obj.numAtoms
+                fprintf('\t %s \t %3.2f%%\n', obj.atoms{i,1}.name, obj.atoms{i,2}*100);
+            end%for
+        end%function
+        
+        %% getAtomicFormFactor
+        % Returns the mixed energy dependent atomic form factor.
+        function f = getAtomicFormFactor(obj,E)
+            f = 0;
+            for j = 1:obj.numAtoms
+                f = f + obj.atoms{j,1}.getAtomicFormFactor(E) * obj.atoms{j,2};
+            end%for
+        end%function
+        
+        %% getCMAtomicFormFactor
+        % Returns the mixed energy and angle dependent atomic form factor.
+        function f = getCMAtomicFormFactor(obj,E,qz)
+            f = 0;
+            for j = 1:obj.numAtoms
+                f = f + obj.atoms{j,1}.getCMAtomicFormFactor(E,qz) * obj.atoms{j,2};
+            end%for
+        end%function
+    end%methods
+end%classdef
+##### SOURCE END #####
+--></body></html>

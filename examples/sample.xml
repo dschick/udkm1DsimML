@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- You have to provide all constants in SI units. -->
+<!-- The ordering of the attributes does not matter, but they are case sensitive! -->
+<sample name="Sample From XML">
+    <!-- initilize atoms and mixed atoms -->
+    <atoms>
+        <!-- required: symbol - optional: ID, ionicty -->
+        <atom symbol="O" /> 
+        <atom symbol="Sr"   ID="Sr" />
+        <atom symbol="Ti"   ionicity="0" />
+        <atom symbol="Ru"   ID="Ru" ionicity="0" />
+        <atom symbol="Pb" />
+        <atom symbol="Zr" />
+        <!-- required: symbol - optinal: ID, name -->
+        <atomMixed symbol="ZT" ID="ZT" name="Zircon-Titan 0.2 0.8">
+            <!-- required: ID, fraction -->
+            <atom ID="Zr" fraction="0.2" />
+            <atom ID="Ti" fraction="0.8" />
+        </atomMixed>
+    </atoms>
+    <!-- build the unit cells -->
+	<unitCells>
+        <!-- required: ID, name, cAxis - optinal: aAxis, bAxis, debWalFac, soundVel, optPenDepth, thermCond. linThermExp, heatCapCoeffs -->
+		<unitCell ID="SRO" name="Strontium Ruthenate" cAxis="3.948e-10" aAxis="3.905e-10" bAxis="3.905e-10" debWalFac="0" soundVel="6312" optPenDepth="43.8e-9" thermCond="5.72" linThermExp="@(T)(-4.16e-6+5.86e-8.*T-7.78e-11.*T.^2+3.41e-14.*T.^3)" heatCapacity="@(T)(455.2 + 0.112.*T - 2.1935e6./T.^2)">
+            <!-- add atoms at relative positions -->
+			<atom ID="O"    position="0" />
+            <atom ID="Sr"   position="0" />
+            <atom ID="O"    position="0.5" />
+            <atom ID="O"    position="0.5" />
+            <atom ID="Ru"   position="0.5" />
+		</unitCell>
+        <unitCell ID="PZT" name="Lead Zirconate/Titante" cAxis="4.1315e-10" aAxis="3.905e-10" bAxis="3.905e-10" debWalFac="0" soundVel="4145" optPenDepth="Inf" thermCond="1" linThermExp="-1.5e-5" heatCapacity="@(T)(733.73 + 0.0248.*T - 6.531e6./T.^2)">
+			<atom ID="O"    position="0" />
+            <atom ID="Pb"   position="@(strain)(0.089888*sqrt((strain+0.0414)/0.0414))"/>
+            <atom ID="O"    position="0.5" />
+            <atom ID="O"    position="0.5" />
+            <atom ID="ZT"   position="@(strain)(0.5*(strain+1)+0.057375*sqrt((strain+0.0414)/0.0414))" />
+		</unitCell>
+        <unitCell ID="STOsub" name="Strontium Titanate Substrate" cAxis="3.905e-10" aAxis="3.905e-10" bAxis="3.905e-10" debWalFac="0" soundVel="7800" optPenDepth="Inf" thermCond="12" linThermExp="1e-5" heatCapacity="@(T)(733.73 + 0.0248.*T - 6.531e6./T.^2)">
+			<!-- required: ID, position - optinal: handle -->
+            <atom ID="O"    position="0" />
+            <atom ID="Sr"   position="0" />
+            <atom ID="O"    position="0.5" />
+            <atom ID="O"    position="0.5" />
+            <atom ID="Ti"   position="0.5" />
+		</unitCell>
+	</unitCells>
+    <!-- build the structure out of substructres and layers -->
+    <structure>
+        <!-- required: N , unitCellID / name -->
+        <!-- substructures can be either unit cells or a structure itself -->
+        <substructure name="double layer" N="5">
+            <substructure unitCellID="PZT" N="7" />
+            <substructure unitCellID="SRO" N="9" />
+        </substructure>
+        <substructure unitCellID="SRO" N="100" />
+        <substructure unitCellID="STOsub" N="200" />
+    </structure>
+    <!-- add a static substrate to the sample structure -->
+    <!-- required: unitCellID, N -->
+    <substrate unitCellID="STOsub" N="100000" />
+</sample>

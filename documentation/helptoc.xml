@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding="utf-8"?>
+<toc version="2.0">
+<!-- First tocitem specifies top level in Help browser Contents pane -->
+<!-- This can be a roadmap page, as shown below, or a content page -->
+
+    <tocitem target="udkm1DsimProductPage.html">
+        udkm1Dsim Toolbox
+        <!-- Nest tocitems to create hierarchical entries in  Contents-->
+        <!-- To include icons, use the following syntax for tocitems: -->
+        <!-- <tocitem target="foo.html" image="HelpIcon.NAME"> -->
+        <!-- Title-of-Section </tocitem> -->
+        <!-- where NAME is one of the following (use capital letters): -->
+        <!-- FUNCTION, USER_GUIDE, EXAMPLES, BLOCK, GETTING_STARTED, -->
+        <!-- DEMOS, RELEASE_NOTES --> 
+        <!-- Icon images used for these entries are also stored in -->
+        <!-- matlabroot/toolbox/matlab/icons -->
+        <!-- A Getting Started Guide usually comes first -->
+        <tocitem target="releaseNotes.html" image="HelpIcon.RELEASE_NOTES">
+            Release Notes
+        </tocitem>
+        <tocitem target="gettingStarted.html" image="HelpIcon.GETTING_STARTED">
+            Getting Started
+            <tocitem target="examples/structureBuildExample.html">Structure Build Example</tocitem>
+            <tocitem target="examples/structureFromXMLExample.html">Structure From XML File Example</tocitem>
+            <tocitem target="examples/heatExample.html">Heat Example</tocitem>
+            <tocitem target="examples/heatExcitationExample.html">Heat Excitation Example</tocitem>
+            <tocitem target="examples/heatNTmodelExample.html">Heat N-Temperature Model Example</tocitem>
+            <tocitem target="examples/phononExample.html">Phonon Example</tocitem>
+            <tocitem target="examples/phononAnharmonicExample.html">Phonon Anharmonic Example</tocitem>
+            <tocitem target="examples/XRDExample.html">XRD Example</tocitem>            
+        </tocitem>
+        <tocitem target="detailedExamples.html" image="HelpIcon.EXAMPLES">
+            Detailed Examples
+            <tocitem target="examples/peakSplittingExample.html">Peak Splitting Example</tocitem>
+            <tocitem target="examples/superlatticeOscillationExample.html">Superlattice Oscillation Example</tocitem>
+            <tocitem target="examples/phononBeamsExample.html">Phonon Beams Example</tocitem>     
+        </tocitem>
+        <!-- User Guide comes next -->
+        <tocitem target="userGuide.html" image="HelpIcon.USER_GUIDE">
+            User Guide
+            <tocitem target="classes/atomBase.html">atomBase</tocitem>
+            <tocitem target="classes/atomMixed.html">atomMixed</tocitem>
+            <tocitem target="classes/unitCell.html">unitCell</tocitem>
+            <tocitem target="classes/structure.html">structure</tocitem>
+            <tocitem target="classes/simulation.html">simulation</tocitem>
+            <tocitem target="classes/heat.html">heat</tocitem>
+            <tocitem target="classes/phonon.html">phonon</tocitem>
+            <tocitem target="classes/phononAna.html">phononAna</tocitem>
+            <tocitem target="classes/phononNum.html">phononNum</tocitem>
+            <tocitem target="classes/XRD.html">XRD</tocitem>
+            <tocitem target="classes/XRDkin.html">XRDkin</tocitem>
+            <tocitem target="classes/XRDdyn.html">XRDdyn</tocitem>
+        </tocitem>
+    </tocitem>
+</toc>

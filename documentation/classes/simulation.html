@@ -1,0 +1,315 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>simulation</title><meta name="generator" content="MATLAB 7.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-07-31"><meta name="DC.source" content="simulation.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+
+  </style></head><body><div class="content"><h1>simulation</h1><!--introduction--><p>The simulation class is the super class for all simulation classes.</p><p>Copyright (c) 2013, Daniel Schick, Andr&eacute; Bojahr, Marc Herzog, Roman Shayduk, Clemens von Korff Schmising All rights reserved.</p><p>License: BSD (use/copy/change/redistribute on own risk, mention the authors)</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Classdef</a></li><li><a href="#2">Properties</a></li><li><a href="#3">Methods</a></li><li><a href="#4">Constructor</a></li><li><a href="#5">Display</a></li><li><a href="#6">dispMessage</a></li><li><a href="#7">progressBar</a></li><li><a href="#8">odeProgressBar</a></li><li><a href="#9">setCacheDir</a></li></ul></div><h2>Classdef<a name="1"></a></h2><p>Each simulation instance and all inherited class objects follow handle semantics. Hence a copy of such object will not copy the object itself, but only a handle to that object.</p><pre class="codeinput"><span class="keyword">classdef</span> simulation &lt; handle
+</pre><h2>Properties<a name="2"></a></h2><pre class="codeinput">    properties (SetAccess=public,GetAccess=public)
+        S                           <span class="comment">% OBJECT structure to simulate the phohon dynamics on</span>
+        forceRecalc     = false;    <span class="comment">% BOOLEAN if true, everything is calculated despite of any saved old data</span>
+        cacheDir        = <span class="string">'./'</span>;     <span class="comment">% STRING path to cached data</span>
+        dispMessages    = true;     <span class="comment">% BOOLEAN is true to display messages of from with in the simulations</span>
+        dispCalcTime    = true;     <span class="comment">% BOOLEAN is true to display the duration of certain calculations</span>
+                                    <span class="comment">% (works only if displayMessages == true)</span>
+        progressBarType = <span class="string">'text'</span>;   <span class="comment">% STRING type of the progressbar 'none', 'text', 'gui'</span>
+    <span class="keyword">end</span><span class="comment">%properties</span>
+</pre><h2>Methods<a name="3"></a></h2><pre class="codeinput">    methods
+</pre><h2>Constructor<a name="4"></a></h2><p>Is executed each time an instance of this class is created. Only the <i>structure</i> input is obligatory.</p><pre class="codeinput">        <span class="keyword">function</span> obj = simulation(structure,forceRecalc,varargin)
+            <span class="comment">% initialize input parser and define defaults and validators</span>
+            p = inputParser;
+            p.KeepUnmatched = true;
+            p.addRequired(<span class="string">'structure'</span>           ,        @(x)isa(x,<span class="string">'structure'</span>));
+            p.addRequired(<span class="string">'forceRecalc'</span>         ,        @islogical);
+            p.addParamValue(<span class="string">'dispMessages'</span>      , true,  @islogical);
+            p.addParamValue(<span class="string">'dispCalcTime'</span>      , true,  @islogical);
+            p.addParamValue(<span class="string">'progressBarType'</span>   ,<span class="string">'text'</span>, @(x)(ischar(x) &amp; find(strcmp(x,{<span class="string">'none'</span>, <span class="string">'text'</span>, <span class="string">'gui'</span>}))));
+            p.parse(structure,forceRecalc,varargin{:});
+            <span class="comment">% assign parser results to object properties</span>
+            obj.S               = p.Results.structure;
+            obj.forceRecalc     = p.Results.forceRecalc;
+            obj.dispMessages    = p.Results.dispMessages;
+            obj.dispCalcTime    = p.Results.dispCalcTime;
+            obj.progressBarType = p.Results.progressBarType;
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>Display<a name="5"></a></h2><p>This method is called to display informations of the instance.</p><pre class="codeinput">        <span class="keyword">function</span> disp(obj)
+            disp(<span class="string">'This is the current structure for the simulations:'</span>);
+            disp(<span class="string">'__________________________________________________'</span>);
+            obj.S.disp();
+            disp(<span class="string">'__________________________________________________'</span>);
+            disp(<span class="string">'Display properties'</span>);
+            disp([<span class="string">'force recalc             : '</span> bool2str(obj.forceRecalc)]);
+            disp([<span class="string">'cache directory          : '</span> obj.cacheDir]);
+            disp([<span class="string">'display messages         : '</span> bool2str(obj.dispMessages)]);
+            disp([<span class="string">'display calculation time : '</span> bool2str(obj.dispCalcTime)]);
+            disp([<span class="string">'progress bar type        : '</span> obj.progressBarType]);
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>dispMessage<a name="6"></a></h2><p>Displays the input message or the input message and input time.</p><pre class="codeinput">        <span class="keyword">function</span> dispMessage(obj,message,time)
+            <span class="keyword">if</span> nargin &lt; 3 <span class="comment">% no time is given, so its just a message</span>
+                <span class="keyword">if</span> obj.dispMessages
+                    disp(message);
+                <span class="keyword">end</span><span class="comment">%if</span>
+            <span class="keyword">else</span> <span class="comment">% this is a message with calculation time</span>
+                <span class="keyword">if</span> obj.dispMessages &amp;&amp; obj.dispCalcTime
+                    disp([message <span class="string">' '</span> num2str(time) <span class="string">' seconds.'</span>]);
+                <span class="keyword">end</span><span class="comment">%if</span>
+            <span class="keyword">end</span><span class="comment">%if</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>progressBar<a name="7"></a></h2><p>Shows a progress bar depending on the value of <i>obj.progressBarType</i>.</p><pre class="codeinput">        <span class="keyword">function</span> progressBar(obj,input)
+            <span class="keyword">persistent</span> h text; <span class="comment">% remember the state</span>
+            <span class="keyword">if</span> strcmp(obj.progressBarType,<span class="string">'text'</span>)
+                <span class="comment">% call external textprogressbar</span>
+                textprogressbar(input);
+            <span class="keyword">elseif</span> strcmp(obj.progressBarType,<span class="string">'gui'</span>)
+                <span class="keyword">if</span> isempty(h) &amp;&amp; ~ischar(input),
+                    <span class="comment">% Progress bar must be initialized with a string</span>
+                    error(<span class="string">'The text progress must be initialized with a string'</span>);
+                <span class="keyword">elseif</span> isempty(h) &amp;&amp; ischar(input),
+                    <span class="comment">% Progress bar - initialization</span>
+                    h = waitbar(0,input); <span class="comment">% open a waitbar</span>
+                    text = input;
+                <span class="keyword">elseif</span> ~isempty(h) &amp;&amp; ischar(input),
+                    <span class="comment">% Progress bar  - termination</span>
+                    close(h);
+                    clear <span class="string">text</span> <span class="string">h</span>;
+                <span class="keyword">elseif</span> ~isempty(h) &amp;&amp; isnumeric(input)
+                    <span class="comment">% Progress bar - normal progress</span>
+                    waitbar(input/100,h, sprintf(<span class="string">'%s %03.1f%%'</span>,text,input)); <span class="comment">% it's just a waitbar</span>
+                <span class="keyword">else</span>
+                    <span class="comment">% Any other unexpected input</span>
+                    error(<span class="string">'Unsupported argument type'</span>);
+                <span class="keyword">end</span><span class="comment">%if</span>
+            <span class="keyword">end</span><span class="comment">%if</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>odeProgressBar<a name="8"></a></h2><p>Provides an interface for a progress bar for a ODE solver. The progressbar can be 'text', 'gui' or 'none'.</p><pre class="codeinput">        <span class="keyword">function</span> status = odeProgressBar(obj,t,~,flag)
+            <span class="keyword">persistent</span> tf;
+
+            <span class="keyword">if</span> isempty(flag)
+                <span class="comment">% Integration steps</span>
+                ts=mean(t);
+                progress=100*ts/tf;
+                obj.progressBar(progress);
+                status = 0;
+            <span class="keyword">else</span>
+                <span class="keyword">switch</span> flag
+                    <span class="keyword">case</span> <span class="string">'init'</span>     <span class="comment">% Initializing progress bar</span>
+                        tf=max(t);
+                        obj.progressBar(<span class="string">'ODE integration: '</span>);
+                    <span class="keyword">case</span> <span class="string">'done'</span>     <span class="comment">% Finishing status function</span>
+                        tf=[];
+                        obj.progressBar(<span class="string">''</span>);
+                    <span class="keyword">otherwise</span>
+                        error(<span class="string">'odetpbar:UnknownError'</span>,<span class="keyword">...</span>
+                            <span class="string">'Unknown error has occured'</span>);
+                <span class="keyword">end</span><span class="comment">%switch</span>
+            <span class="keyword">end</span><span class="comment">%if</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>setCacheDir<a name="9"></a></h2><p>Sets the path where calculation results can be saved for later usage.</p><pre class="codeinput">        <span class="keyword">function</span> setCacheDir(obj, path)
+            <span class="keyword">if</span> exist(path,<span class="string">'dir'</span>)
+                obj.cacheDir = path;
+            <span class="keyword">else</span>
+                error(<span class="string">'Path does not exist'</span>);
+            <span class="keyword">end</span><span class="comment">%if</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><pre class="codeinput">    <span class="keyword">end</span><span class="comment">%methods</span>
+</pre><pre class="codeinput"><span class="keyword">end</span><span class="comment">%classdef</span>
+</pre><p class="footer"><br>
+      Published with MATLAB&reg; 7.14<br></p></div><!--
+##### SOURCE BEGIN #####
+%% simulation
+% The simulation class is the super class for all simulation classes.
+%
+% Copyright (c) 2013, Daniel Schick, André Bojahr, Marc Herzog, Roman Shayduk, Clemens von Korff Schmising
+% All rights reserved.
+%
+% License: BSD (use/copy/change/redistribute on own risk, mention the authors)
+
+%% Classdef
+% Each simulation instance and all inherited class objects follow handle
+% semantics. Hence a copy of such object will not copy the object itself,
+% but only a handle to that object.
+classdef simulation < handle
+    %% Properties
+    properties (SetAccess=public,GetAccess=public)
+        S                           % OBJECT structure to simulate the phohon dynamics on
+        forceRecalc     = false;    % BOOLEAN if true, everything is calculated despite of any saved old data
+        cacheDir        = './';     % STRING path to cached data
+        dispMessages    = true;     % BOOLEAN is true to display messages of from with in the simulations
+        dispCalcTime    = true;     % BOOLEAN is true to display the duration of certain calculations 
+                                    % (works only if displayMessages == true) 
+        progressBarType = 'text';   % STRING type of the progressbar 'none', 'text', 'gui'
+    end%properties
+    %% Methods
+    methods
+        %% Constructor
+        % Is executed each time an instance of this class is created. Only
+        % the _structure_ input is obligatory.
+        function obj = simulation(structure,forceRecalc,varargin)
+            % initialize input parser and define defaults and validators
+            p = inputParser;
+            p.KeepUnmatched = true;
+            p.addRequired('structure'           ,        @(x)isa(x,'structure'));
+            p.addRequired('forceRecalc'         ,        @islogical);
+            p.addParamValue('dispMessages'      , true,  @islogical);
+            p.addParamValue('dispCalcTime'      , true,  @islogical);
+            p.addParamValue('progressBarType'   ,'text', @(x)(ischar(x) & find(strcmp(x,{'none', 'text', 'gui'}))));
+            p.parse(structure,forceRecalc,varargin{:});
+            % assign parser results to object properties
+            obj.S               = p.Results.structure;
+            obj.forceRecalc     = p.Results.forceRecalc;
+            obj.dispMessages    = p.Results.dispMessages;
+            obj.dispCalcTime    = p.Results.dispCalcTime;
+            obj.progressBarType = p.Results.progressBarType;
+        end%function
+        
+        %% Display
+        % This method is called to display informations of the instance.
+        function disp(obj)
+            disp('This is the current structure for the simulations:');
+            disp('__________________________________________________');
+            obj.S.disp();
+            disp('__________________________________________________');
+            disp('Display properties');
+            disp(['force recalc             : ' bool2str(obj.forceRecalc)]);
+            disp(['cache directory          : ' obj.cacheDir]);
+            disp(['display messages         : ' bool2str(obj.dispMessages)]);
+            disp(['display calculation time : ' bool2str(obj.dispCalcTime)]);
+            disp(['progress bar type        : ' obj.progressBarType]);     
+        end%function
+                
+        %% dispMessage
+        % Displays the input message or the input message and input time.
+        function dispMessage(obj,message,time)
+            if nargin < 3 % no time is given, so its just a message
+                if obj.dispMessages
+                    disp(message);
+                end%if
+            else % this is a message with calculation time
+                if obj.dispMessages && obj.dispCalcTime
+                    disp([message ' ' num2str(time) ' seconds.']);
+                end%if
+            end%if
+        end%function
+        
+        %% progressBar
+        % Shows a progress bar depending on the value of
+        % _obj.progressBarType_.
+        function progressBar(obj,input)
+            persistent h text; % remember the state
+            if strcmp(obj.progressBarType,'text')
+                % call external textprogressbar
+                textprogressbar(input);
+            elseif strcmp(obj.progressBarType,'gui')
+                if isempty(h) && ~ischar(input),
+                    % Progress bar must be initialized with a string
+                    error('The text progress must be initialized with a string');
+                elseif isempty(h) && ischar(input),
+                    % Progress bar - initialization
+                    h = waitbar(0,input); % open a waitbar
+                    text = input;
+                elseif ~isempty(h) && ischar(input),
+                    % Progress bar  - termination
+                    close(h);
+                    clear text h;
+                elseif ~isempty(h) && isnumeric(input)
+                    % Progress bar - normal progress
+                    waitbar(input/100,h, sprintf('%s %03.1f%%',text,input)); % it's just a waitbar
+                else
+                    % Any other unexpected input
+                    error('Unsupported argument type');
+                end%if
+            end%if
+        end%function
+        
+        %% odeProgressBar
+        % Provides an interface for a progress bar for a ODE solver.
+        % The progressbar can be 'text', 'gui' or 'none'.
+        function status = odeProgressBar(obj,t,~,flag)
+            persistent tf;
+            
+            if isempty(flag)
+                % Integration steps
+                ts=mean(t);
+                progress=100*ts/tf;
+                obj.progressBar(progress);
+                status = 0;
+            else
+                switch flag
+                    case 'init'     % Initializing progress bar
+                        tf=max(t);
+                        obj.progressBar('ODE integration: ');
+                    case 'done'     % Finishing status function
+                        tf=[];
+                        obj.progressBar('');
+                    otherwise
+                        error('odetpbar:UnknownError',...
+                            'Unknown error has occured');
+                end%switch
+            end%if
+        end%function
+        
+        %% setCacheDir
+        % Sets the path where calculation results can be saved for later
+        % usage.
+        function setCacheDir(obj, path)
+            if exist(path,'dir')
+                obj.cacheDir = path;
+            else
+                error('Path does not exist');
+            end%if
+        end%function 
+    end%methods
+end%classdef
+##### SOURCE END #####
+--></body></html>

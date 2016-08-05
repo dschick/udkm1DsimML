@@ -1,0 +1,421 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Structure Build Example</title><meta name="generator" content="MATLAB 7.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-05-02"><meta name="DC.source" content="structureBuildExample.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+
+  </style></head><body><div class="content"><h1>Structure Build Example</h1><!--introduction--><p>This is a first example to get used to the basic element of each simulation of the udkm1dsim toolbox: a sample structure.</p><p>For the 1D case a sample structure consists of a linear chain of different "layers". These layers themselves are called sub-structures and can again consist of sub-layers or finally of a certain number of unit cells. Each unit cell contains a number of atoms at certain relative positions in this unit cell.</p><p>In this example script the basic concepts of creating atoms, unit cells, and sample structures are introduced. Furthermore one should easily see how to access all the properties of these physical objects.</p><p>Be sure to include all folders of the udkm1dsim toolbox to your MATLAB search path. Especially the <i>/parameters</i> and <i>/helpers</i> folders with all their subfolders.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Atoms</a></li><li><a href="#5">Mixed Atoms</a></li><li><a href="#6">Unit Cells</a></li><li><a href="#7">SrRuO3 unit cell</a></li><li><a href="#8">SrTiO3 substrate</a></li><li><a href="#9">Non-Linear Strain Dependence</a></li><li><a href="#11">Clone to Multiple</a></li><li><a href="#12">Structure</a></li></ul></div><p>here we clear the workspace and close all figures</p><pre class="codeinput">clear <span class="string">all</span>;
+close <span class="string">all</span>;
+<span class="comment">% these are some units and constants we can use later on</span>
+u            = units;
+const        = constants;
+</pre><h2>Atoms<a name="2"></a></h2><p>All necessary data are loaded from the paramter files defined by the given element symbol. As an additional 2nd parameter one can give an ID if you work with different atoms of the same element. The optinal 3rd input parameter is the ionicity of the atom, which has to be present in the parameter files.</p><pre class="codeinput">O   = atomBase(<span class="string">'O'</span>);
+Op1 = atomBase(<span class="string">'O'</span>,<span class="string">'Op1'</span>,-1);
+Op2 = atomBase(<span class="string">'O'</span>,<span class="string">'Op2'</span>,-2);
+Ti  = atomBase(<span class="string">'Ti'</span>);
+Sr  = atomBase(<span class="string">'Sr'</span>);
+Ru  = atomBase(<span class="string">'Ru'</span>);
+Pb  = atomBase(<span class="string">'Pb'</span>);
+Zr  = atomBase(<span class="string">'Zr'</span>);
+
+<span class="comment">% the available parameters of each atom can be easily displayed:</span>
+O.disp();
+</pre><pre class="codeoutput">Atom with the following properties
+ID                 : O
+symbol             : O
+name               : Oxygen
+atomic number Z    : 8
+mass number   A    : 15.9994
+mass [kg]          : 2.6568e-26
+ionicity           : 0
+Cromer Mann coeff. : 3.0485       2.2868       1.5463        0.867      13.2771       5.7011       0.3239      32.9089       0.2508
+</pre><pre class="codeinput">Ru.disp();
+</pre><pre class="codeoutput">Atom with the following properties
+ID                 : Ru
+symbol             : Ru
+name               : Ruthenium
+atomic number Z    : 44
+mass number   A    : 101.07
+mass [kg]          : 1.6783e-25
+ionicity           : 0
+Cromer Mann coeff. : 19.2674      12.9182      4.86337      1.56756      0.80852      8.43467      24.7997      94.2928      5.37874
+</pre><p>Of course you can also access single properties, e.g. the mass of Ti atom:</p><pre class="codeinput">disp(Ti.mass/u.kg);
+</pre><pre class="codeoutput">   7.9485e-26
+
+</pre><h2>Mixed Atoms<a name="5"></a></h2><p>If you want to create a mixed atom for a solid solution you can easily achieve this by the following lines of code. The input for the initialization of the mixed atom are the symbol, ID and name, whereas only the first is required.</p><pre class="codeinput">ZT = atomMixed(<span class="string">'ZT'</span>, <span class="string">'ZT'</span>, <span class="string">'Zircon-Titan 0.2 0.8'</span>);
+ZT.addAtom(Zr, 0.2);
+ZT.addAtom(Ti, 0.8);
+
+<span class="comment">% Let's have a look at the mixed properties:</span>
+ZT.disp();
+</pre><pre class="codeoutput">Atom with the following properties
+ID                 : ZT
+symbol             : ZT
+name               : Zircon-Titan 0.2 0.8
+atomic number Z    : 25.6
+mass number   A    : 56.5384
+mass [kg]          : 9.3884e-26
+ionicity           : 0
+Cromer Mann coeff. : 0  0  0  0  0  0
+2 Constituents:
+	 Zirconium 	 20.00%
+	 Titanium 	 80.00%
+</pre><h2>Unit Cells<a name="6"></a></h2><p>Now we have created enough atoms to build a unit cell. We choose a cubic unit cell of the perovskite SrRuO3 on a substrate of SrTiO3. However we need to define some  properties of the unit cell first, Note that the thermal conductivity, linear thermal expansion, and heat capacity are defined either as constants or anonymous functions of the termperature T in Kelvin.</p><pre class="codeinput"><span class="comment">% c-axis lattice constants of the two materials</span>
+cSTOsub     = 3.905     *u.ang;
+cSRO        = 3.94897   *u.ang;
+<span class="comment">% sound velocities [nm/ps] of the materials</span>
+svSRO       = 6.312     *u.nm/u.ps;
+svSTO       = 7.800     *u.nm/u.ps;
+</pre><h2>SrRuO3 unit cell<a name="7"></a></h2><pre class="codeinput">propSRO.aAxis           = cSTOsub;              <span class="comment">% aAxis</span>
+propSRO.bAxis           = cSTOsub;              <span class="comment">% bAxis</span>
+propSRO.debWalFac       = 0;                    <span class="comment">% Debye-Waller factor</span>
+propSRO.soundVel        = svSRO;                <span class="comment">% sound velocity</span>
+propSRO.optPenDepth     = 43.8*u.nm;            <span class="comment">% optical penetration depth</span>
+propSRO.thermCond       = 5.72*u.W/(u.m *u.K);  <span class="comment">% heat conductivity</span>
+propSRO.linThermExp     = 1.03e-5;              <span class="comment">% linear thermal expansion</span>
+propSRO.heatCapacity    = @(T)(455.2 + 0.112.*T - 2.1935e6./T.^2);
+                                                <span class="comment">% heat capacity [J/kg K]</span>
+
+<span class="comment">% lets create the unit cell</span>
+SRO = unitCell(<span class="string">'SRO'</span>,<span class="string">'SRO'</span>,cSRO,propSRO);
+<span class="comment">% add some atoms at relative positions in the unit cell</span>
+SRO.addAtom(O,0);
+SRO.addAtom(Sr,0);
+SRO.addAtom(O,0.5);
+SRO.addAtom(O,0.5);
+SRO.addAtom(Ru,0.5);
+</pre><h2>SrTiO3 substrate<a name="8"></a></h2><pre class="codeinput">propSTOsub.aAxis           = cSTOsub;           <span class="comment">% aAxis</span>
+propSTOsub.bAxis           = cSTOsub;           <span class="comment">% bAxis</span>
+propSTOsub.debWalFac       = 0;                 <span class="comment">% Debye-Waller factor</span>
+propSTOsub.soundVel        = svSTO;             <span class="comment">% sound velocity</span>
+propSTOsub.optPenDepth     = Inf;               <span class="comment">% optical penetration depth</span>
+propSTOsub.thermCond       = 12*u.W/(u.m *u.K); <span class="comment">% heat conductivity</span>
+propSTOsub.linThermExp     = 1e-5;              <span class="comment">% linear thermal expansion</span>
+propSTOsub.heatCapacity    = @(T)(733.73 + 0.0248.*T - 6.531e6./T.^2);
+                                                <span class="comment">% heat capacity [J/kg K]</span>
+</pre><h2>Non-Linear Strain Dependence<a name="9"></a></h2><p>In general the position of each atom in a unit cell dependence linearly from an external strain. In some cases this linear behaviour had to be altered. This can be easily achieved by providing a strain dependent anonymous function handle for the atom position when the atom is added to the unit cell.</p><pre class="codeinput">STOsub = unitCell(<span class="string">'STOsub'</span>, <span class="string">'STOsub'</span>, cSTOsub, propSTOsub);
+STOsub.addAtom(O, @(strain)(0.1*strain^2)); <span class="comment">% quadratic strain dependency</span>
+STOsub.addAtom(Sr,0);
+STOsub.addAtom(O,0.5);
+STOsub.addAtom(O,0.5);
+STOsub.addAtom(Ti,0.5);
+
+<span class="comment">% again we can display all properties of the unit cells:</span>
+SRO.disp();
+</pre><pre class="codeoutput">Unit Cell with the following properties
+ID                            : SRO
+name                          : SRO
+a-axis [Ang]                  : 3.905
+b-axis [Ang]                  : 3.905
+c-axis [Ang]                  : 3.949
+area [Ang^2]                  : 15.249
+volume [Ang^3]                : 60.2179
+mass [kg]                     : 3.9303e-25
+density [kg/m^3]              : 6526.7917
+Debye Waller Factor [m^2]     : 0
+sound velocity [nm/ps]        : 6.312
+spring constant [kg/s^2]      : 100.4135
+phonon damping [kg/s]         : 0
+opt. pen. depth [nm]          : 43.8
+opt. refractive index         : 0  0
+opt. ref. index/strain        : 0  0
+thermal conduct. [W/m K]      :
+							@(T)(5.72.*T./T)
+linear thermal expansion [1/K]: 
+							@(T)(1.03e-05.*T./T)
+heat capacity [J/kg K]        : 
+							@(T)(455.2+0.112.*T-2.1935e6./T.^2)
+subsystem coupling [W/m^3]    : 
+							@(T)(0.*T./T)
+5 Constituents:
+Oxygen 	 0.00 	 @(strain)(0*(strain+1))
+Strontium 	 0.00 	 @(strain)(0*(strain+1))
+Oxygen 	 0.50 	 @(strain)(0.5*(strain+1))
+Oxygen 	 0.50 	 @(strain)(0.5*(strain+1))
+Ruthenium 	 0.50 	 @(strain)(0.5*(strain+1))
+</pre><p>we can also visualize the positions of the atoms in the unit cell:</p><pre class="codeinput">SRO.visualize();
+</pre><img vspace="5" hspace="5" src="structureBuildExample_01.png" alt=""> <h2>Clone to Multiple<a name="11"></a></h2><p>For some simulations it may save computational time if a larger spacial grid is used. This can be achieved by e.g. providing larger unit cells. In order to automatically do that task we can easily clone unit cells to multiples of them:</p><pre class="codeinput">SRO2 = SRO.clone2multiple(2);
+SRO2.visualize();
+</pre><img vspace="5" hspace="5" src="structureBuildExample_02.png" alt=""> <h2>Structure<a name="12"></a></h2><p>Since we have build two different kinds of unit cells we can build a sample structure</p><pre class="codeinput">S = structure(<span class="string">'Single Layer'</span>);
+S.addSubStructure(SRO,100);     <span class="comment">% add 100 layers of SRO to sample</span>
+S.addSubStructure(STOsub,1000); <span class="comment">% add 1000 layers of STO substrate</span>
+
+<span class="comment">% display the properties of the structure and visualize</span>
+S.disp();
+</pre><pre class="codeoutput">Structure properties:
+Name  : Single Layer
+Length: 429.99 nm
+----
+100 times SRO: 39.49 nm
+1000 times STOsub: 390.50 nm
+----
+</pre><pre class="codeinput">S.visualize();
+</pre><img vspace="5" hspace="5" src="structureBuildExample_03.png" alt=""> <p>there are various methods to get informations from the structure which are mostly self explanatory:</p><pre class="codeinput">[dStart, dEnd, dMid] = S.getDistancesOfUnitCells();
+K = S.getNumberOfSubStructures();
+L = S.getNumberOfUniqueUnitCells();
+M = S.getNumberOfUnitCells();
+P = S.getAllPositionsPerUniqueUnitCell();
+I = S.getDistancesOfInterfaces();
+cAxis = S.getUnitCellPropertyVector(<span class="string">'cAxis'</span>);
+
+<span class="comment">% we can also build more complicated structures like super lattices:</span>
+S2 = structure(<span class="string">'Super Lattice'</span>);
+<span class="comment">% define a single double layer</span>
+DL = structure(<span class="string">'Double Layer'</span>);
+DL.addSubStructure(SRO,15);     <span class="comment">% add 15 layers of SRO</span>
+DL.addSubStructure(STOsub,20);  <span class="comment">% add 20 layers of STO substrate</span>
+<span class="comment">% add the double layer to the super lattice</span>
+S2.addSubStructure(DL,10);      <span class="comment">% add 10 double layers to super lattice</span>
+S2.addSubStructure(STOsub,500); <span class="comment">% add 500 layers of STO substrate</span>
+
+<span class="comment">% display and visualize the structure:</span>
+S2.disp();
+</pre><pre class="codeoutput">Structure properties:
+Name  : Super Lattice
+Length: 332.58 nm
+----
+SubStructure 10 times:
+	Structure properties:
+	Name  : Double Layer
+	Length: 13.73 nm
+	----
+	15 times SRO: 5.92 nm
+	20 times STOsub: 7.81 nm
+	----
+500 times STOsub: 195.25 nm
+----
+</pre><pre class="codeinput">S2.visualize();
+</pre><img vspace="5" hspace="5" src="structureBuildExample_04.png" alt=""> <p>now there are some more interfaces than before:</p><pre class="codeinput">I2 = S2.getDistancesOfInterfaces();
+disp(length(I2));
+</pre><pre class="codeoutput">    21
+
+</pre><p class="footer"><br>
+      Published with MATLAB&reg; 7.14<br></p></div><!--
+##### SOURCE BEGIN #####
+%% Structure Build Example
+% This is a first example to get used to the basic element of each
+% simulation of the udkm1dsim toolbox: a sample structure.
+%
+% For the 1D case a sample structure consists of a linear chain of
+% different "layers". These layers themselves are called sub-structures and
+% can again consist of sub-layers or finally of a certain number of unit
+% cells. Each unit cell contains a number of atoms at certain relative
+% positions in this unit cell.
+%
+% In this example script the basic concepts of creating atoms, unit cells,
+% and sample structures are introduced. Furthermore one should easily see
+% how to access all the properties of these physical objects.
+%
+% Be sure to include all folders of the udkm1dsim toolbox to your MATLAB 
+% search path. Especially the _/parameters_ and _/helpers_ folders with all 
+% their subfolders.
+
+%%
+% here we clear the workspace and close all figures
+clear all;
+close all;
+% these are some units and constants we can use later on
+u            = units;
+const        = constants;
+
+%% Atoms
+% All necessary data are loaded from the paramter files defined by the given
+% element symbol. As an additional 2nd parameter one can give an ID if you
+% work with different atoms of the same element. The optinal 3rd input
+% parameter is the ionicity of the atom, which has to be present in the
+% parameter files.
+O   = atomBase('O');
+Op1 = atomBase('O','Op1',-1);
+Op2 = atomBase('O','Op2',-2);
+Ti  = atomBase('Ti');
+Sr  = atomBase('Sr');
+Ru  = atomBase('Ru');
+Pb  = atomBase('Pb');
+Zr  = atomBase('Zr');
+
+% the available parameters of each atom can be easily displayed:
+O.disp();
+%%
+Ru.disp();
+%%
+% Of course you can also access single properties, e.g. the mass of Ti atom:
+disp(Ti.mass/u.kg);
+
+%% Mixed Atoms
+% If you want to create a mixed atom for a solid solution you can easily
+% achieve this by the following lines of code.
+% The input for the initialization of the mixed atom are the symbol, ID and
+% name, whereas only the first is required.
+ZT = atomMixed('ZT', 'ZT', 'Zircon-Titan 0.2 0.8');
+ZT.addAtom(Zr, 0.2);
+ZT.addAtom(Ti, 0.8);
+
+% Let's have a look at the mixed properties:
+ZT.disp();
+
+%% Unit Cells
+% Now we have created enough atoms to build a unit cell. We choose a cubic 
+% unit cell of the perovskite SrRuO3 on a substrate of SrTiO3. 
+% However we need to define some  properties of the unit cell first,
+% Note that the thermal conductivity, linear thermal expansion, and heat
+% capacity are defined either as constants or anonymous functions of the
+% termperature T in Kelvin.
+
+% c-axis lattice constants of the two materials
+cSTOsub     = 3.905     *u.ang;
+cSRO        = 3.94897   *u.ang;
+% sound velocities [nm/ps] of the materials
+svSRO       = 6.312     *u.nm/u.ps;
+svSTO       = 7.800     *u.nm/u.ps;
+
+%% SrRuO3 unit cell
+propSRO.aAxis           = cSTOsub;              % aAxis
+propSRO.bAxis           = cSTOsub;              % bAxis
+propSRO.debWalFac       = 0;                    % Debye-Waller factor
+propSRO.soundVel        = svSRO;                % sound velocity
+propSRO.optPenDepth     = 43.8*u.nm;            % optical penetration depth
+propSRO.thermCond       = 5.72*u.W/(u.m *u.K);  % heat conductivity
+propSRO.linThermExp     = 1.03e-5;              % linear thermal expansion
+propSRO.heatCapacity    = @(T)(455.2 + 0.112.*T - 2.1935e6./T.^2);
+                                                % heat capacity [J/kg K]
+                                   
+% lets create the unit cell
+SRO = unitCell('SRO','SRO',cSRO,propSRO);
+% add some atoms at relative positions in the unit cell
+SRO.addAtom(O,0);
+SRO.addAtom(Sr,0);
+SRO.addAtom(O,0.5);
+SRO.addAtom(O,0.5);
+SRO.addAtom(Ru,0.5);
+
+%% SrTiO3 substrate
+propSTOsub.aAxis           = cSTOsub;           % aAxis
+propSTOsub.bAxis           = cSTOsub;           % bAxis
+propSTOsub.debWalFac       = 0;                 % Debye-Waller factor
+propSTOsub.soundVel        = svSTO;             % sound velocity
+propSTOsub.optPenDepth     = Inf;               % optical penetration depth
+propSTOsub.thermCond       = 12*u.W/(u.m *u.K); % heat conductivity
+propSTOsub.linThermExp     = 1e-5;              % linear thermal expansion
+propSTOsub.heatCapacity    = @(T)(733.73 + 0.0248.*T - 6.531e6./T.^2);
+                                                % heat capacity [J/kg K]
+
+%% Non-Linear Strain Dependence
+% In general the position of each atom in a unit cell dependence linearly
+% from an external strain. In some cases this linear behaviour had to be 
+% altered. This can be easily achieved by providing a strain dependent 
+% anonymous function handle for the atom position when the atom is added to
+% the unit cell.
+STOsub = unitCell('STOsub', 'STOsub', cSTOsub, propSTOsub);
+STOsub.addAtom(O, @(strain)(0.1*strain^2)); % quadratic strain dependency
+STOsub.addAtom(Sr,0);
+STOsub.addAtom(O,0.5);
+STOsub.addAtom(O,0.5);
+STOsub.addAtom(Ti,0.5);
+
+% again we can display all properties of the unit cells:
+SRO.disp();
+%%
+% we can also visualize the positions of the atoms in the unit cell:
+SRO.visualize();
+
+%% Clone to Multiple
+% For some simulations it may save computational time if a larger spacial
+% grid is used. This can be achieved by e.g. providing larger unit cells.
+% In order to automatically do that task we can easily clone unit cells to
+% multiples of them:
+SRO2 = SRO.clone2multiple(2);
+SRO2.visualize();
+
+%% Structure
+% Since we have build two different kinds of unit cells we can build a
+% sample structure
+S = structure('Single Layer');
+S.addSubStructure(SRO,100);     % add 100 layers of SRO to sample
+S.addSubStructure(STOsub,1000); % add 1000 layers of STO substrate
+
+% display the properties of the structure and visualize
+S.disp();
+%%
+S.visualize();
+%%
+% there are various methods to get informations from the structure which
+% are mostly self explanatory:
+[dStart, dEnd, dMid] = S.getDistancesOfUnitCells(); 
+K = S.getNumberOfSubStructures();
+L = S.getNumberOfUniqueUnitCells();
+M = S.getNumberOfUnitCells();
+P = S.getAllPositionsPerUniqueUnitCell();
+I = S.getDistancesOfInterfaces();
+cAxis = S.getUnitCellPropertyVector('cAxis');
+
+% we can also build more complicated structures like super lattices:
+S2 = structure('Super Lattice');
+% define a single double layer
+DL = structure('Double Layer');
+DL.addSubStructure(SRO,15);     % add 15 layers of SRO
+DL.addSubStructure(STOsub,20);  % add 20 layers of STO substrate
+% add the double layer to the super lattice
+S2.addSubStructure(DL,10);      % add 10 double layers to super lattice
+S2.addSubStructure(STOsub,500); % add 500 layers of STO substrate
+
+% display and visualize the structure:
+S2.disp();
+%%
+S2.visualize();
+%%
+% now there are some more interfaces than before:
+I2 = S2.getDistancesOfInterfaces();
+disp(length(I2));
+##### SOURCE END #####
+--></body></html>

@@ -1,0 +1,302 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>XRD</title><meta name="generator" content="MATLAB 7.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-07-31"><meta name="DC.source" content="XRD.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+
+  </style></head><body><div class="content"><h1>XRD</h1><!--introduction--><p>The XRD class is the base class for 1D X-ray diffraction simulations. Besides the 1D structure it holds various simulation parameters and provides several general helper functions.</p><p>Copyright (c) 2013, Daniel Schick, Andr&eacute; Bojahr, Marc Herzog, Roman Shayduk, Clemens von Korff Schmising All rights reserved.</p><p>License: BSD (use/copy/change/redistribute on own risk, mention the authors)</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Classdef</a></li><li><a href="#2">Properties</a></li><li><a href="#3">Methods</a></li><li><a href="#4">Constructor</a></li><li><a href="#5">Display</a></li><li><a href="#6">setQz</a></li><li><a href="#7">setQzByTheta</a></li><li><a href="#8">getPolarizationFactor</a></li><li><a href="#9">convWithTemporalResolution</a></li><li><a href="#10">convWithInstrumentFunction</a></li><li><a href="#12">convWithFunction</a></li></ul></div><h2>Classdef<a name="1"></a></h2><p>Each XRD instance and all inherited class objects follow handle semantics. Hence a copy of such object will not copy the object itself, but only a handle to that object.</p><pre class="codeinput"><span class="keyword">classdef</span> XRD &lt; simulation
+</pre><h2>Properties<a name="2"></a></h2><pre class="codeinput">    properties (SetAccess=public,GetAccess=public)
+        E                       <span class="comment">% FLOAT energy [J]</span>
+        qz                      <span class="comment">% VECTOR FLOATs qz range [m^-1]</span>
+        theta                   <span class="comment">% VECTOR FLOATs theta range [rad]</span>
+        lambda                  <span class="comment">% FLOAT wavelength of X-rays [m]</span>
+        k                       <span class="comment">% FLOAT wavenumber of X-rays [m^-1]</span>
+        pol                     <span class="comment">% FLOAT polarization -  pol == 0 : s-polarized; pol == 1 : p-polarized, pol == 0.5 : unpolarized</span>
+    <span class="keyword">end</span><span class="comment">%properties</span>
+</pre><h2>Methods<a name="3"></a></h2><pre class="codeinput">    methods
+</pre><h2>Constructor<a name="4"></a></h2><p>Is executed each time an instance of this class is created. Only the <i>structure</i> input is obligatory. Automatically, the X-ray wavelength <img src="XRD_eq15041.png" alt="$\lambda = h\, c_0 / E$"> and the X-ray wavevector <img src="XRD_eq14104.png" alt="$k = 2\pi / \lambda$"> are calculated.</p><pre class="codeinput">        <span class="keyword">function</span> obj = XRD(structure,forceRecalc,varargin)
+            obj = obj@simulation(structure,forceRecalc,varargin{3:end});
+            <span class="comment">% initialize input parser and define defaults and validators</span>
+            p = inputParser;
+            p.KeepUnmatched = true;
+            p.addOptional(<span class="string">'E'</span>   , 8047*units.eV , @isnumeric);
+            p.addOptional(<span class="string">'pol'</span> , 0.5           , @(x)(isnumeric(x) &amp;&amp; x &gt;= 0 &amp;&amp; x &lt;= 1));
+            <span class="comment">% parse the input</span>
+            p.parse(varargin{:});
+            <span class="comment">% assign parser results to object properties</span>
+            obj.E       = p.Results.E;
+            obj.pol     = p.Results.pol;
+            <span class="comment">% automatically set the wavelength and k-vector for the</span>
+            <span class="comment">% simulations</span>
+            obj.lambda  = (constants.h*constants.c_0) / p.Results.E; <span class="comment">% probe wavelength [m]</span>
+            obj.k       = 2*pi/ obj.lambda; <span class="comment">% probe wavenumber [m^-1]</span>
+        <span class="keyword">end</span><span class="comment">%functions</span>
+</pre><h2>Display<a name="5"></a></h2><p>This method is called to display informations of the instance.</p><pre class="codeinput">        <span class="keyword">function</span> disp(obj)
+            disp([<span class="string">'X-ray engery [eV]     : '</span> num2str(obj.E/units.eV)]);
+            disp([<span class="string">'X-ray wavelength [Ang]: '</span> num2str(obj.lambda/units.ang)]);
+            disp([<span class="string">'polarization          : '</span> num2str(obj.pol) <span class="string">' (pol == 0 : s-polarized; pol == 1 : p-polarized, pol == 0.5 : unpolarized)'</span>]);
+            <span class="comment">% call the parent display method</span>
+            disp@simulation(obj);
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>setQz<a name="6"></a></h2><p>Sets the <img src="XRD_eq04092.png" alt="$q_z$">-range of the simulation directly and automatically caluclates the corresponding <img src="XRD_eq49435.png" alt="$\theta$">-range:</p><p><img src="XRD_eq46434.png" alt="$$ \theta = \arcsin\left(\frac{q_z}{2k}\right) $$"></p><pre class="codeinput">        <span class="keyword">function</span> setQz(obj,qz)
+            obj.qz      = qz;
+            obj.theta   = asin(obj.qz / (2*obj.k));
+        <span class="keyword">end</span><span class="comment">%functions</span>
+</pre><h2>setQzByTheta<a name="7"></a></h2><p>Sets the <img src="XRD_eq49435.png" alt="$\theta$">-range of the simulation directly and automatically caluclates the corresponding <img src="XRD_eq04092.png" alt="$q_z$">-range:</p><p><img src="XRD_eq74664.png" alt="$$ q_z = 2k\sin\left(\theta\right) $$"></p><pre class="codeinput">        <span class="keyword">function</span> setQzByTheta(obj,theta)
+            obj.theta   = theta;
+            obj.qz      = 2*obj.k*sin(theta);
+        <span class="keyword">end</span><span class="comment">%functions</span>
+</pre><h2>getPolarizationFactor<a name="8"></a></h2><p>Returns the polarization factor <img src="XRD_eq34212.png" alt="$P(\theta)$"> for a given incident angle <img src="XRD_eq49435.png" alt="$\theta$"> for the case of s-polarization (<img src="XRD_eq79253.png" alt="$pol = 0$">), or p-polarization (<img src="XRD_eq59571.png" alt="$pol = 1$">), or unpolarized X-rays (<img src="XRD_eq15534.png" alt="$pol = 0.5$">):</p><p><img src="XRD_eq15921.png" alt="$$ P(\theta) = \sqrt{(1-\mbox{pol}) + \mbox{pol} \cdot \cos(2\theta)} $$"></p><pre class="codeinput">        <span class="keyword">function</span> P = getPolarizationFactor(obj)
+            P = sqrt((1-obj.pol) + obj.pol*cos(2*obj.theta).^2);
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>convWithTemporalResolution<a name="9"></a></h2><p>Convolutes the reflectivity <img src="XRD_eq18078.png" alt="$R(t,q_z)$"> with a temporal resolution function, given by a Gaussian of the <i>FWHM</i> for the time vector <img src="XRD_eq07064.png" alt="$t$">. <img src="XRD_eq07064.png" alt="$t$"> must have the same length as the 1st dimension of <img src="XRD_eq18078.png" alt="$R(t,q_z)$">. The time resolution funtion has to be centered around <img src="XRD_eq21444.png" alt="$t=0$">.</p><pre class="codeinput">        <span class="keyword">function</span> [Rc tc] = convWithTemporalResolution(obj,R,t,FWHM)
+            <span class="comment">% define the Gaussian in time</span>
+            handle = @(t)(gauss(t,FWHM,<span class="string">'widthType'</span>, <span class="string">'FWHM'</span>, <span class="string">'normalize'</span>, true));
+            <span class="comment">% convolute R</span>
+            [Rc tc] = obj.convWithFunction(R',t,handle);
+            Rc = Rc';
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>convWithInstrumentFunction<a name="10"></a></h2><p>Convolutes the reflectivity <img src="XRD_eq18078.png" alt="$R(t,q_z)$"> with an instrument function, given by a function handle for arguments <img src="XRD_eq04092.png" alt="$q_z$">. <img src="XRD_eq04092.png" alt="$q_z$"> must have the same length as the 2nd dimension of <img src="XRD_eq18078.png" alt="$R(t,q_z)$">. The instrument funtion has to be centered around <img src="XRD_eq86676.png" alt="$q_z=0$"> and <img src="XRD_eq04092.png" alt="$q_z$"> can be replaced by <img src="XRD_eq49435.png" alt="$\theta$">.</p><pre class="codeinput">        <span class="keyword">function</span> [Rc qzc] = convWithInstrumentFunction(obj,R,qz,handle)
+            [Rc qzc] = obj.convWithFunction(R,qz,handle);
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><pre class="codeinput">    <span class="keyword">end</span><span class="comment">%methods</span>
+
+    methods (Static = true)
+</pre><h2>convWithFunction<a name="12"></a></h2><p>Convolutes the matrix <img src="XRD_eq39797.png" alt="$Z(x,y)$"> with a function given by the <i>handle</i> on the argument vector <img src="XRD_eq44020.png" alt="$y$">. The length of <img src="XRD_eq44020.png" alt="$y$"> must be the same as the second dimension of <img src="XRD_eq14833.png" alt="$Z$">.</p><pre class="codeinput">        <span class="keyword">function</span> [Zc yc] = convWithFunction(Z,y,handle)
+            <span class="comment">% interpolate y on a linear grid</span>
+            dy = min(diff(y));
+            <span class="keyword">if</span> dy &lt;= 0
+                error(<span class="string">'The argument vector is not sequenced in strict monotonic order.'</span>);
+            <span class="keyword">end</span>
+            ylin = min(y):dy:max(y);
+
+            <span class="comment">% center of argument x</span>
+            yc = (max(ylin)-min(ylin))/2 + min(ylin);
+            <span class="comment">% extend the argument to avoid edge effects</span>
+            y_conv = (2*min(ylin)-max(ylin):dy:2*max(ylin)-min(ylin)) - yc;
+
+            <span class="comment">% calculate the values of the convolution function (normalized)</span>
+            conv_values = handle(y_conv)/sum(handle(y_conv));
+            Zc = zeros(size(Z));
+            <span class="comment">% convolute for each x of Z</span>
+            <span class="keyword">for</span> i=1:size(Z,1)
+                <span class="comment">% interpolate Z on a linear grid</span>
+                Zlin = interp1(y,Z(i,:),ylin);
+                <span class="comment">% convolute</span>
+                temp = conv(Zlin,conv_values,<span class="string">'same'</span>);
+                <span class="comment">% interpolate back on original grid</span>
+                Zc(i,:) = interp1(ylin,temp,y);
+            <span class="keyword">end</span><span class="comment">%for</span>
+            <span class="comment">% finaly remove NaN entries due to the interpolation</span>
+            Zc(isnan(Zc)) = 0;
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><pre class="codeinput">    <span class="keyword">end</span><span class="comment">%methods</span>
+</pre><pre class="codeinput"><span class="keyword">end</span><span class="comment">%classdef</span>
+</pre><p class="footer"><br>
+      Published with MATLAB&reg; 7.14<br></p></div><!--
+##### SOURCE BEGIN #####
+%% XRD
+% The XRD class is the base class for 1D X-ray diffraction simulations.
+% Besides the 1D structure it holds various simulation parameters and
+% provides several general helper functions.
+%
+% Copyright (c) 2013, Daniel Schick, André Bojahr, Marc Herzog, Roman Shayduk, Clemens von Korff Schmising
+% All rights reserved.
+%
+% License: BSD (use/copy/change/redistribute on own risk, mention the authors)
+
+%% Classdef
+% Each XRD instance and all inherited class objects follow handle
+% semantics. Hence a copy of such object will not copy the object itself,
+% but only a handle to that object.
+classdef XRD < simulation
+    %% Properties
+    properties (SetAccess=public,GetAccess=public)
+        E                       % FLOAT energy [J]
+        qz                      % VECTOR FLOATs qz range [m^-1]
+        theta                   % VECTOR FLOATs theta range [rad]
+        lambda                  % FLOAT wavelength of X-rays [m]
+        k                       % FLOAT wavenumber of X-rays [m^-1]
+        pol                     % FLOAT polarization -  pol == 0 : s-polarized; pol == 1 : p-polarized, pol == 0.5 : unpolarized    
+    end%properties
+    %% Methods
+    methods
+        %% Constructor
+        % Is executed each time an instance of this class is created. Only
+        % the _structure_ input is obligatory. Automatically, the X-ray
+        % wavelength $\lambda = h\, c_0 / E$ and the X-ray wavevector
+        % $k = 2\pi / \lambda$ are calculated.        
+        function obj = XRD(structure,forceRecalc,varargin)
+            obj = obj@simulation(structure,forceRecalc,varargin{3:end});
+            % initialize input parser and define defaults and validators
+            p = inputParser;
+            p.KeepUnmatched = true;
+            p.addOptional('E'   , 8047*units.eV , @isnumeric);
+            p.addOptional('pol' , 0.5           , @(x)(isnumeric(x) && x >= 0 && x <= 1));
+            % parse the input
+            p.parse(varargin{:});
+            % assign parser results to object properties
+            obj.E       = p.Results.E;
+            obj.pol     = p.Results.pol;
+            % automatically set the wavelength and k-vector for the
+            % simulations
+            obj.lambda  = (constants.h*constants.c_0) / p.Results.E; % probe wavelength [m]
+            obj.k       = 2*pi/ obj.lambda; % probe wavenumber [m^-1]
+        end%functions
+        
+        %% Display
+        % This method is called to display informations of the instance.
+        function disp(obj)
+            disp(['X-ray engery [eV]     : ' num2str(obj.E/units.eV)]);
+            disp(['X-ray wavelength [Ang]: ' num2str(obj.lambda/units.ang)]);
+            disp(['polarization          : ' num2str(obj.pol) ' (pol == 0 : s-polarized; pol == 1 : p-polarized, pol == 0.5 : unpolarized)']);
+            % call the parent display method
+            disp@simulation(obj);
+        end%function
+                
+        %% setQz
+        % Sets the $q_z$-range of the simulation directly and automatically
+        % caluclates the corresponding $\theta$-range:
+        %
+        % $$ \theta = \arcsin\left(\frac{q_z}{2k}\right) $$
+        %
+        function setQz(obj,qz)
+            obj.qz      = qz;
+            obj.theta   = asin(obj.qz / (2*obj.k));
+        end%functions
+        
+        %% setQzByTheta
+        % Sets the $\theta$-range of the simulation directly and 
+        % automatically caluclates the corresponding $q_z$-range:
+        %
+        % $$ q_z = 2k\sin\left(\theta\right) $$
+        %
+        function setQzByTheta(obj,theta)
+            obj.theta   = theta;
+            obj.qz      = 2*obj.k*sin(theta);
+        end%functions
+                
+        %% getPolarizationFactor
+        % Returns the polarization factor $P(\theta)$ for a given incident 
+        % angle $\theta$ for the case of s-polarization ($pol = 0$), or 
+        % p-polarization ($pol = 1$), or unpolarized X-rays ($pol = 0.5$):
+        %
+        % $$ P(\theta) = \sqrt{(1-\mbox{pol}) + \mbox{pol} \cdot \cos(2\theta)} $$
+        %
+        function P = getPolarizationFactor(obj)
+            P = sqrt((1-obj.pol) + obj.pol*cos(2*obj.theta).^2);
+        end%function        
+        
+        %% convWithTemporalResolution
+        % Convolutes the reflectivity $R(t,q_z)$ with a temporal 
+        % resolution function, given by a Gaussian of the _FWHM_ for the 
+        % time vector $t$. $t$ must have the same length as the 1st 
+        % dimension of $R(t,q_z)$. The time resolution funtion has to be 
+        % centered around $t=0$.
+        function [Rc tc] = convWithTemporalResolution(obj,R,t,FWHM)
+            % define the Gaussian in time
+            handle = @(t)(gauss(t,FWHM,'widthType', 'FWHM', 'normalize', true));
+            % convolute R
+            [Rc tc] = obj.convWithFunction(R',t,handle);
+            Rc = Rc';
+        end%function
+        
+        %% convWithInstrumentFunction
+        % Convolutes the reflectivity $R(t,q_z)$ with an instrument 
+        % function, given by a function handle for arguments $q_z$. $q_z$ 
+        % must have the same length as the 2nd dimension of $R(t,q_z)$. 
+        % The instrument funtion has to be centered around $q_z=0$ and 
+        % $q_z$ can be replaced by $\theta$.
+        function [Rc qzc] = convWithInstrumentFunction(obj,R,qz,handle)
+            [Rc qzc] = obj.convWithFunction(R,qz,handle);
+        end%function
+    end%methods
+    
+    methods (Static = true)
+        %% convWithFunction
+        % Convolutes the matrix $Z(x,y)$ with a function given by the 
+        % _handle_ on the argument vector $y$. The length of $y$ must be 
+        % the same as the second dimension of $Z$.
+        function [Zc yc] = convWithFunction(Z,y,handle)
+            % interpolate y on a linear grid
+            dy = min(diff(y));
+            if dy <= 0
+                error('The argument vector is not sequenced in strict monotonic order.');
+            end
+            ylin = min(y):dy:max(y);
+            
+            % center of argument x  
+            yc = (max(ylin)-min(ylin))/2 + min(ylin); 
+            % extend the argument to avoid edge effects
+            y_conv = (2*min(ylin)-max(ylin):dy:2*max(ylin)-min(ylin)) - yc;
+             
+            % calculate the values of the convolution function (normalized)
+            conv_values = handle(y_conv)/sum(handle(y_conv));
+            Zc = zeros(size(Z));
+            % convolute for each x of Z
+            for i=1:size(Z,1)
+                % interpolate Z on a linear grid
+                Zlin = interp1(y,Z(i,:),ylin);
+                % convolute
+                temp = conv(Zlin,conv_values,'same');
+                % interpolate back on original grid
+                Zc(i,:) = interp1(ylin,temp,y);
+            end%for
+            % finaly remove NaN entries due to the interpolation
+            Zc(isnan(Zc)) = 0;
+        end%function        
+    end%methods
+end%classdef
+##### SOURCE END #####
+--></body></html>

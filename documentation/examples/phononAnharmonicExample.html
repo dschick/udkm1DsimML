@@ -1,0 +1,271 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Phonon Anharmonic Example</title><meta name="generator" content="MATLAB 7.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-05-02"><meta name="DC.source" content="phononAnharmonicExample.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+
+  </style></head><body><div class="content"><h1>Phonon Anharmonic Example</h1><!--introduction--><p>In this example we show how to include anharmonicity and damping for the calculation of the coherent phonon dynamics using the numerical phonon simulation model.</p><p>Before we can start a phonon simulation we need to build a sample structure and simulate the temperature map after the excitation.</p><p>Be sure to include all folders of the udkm1dsim toolbox to your MATLAB search path. Especially the <i>/parameters</i> and <i>/helpers</i> folders with all their subfolders.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Build a Sample Structure</a></li><li><a href="#3">Anharmonicity &amp; Damping</a></li><li><a href="#4">Initialize Heat Simulation</a></li><li><a href="#5">Excitation</a></li><li><a href="#6">Numerical Phonon Simulation</a></li></ul></div><p>here we clear the workspace and close all figures</p><pre class="codeinput">clear <span class="string">all</span>;
+close <span class="string">all</span>;
+<span class="comment">% these are some units and constants we can use later on</span>
+u            = units;
+const        = constants;
+</pre><h2>Build a Sample Structure<a name="2"></a></h2><pre class="codeinput">O   = atomBase(<span class="string">'O'</span>);
+Ti  = atomBase(<span class="string">'Ti'</span>);
+Sr  = atomBase(<span class="string">'Sr'</span>);
+Ru  = atomBase(<span class="string">'Ru'</span>);
+Pb  = atomBase(<span class="string">'Pb'</span>);
+Zr  = atomBase(<span class="string">'Zr'</span>);
+
+cSTOsub     = 3.905     *u.ang;
+cSRO        = 3.94897   *u.ang;
+svSRO       = 6.312     *u.nm/u.ps;
+svSTO       = 7.800     *u.nm/u.ps;
+
+propSRO.aAxis           = cSTOsub;              <span class="comment">% aAxis</span>
+propSRO.bAxis           = cSTOsub;              <span class="comment">% bAxis</span>
+propSRO.debWalFac       = 0;                    <span class="comment">% Debye-Waller factor</span>
+propSRO.soundVel        = svSRO;                <span class="comment">% sound velocity</span>
+propSRO.optPenDepth     = 43.8*u.nm;            <span class="comment">% optical penetration depth</span>
+propSRO.thermCond       = 5.72*u.W/(u.m *u.K);  <span class="comment">% heat conductivity</span>
+propSRO.linThermExp     = 1.03e-5;              <span class="comment">% linear thermal expansion</span>
+propSRO.heatCapacity    = @(T)(455.2 + 0.112.*T - 2.1935e6./T.^2);
+                                                <span class="comment">% heat capacity [J/kg K]</span>
+SRO = unitCell(<span class="string">'SRO'</span>,<span class="string">'SRO'</span>,cSRO,propSRO);
+SRO.addAtom(O,0);
+SRO.addAtom(Sr,0);
+SRO.addAtom(O,0.5);
+SRO.addAtom(O,0.5);
+SRO.addAtom(Ru,0.5);
+
+propSTOsub.aAxis           = cSTOsub;           <span class="comment">% aAxis</span>
+propSTOsub.bAxis           = cSTOsub;           <span class="comment">% bAxis</span>
+propSTOsub.debWalFac       = 0;                 <span class="comment">% Debye-Waller factor</span>
+propSTOsub.soundVel        = svSTO;             <span class="comment">% sound velocity</span>
+propSTOsub.optPenDepth     = Inf;               <span class="comment">% optical penetration depth</span>
+propSTOsub.thermCond       = 12*u.W/(u.m *u.K); <span class="comment">% heat conductivity</span>
+propSTOsub.linThermExp     = 1e-5;              <span class="comment">% linear thermal expansion</span>
+propSTOsub.heatCapacity    = @(T)(733.73 + 0.0248.*T - 6.531e6./T.^2);
+                                                <span class="comment">% heat capacity [J/kg K]</span>
+STOsub = unitCell(<span class="string">'STOsub'</span>, <span class="string">'STOsub'</span>, cSTOsub, propSTOsub);
+STOsub.addAtom(O,0);
+STOsub.addAtom(Sr,0);
+STOsub.addAtom(O,0.5);
+STOsub.addAtom(O,0.5);
+STOsub.addAtom(Ti,0.5);
+</pre><h2>Anharmonicity &amp; Damping<a name="3"></a></h2><p>We can easily change the phonon propagation in the numerical model by introducing phonon damping and higher order spring constants to any</p><pre class="codeinput">STOsub.phononDamping = 1e-12;        <span class="comment">% [kg/s]</span>
+STOsub.setHOspringConstants([-7e12]);<span class="comment">% qubic potential [kg/m s^2]</span>
+
+S = structure(<span class="string">'Single Layer'</span>);
+S.addSubStructure(SRO,100);     <span class="comment">% add 100 layers of SRO to sample</span>
+S.addSubStructure(STOsub,2000); <span class="comment">% add 2000 layers of STO substrate</span>
+
+distances = S.getDistancesOfUnitCells();
+</pre><h2>Initialize Heat Simulation<a name="4"></a></h2><pre class="codeinput">cacheDir = <span class="string">'./cache'</span>;
+forceRecalc = false;
+
+H = heat(S,forceRecalc);
+H.setCacheDir(cacheDir); <span class="comment">% set the cache directory</span>
+time        = (-10:0.1:90)*u.ps;
+fluence     = 30*u.mJ/u.cm^2;
+initTemp    = 300*u.K;
+</pre><h2>Excitation<a name="5"></a></h2><p>Calculate the temperature map after instantaneous excitation at <img src="phononAnharmonicExample_eq21444.png" alt="$t=0$">. For the phonon simulations also the differential temperature map _deltaTempMap_in time is necessary:</p><pre class="codeinput">[tempMap deltaTempMap] = H.getTempMap(time,fluence,initTemp);
+</pre><pre class="codeoutput">Elapsed time for _temperatureAfterDeltaExcitation_: 0.88329 seconds.
+Elapsed time for _tempMap_: 0.95687 seconds.
+_tempMap_ saved to file .\cache\tempMap_6846213173e5c0133e64007867564dde_0a12c6e85ca09571cac2f1fb1d3058aa.mat
+</pre><h2>Numerical Phonon Simulation<a name="6"></a></h2><pre class="codeinput">clear <span class="string">P</span>;
+P = phononNum(S,forceRecalc);
+P.setCacheDir(cacheDir); <span class="comment">% set the cache directory</span>
+</pre><p>The coherent phonon dynamics (strainMap) is calculated by one line providing the <i>time</i>, and temperature inputs of the heat simulation:</p><pre class="codeinput">strainMap = P.getStrainMap(time,tempMap,deltaTempMap);
+</pre><pre class="codeoutput">Calculating linear thermal expansion ...
+Calculating coherent dynamics with ODE solver ...
+ODE integration: 100%    [..................................................]
+Elapsed time for _strainMap_: 25.582 seconds.
+_strainMap_ saved to file .\cache\strainMapNum_b8d18b2b599e6ff7c32abae8caeb43da_264c2d8c84b13fc27e0268278ebb140b.mat
+</pre><p>plot the results:</p><pre class="codeinput">figure(1)
+kk = surf(distances/u.nm,time/u.ps,strainMap);
+set(kk, <span class="string">'LineStyle'</span>, <span class="string">'none'</span>);
+title(<span class="string">'Strain'</span>); xlabel(<span class="string">'z [nm]'</span>); ylabel(<span class="string">'Time [ps]'</span>);
+axis([distances(1)/u.nm distances(end)/u.nm time(1)/u.ps time(end)/u.ps])
+box; colorbar; colormap(fireice(255));
+caxis([-max(max(strainMap)) max(max(strainMap))]);
+set(gca, <span class="string">'XMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'YMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'TickDir'</span>, <span class="string">'out'</span>);
+</pre><img vspace="5" hspace="5" src="phononAnharmonicExample_01.png" alt=""> <pre class="codeinput">figure(2)
+show = 101:150:length(time);
+plot(distances/u.nm,strainMap(show,:));
+xlim([distances(1)/u.nm distances(end)/u.nm]);
+xlabel(<span class="string">'z [nm]'</span>); ylabel(<span class="string">'Strain'</span>);
+legend([num2str(time(show)'/u.ps) repmat(<span class="string">' ps'</span>,length(show),1) ],<span class="string">'Location'</span>,<span class="string">'EastOutside'</span>);
+box <span class="string">on</span>; grid <span class="string">on</span>;
+set(gca, <span class="string">'XMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'YMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'TickDir'</span>, <span class="string">'out'</span>);
+</pre><img vspace="5" hspace="5" src="phononAnharmonicExample_02.png" alt=""> <p class="footer"><br>
+      Published with MATLAB&reg; 7.14<br></p></div><!--
+##### SOURCE BEGIN #####
+%% Phonon Anharmonic Example
+% In this example we show how to include anharmonicity and damping for the
+% calculation of the coherent phonon dynamics using the numerical phonon
+% simulation model.
+%
+% Before we can start a phonon simulation we need to build a sample
+% structure and simulate the temperature map after the excitation.
+%
+% Be sure to include all folders of the udkm1dsim toolbox to your MATLAB 
+% search path. Especially the _/parameters_ and _/helpers_ folders with all 
+% their subfolders.
+
+%%
+% here we clear the workspace and close all figures
+clear all;
+close all;
+% these are some units and constants we can use later on
+u            = units;
+const        = constants;
+%% Build a Sample Structure
+O   = atomBase('O');
+Ti  = atomBase('Ti');
+Sr  = atomBase('Sr');
+Ru  = atomBase('Ru');
+Pb  = atomBase('Pb');
+Zr  = atomBase('Zr');
+
+cSTOsub     = 3.905     *u.ang;
+cSRO        = 3.94897   *u.ang;
+svSRO       = 6.312     *u.nm/u.ps;
+svSTO       = 7.800     *u.nm/u.ps;
+
+propSRO.aAxis           = cSTOsub;              % aAxis
+propSRO.bAxis           = cSTOsub;              % bAxis
+propSRO.debWalFac       = 0;                    % Debye-Waller factor
+propSRO.soundVel        = svSRO;                % sound velocity
+propSRO.optPenDepth     = 43.8*u.nm;            % optical penetration depth
+propSRO.thermCond       = 5.72*u.W/(u.m *u.K);  % heat conductivity
+propSRO.linThermExp     = 1.03e-5;              % linear thermal expansion
+propSRO.heatCapacity    = @(T)(455.2 + 0.112.*T - 2.1935e6./T.^2);
+                                                % heat capacity [J/kg K]
+SRO = unitCell('SRO','SRO',cSRO,propSRO);
+SRO.addAtom(O,0);
+SRO.addAtom(Sr,0);
+SRO.addAtom(O,0.5);
+SRO.addAtom(O,0.5);
+SRO.addAtom(Ru,0.5);
+
+propSTOsub.aAxis           = cSTOsub;           % aAxis
+propSTOsub.bAxis           = cSTOsub;           % bAxis
+propSTOsub.debWalFac       = 0;                 % Debye-Waller factor
+propSTOsub.soundVel        = svSTO;             % sound velocity
+propSTOsub.optPenDepth     = Inf;               % optical penetration depth
+propSTOsub.thermCond       = 12*u.W/(u.m *u.K); % heat conductivity
+propSTOsub.linThermExp     = 1e-5;              % linear thermal expansion
+propSTOsub.heatCapacity    = @(T)(733.73 + 0.0248.*T - 6.531e6./T.^2);
+                                                % heat capacity [J/kg K]
+STOsub = unitCell('STOsub', 'STOsub', cSTOsub, propSTOsub);
+STOsub.addAtom(O,0);
+STOsub.addAtom(Sr,0);
+STOsub.addAtom(O,0.5);
+STOsub.addAtom(O,0.5);
+STOsub.addAtom(Ti,0.5);
+%% Anharmonicity & Damping
+% We can easily change the phonon propagation in the numerical model by
+% introducing phonon damping and higher order spring constants to any
+
+STOsub.phononDamping = 1e-12;        % [kg/s]
+STOsub.setHOspringConstants([-7e12]);% qubic potential [kg/m s^2]
+
+S = structure('Single Layer');
+S.addSubStructure(SRO,100);     % add 100 layers of SRO to sample
+S.addSubStructure(STOsub,2000); % add 2000 layers of STO substrate
+
+distances = S.getDistancesOfUnitCells();
+%% Initialize Heat Simulation
+cacheDir = './cache';
+forceRecalc = false; 
+
+H = heat(S,forceRecalc);
+H.setCacheDir(cacheDir); % set the cache directory
+time        = (-10:0.1:90)*u.ps;
+fluence     = 30*u.mJ/u.cm^2;
+initTemp    = 300*u.K;
+%% Excitation
+% Calculate the temperature map after instantaneous excitation at $t=0$.
+% For the phonon simulations also the differential temperature map 
+% _deltaTempMap_in time is necessary:
+[tempMap deltaTempMap] = H.getTempMap(time,fluence,initTemp);
+%% Numerical Phonon Simulation
+clear P;
+P = phononNum(S,forceRecalc);
+P.setCacheDir(cacheDir); % set the cache directory
+%% 
+% The coherent phonon dynamics (strainMap) is calculated by one line
+% providing the _time_, and temperature inputs of the heat simulation:
+strainMap = P.getStrainMap(time,tempMap,deltaTempMap);
+%%
+% plot the results:
+figure(1)
+kk = surf(distances/u.nm,time/u.ps,strainMap);
+set(kk, 'LineStyle', 'none');
+title('Strain'); xlabel('z [nm]'); ylabel('Time [ps]');
+axis([distances(1)/u.nm distances(end)/u.nm time(1)/u.ps time(end)/u.ps])
+box; colorbar; colormap(fireice(255));
+caxis([-max(max(strainMap)) max(max(strainMap))]);
+set(gca, 'XMinorTick', 'on', 'YMinorTick', 'on', 'TickDir', 'out');
+%%
+figure(2)
+show = 101:150:length(time);
+plot(distances/u.nm,strainMap(show,:));
+xlim([distances(1)/u.nm distances(end)/u.nm]);
+xlabel('z [nm]'); ylabel('Strain');
+legend([num2str(time(show)'/u.ps) repmat(' ps',length(show),1) ],'Location','EastOutside');
+box on; grid on;
+set(gca, 'XMinorTick', 'on', 'YMinorTick', 'on', 'TickDir', 'out');
+##### SOURCE END #####
+--></body></html>

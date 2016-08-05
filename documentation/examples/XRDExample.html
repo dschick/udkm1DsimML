@@ -1,0 +1,480 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>XRD Example</title><meta name="generator" content="MATLAB 7.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-05-02"><meta name="DC.source" content="XRDExample.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+
+  </style></head><body><div class="content"><h1>XRD Example</h1><!--introduction--><p>In this example we show how to carry out XRD simulations for the static and transient case.</p><p>Before we can start a XRD simulation we need to build a sample structure. For the transient XRD simulations also according lattice dynamics are necessary as input.</p><p>Be sure to include all folders of the udkm1dsim toolbox to your MATLAB search path. Especially the <i>/parameters</i> and <i>/helpers</i> folders with all their subfolders.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Build a Sample Structure</a></li><li><a href="#3">set the parameters for the XRD simulations</a></li><li><a href="#4">Static Rocking Curves - thin sample</a></li><li><a href="#5">Add static substrate</a></li><li><a href="#6">Recalculate the static rocking curves</a></li><li><a href="#7">Static Rocking Curves - thick sample</a></li><li><a href="#8">Initialize Heat Simulation</a></li><li><a href="#9">Excitation</a></li><li><a href="#11">Initialize Phonon Simulation</a></li><li><a href="#14">Calculate transient XRD</a></li></ul></div><p>here we clear the workspace and close all figures</p><pre class="codeinput">clear <span class="string">all</span>;
+close <span class="string">all</span>;
+<span class="comment">% these are some units and constants we can use later on</span>
+u            = units;
+const        = constants;
+</pre><h2>Build a Sample Structure<a name="2"></a></h2><pre class="codeinput">O   = atomBase(<span class="string">'O'</span>);
+Ti  = atomBase(<span class="string">'Ti'</span>);
+Sr  = atomBase(<span class="string">'Sr'</span>);
+Ru  = atomBase(<span class="string">'Ru'</span>);
+Pb  = atomBase(<span class="string">'Pb'</span>);
+Zr  = atomBase(<span class="string">'Zr'</span>);
+
+cSTOsub     = 3.905     *u.ang;
+cSRO        = 3.94897   *u.ang;
+svSRO       = 6.312     *u.nm/u.ps;
+svSTO       = 7.800     *u.nm/u.ps;
+
+propSRO.aAxis           = cSTOsub;              <span class="comment">% aAxis</span>
+propSRO.bAxis           = cSTOsub;              <span class="comment">% bAxis</span>
+propSRO.debWalFac       = 0;                    <span class="comment">% Debye-Waller factor</span>
+propSRO.soundVel        = svSRO;                <span class="comment">% sound velocity</span>
+propSRO.optPenDepth     = 43.8*u.nm;            <span class="comment">% optical penetration depth</span>
+propSRO.thermCond       = 5.72*u.W/(u.m *u.K);  <span class="comment">% heat conductivity</span>
+propSRO.linThermExp     = 1.03e-5;              <span class="comment">% linear thermal expansion</span>
+propSRO.heatCapacity    = @(T)(455.2 + 0.112.*T - 2.1935e6./T.^2);
+                                                <span class="comment">% heat capacity [J/kg K]</span>
+SRO = unitCell(<span class="string">'SRO'</span>,<span class="string">'SRO'</span>,cSRO,propSRO);
+SRO.addAtom(O,0);
+SRO.addAtom(Sr,0);
+SRO.addAtom(O,0.5);
+SRO.addAtom(O,0.5);
+SRO.addAtom(Ru,0.5);
+
+propSTOsub.aAxis           = cSTOsub;           <span class="comment">% aAxis</span>
+propSTOsub.bAxis           = cSTOsub;           <span class="comment">% bAxis</span>
+propSTOsub.debWalFac       = 0;                 <span class="comment">% Debye-Waller factor</span>
+propSTOsub.soundVel        = svSTO;             <span class="comment">% sound velocity</span>
+propSTOsub.optPenDepth     = Inf;               <span class="comment">% optical penetration depth</span>
+propSTOsub.thermCond       = 12*u.W/(u.m *u.K); <span class="comment">% heat conductivity</span>
+propSTOsub.linThermExp     = 1e-5;              <span class="comment">% linear thermal expansion</span>
+propSTOsub.heatCapacity    = @(T)(733.73 + 0.0248.*T - 6.531e6./T.^2);
+                                                <span class="comment">% heat capacity [J/kg K]</span>
+STOsub = unitCell(<span class="string">'STOsub'</span>, <span class="string">'STOsub'</span>, cSTOsub, propSTOsub);
+STOsub.addAtom(O,0);
+STOsub.addAtom(Sr,0);
+STOsub.addAtom(O,0.5);
+STOsub.addAtom(O,0.5);
+STOsub.addAtom(Ti,0.5);
+
+S = structure(<span class="string">'Single Layer'</span>);
+S.addSubStructure(SRO,100);    <span class="comment">% add 100 layers of SRO to sample</span>
+S.addSubStructure(STOsub,1000);<span class="comment">% add 1000 layers of STO substrate</span>
+
+distances = S.getDistancesOfUnitCells();
+</pre><h2>set the parameters for the XRD simulations<a name="3"></a></h2><pre class="codeinput">forceRecalc     = false;
+cacheDir        = <span class="string">'./cache'</span>;
+E               = 8047*u.eV; <span class="comment">% X-ray energy</span>
+pol             = 0.5; <span class="comment">% mixed X-ray polarization</span>
+theta           = (22:0.0001:24)*u.deg; <span class="comment">% theta-range</span>
+
+<span class="comment">% initialize the kinematical XRD simulation</span>
+K = XRDkin(S,forceRecalc,E,pol);
+K.setCacheDir(cacheDir); <span class="comment">% set the cache directory</span>
+K.setQzByTheta(theta); <span class="comment">% set the theta range</span>
+<span class="comment">% calculate the static rocking curve for the homogenous sample in 1 line</span>
+Rkin = K.homogeneousReflectivity();
+
+<span class="comment">% initialize the dynamical XRD simulation</span>
+D = XRDdyn(S,forceRecalc,E,pol);
+D.setCacheDir(cacheDir); <span class="comment">% set the cache directory</span>
+D.setQzByTheta(theta); <span class="comment">% set the theta range</span>
+<span class="comment">% calculate the static rocking curve for the homogenous sample in 1 line</span>
+Rdyn = D.homogeneousReflectivity();
+</pre><pre class="codeoutput">Calculating _homogenousReflectivity_ ...
+Elapsed time for _homogenousReflectivity_: 0.108 seconds.
+Calculating _homogenousReflectivity_ ...
+Elapsed time for _homogenousReflectivity_: 0.77523 seconds.
+</pre><h2>Static Rocking Curves - thin sample<a name="4"></a></h2><p>For the this sampple, both kinematical and dynamical XRD theory nealry coincident. However, the slight offset of the two dataset is due to the neglect of refraction in the kinematical model. The oscillations on both curves are so-called Kiessig fringes which originate from the finite thickness of the sample, which is smaller than the absorption/extinction depth of the X-ray photons.</p><pre class="codeinput">figure(1);
+semilogy(theta/u.deg,Rkin, <span class="string">'-k'</span>); hold <span class="string">on</span>;
+semilogy(theta/u.deg,Rdyn, <span class="string">'-r'</span>);
+ylim([1e-7 1]);
+xlabel(<span class="string">'\theta [deg.]'</span>);
+ylabel(<span class="string">'Reflectivity'</span>);
+title(<span class="string">'Static Rocking Curve'</span>);
+legend(<span class="string">'kinematical'</span>, <span class="string">'dynamical'</span>);
+set(gca, <span class="string">'XMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'YMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'TickDir'</span>, <span class="string">'out'</span>);
+</pre><img vspace="5" hspace="5" src="XRDExample_01.png" alt=""> <h2>Add static substrate<a name="5"></a></h2><p>In order to simulate rocking curves of samples having a quasi-infinite substrate, one can add such a static substrate to the sample structure as an special substructure. This substrate substructure is not considered in the <i>heat</i> and <i>phonon</i> simulations and only acts in XRD simulations.</p><pre class="codeinput">substrate = structure(<span class="string">'STOsubstrate'</span>);
+substrate.addSubStructure(STOsub,100000);
+<span class="comment">% add the substrate to the sample</span>
+S.addSubstrate(substrate);
+</pre><h2>Recalculate the static rocking curves<a name="6"></a></h2><pre class="codeinput">Rkin = K.homogeneousReflectivity();
+Rdyn = D.homogeneousReflectivity();
+</pre><pre class="codeoutput">Calculating _homogenousReflectivity_ ...
+Elapsed time for _homogenousReflectivity_: 0.035704 seconds.
+Calculating _homogenousReflectivity_ ...
+Elapsed time for _homogenousReflectivity_: 1.0392 seconds.
+</pre><h2>Static Rocking Curves - thick sample<a name="7"></a></h2><p>Obviously, the kinematical simulation fails at maximum of the substrate peak, since reflectivities greater than 1 are simulated. Furthermore, the kinematical result still shows Kiessig fringes which are vanished in the dynamical simulation. Both effects can be explained by the neglect of absorption in the kinematical approach. However, only dynamical theory is capable to calculate the Darwin width of the intensie subsrtate peak correctly, which is observable in the strong zoom of this Bragg peak.</p><pre class="codeinput">figure(2);
+subplot(2,1,1);
+semilogy(theta/u.deg,Rkin, <span class="string">'-k'</span>); hold <span class="string">on</span>;
+semilogy(theta/u.deg,Rdyn, <span class="string">'-r'</span>);
+ylim([1e-7 10000]);
+xlabel(<span class="string">'\theta [deg.]'</span>);
+ylabel(<span class="string">'Reflectivity'</span>);
+title(<span class="string">'Static Rocking Curve incl. Static Substrate'</span>);
+legend(<span class="string">'kinematical'</span>, <span class="string">'dynamical'</span>);
+box <span class="string">on</span>;
+subplot(2,1,2);
+semilogy(theta/u.deg,Rdyn, <span class="string">'-r'</span>);
+ylim([1e-4 1]);
+xlim([23.2 23.28]);
+xlabel(<span class="string">'\theta [deg.]'</span>);
+ylabel(<span class="string">'Reflectivity'</span>);
+title(<span class="string">'Darwin Width'</span>);
+box <span class="string">on</span>;
+set(gca, <span class="string">'XMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'YMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'TickDir'</span>, <span class="string">'out'</span>);
+</pre><img vspace="5" hspace="5" src="XRDExample_02.png" alt=""> <h2>Initialize Heat Simulation<a name="8"></a></h2><pre class="codeinput">H = heat(S,forceRecalc);
+H.setCacheDir(cacheDir); <span class="comment">% set the cache directory</span>
+time        = (-10:0.1:40)*u.ps;
+fluence     = 20*u.mJ/u.cm^2;
+initTemp    = 300*u.K;
+</pre><h2>Excitation<a name="9"></a></h2><p>Calculate the temperature map after instantaneous excitation at <img src="XRDExample_eq21444.png" alt="$t=0$">. For the phonon simulations also the differential temperature map <i>deltaTempMap</i> in time is necessary:</p><pre class="codeinput">[tempMap deltaTempMap] = H.getTempMap(time,fluence,initTemp);
+</pre><pre class="codeoutput">_tempMap_ loaded from file .\cache\tempMap_be3805e09c8a88ad8091020d5693a1aa_246e954d5f98c4c69e562e4d29c1054c.mat
+</pre><p>plot the results:</p><pre class="codeinput">figure(3)
+plot(distances/u.nm,deltaTempMap(time == 0,:));
+xlabel(<span class="string">'z [nm]'</span>);
+ylabel(<span class="string">'\Delta T [K]'</span>);
+title(<span class="string">'Temperature profile after optical excitation'</span>);
+box <span class="string">on</span>;
+set(gca, <span class="string">'XMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'YMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'TickDir'</span>, <span class="string">'out'</span>);
+</pre><img vspace="5" hspace="5" src="XRDExample_03.png" alt=""> <h2>Initialize Phonon Simulation<a name="11"></a></h2><pre class="codeinput">P = phononNum(S,forceRecalc);
+P.setCacheDir(cacheDir); <span class="comment">% set the cache directory</span>
+</pre><p>Calculate coherent phonon dynamics (strainMap) providing the <i>time</i>, and temperature inputs of the heat simulation:</p><pre class="codeinput">strainMap = P.getStrainMap(time,tempMap,deltaTempMap);
+<span class="comment">% calculate a reduced number of strains per unique unit cell in order to</span>
+<span class="comment">% save computational time for the transient XRD simulation</span>
+strainVectors = P.getReducedStrainsPerUniqueUnitCell(strainMap);
+</pre><pre class="codeoutput">_strainMap_ loaded from file .\cache\strainMapNum_e526d78145e4f18c5abeb5cb94b1e39f_d5e9d90287eca05336cfa1a7e2a802b3.mat
+</pre><p>plot the results:</p><pre class="codeinput">figure(4)
+kk = surf(distances/u.nm,time/u.ps,strainMap);
+set(kk,<span class="string">'LineStyle'</span>, <span class="string">'none'</span>);
+xlabel(<span class="string">'z [nm]'</span>);
+ylabel(<span class="string">'Delay [ps]'</span>);
+title(<span class="string">'Strain - Coherent Phonon Dynamics'</span>);
+axis([distances(1)/u.nm distances(end)/u.nm time(1)/u.ps time(end)/u.ps])
+box <span class="string">on</span>; colorbar; colormap(fireice(255));
+caxis([-max(max(strainMap)) max(max(strainMap))]);
+set(gca, <span class="string">'XMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'YMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'TickDir'</span>, <span class="string">'out'</span>);
+</pre><img vspace="5" hspace="5" src="XRDExample_04.png" alt=""> <h2>Calculate transient XRD<a name="14"></a></h2><p>Reduce the number of angular steps, to save computational time</p><pre class="codeinput">theta = (22:0.01:24)*u.deg;
+D.setQzByTheta(theta);
+<span class="comment">% This is the parallel calculation of the transient XRD for the given</span>
+<span class="comment">% _strainMap_</span>
+R = D.getInhomogeneousReflectivity(strainMap,strainVectors);
+</pre><pre class="codeoutput">Caclulate all _refTransMatricies_ ...
+Elapsed time for _refTransMatricies_: 1.5985 seconds.
+_refTransMatrices_ saved to file .\cache\allRefTransMatrices_e44b86505a07decd34c166d64067e17d_1f1fa9019ee850b36a774a0d37b894e4.mat
+Calculating _inhomogenousReflectivity_ ...
+No matlab pool was opened in advance, so lets do it now with the default configuration!
+Starting matlabpool using the 'local' profile ... connected to 12 labs.
+Elapsed time for _inhomogeneousReflectivity_: 40.6552 seconds.
+_inhomogeneousReflectivity_ saved to file .\cache\inhomogeneousReflectivityDyn_e44b86505a07decd34c166d64067e17d_d7a6c739056a92e398143bdf17a06101.mat
+</pre><p>plot the results:</p><pre class="codeinput">figure(5)
+kk = surf(theta/u.deg,time/u.ps,log10(R));
+set(kk,<span class="string">'LineStyle'</span>, <span class="string">'none'</span>);
+colorbar; colormap(fireice(255));
+axis <span class="string">xy</span>;
+xlabel(<span class="string">'\theta [deg.]'</span>);
+ylabel(<span class="string">'Delay [ps]'</span>);
+title(<span class="string">'Transient X-ray Reflectivity'</span>);
+view(0,90); box <span class="string">on</span>;
+set(gca, <span class="string">'XMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'YMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'TickDir'</span>, <span class="string">'out'</span>);
+</pre><img vspace="5" hspace="5" src="XRDExample_05.png" alt=""> <p>convolute the results with an angular instrument function (Pseudo Voigt) and temporal instrument function (Gauss)</p><pre class="codeinput">instFunc = @(theta)(pseudo_voigt(theta,0.02*u.deg));
+Rconv = D.convWithInstrumentFunction(R,theta,instFunc);
+Rconv = D.convWithTemporalResolution(Rconv,time,1*u.ps);
+</pre><p>plot the convoluted results:</p><pre class="codeinput">figure(6)
+kk = surf(theta/u.deg,time/u.ps,log10(Rconv));
+set(kk,<span class="string">'LineStyle'</span>, <span class="string">'none'</span>);
+colorbar; colormap(fireice);
+axis <span class="string">xy</span>;
+xlabel(<span class="string">'\theta [deg.]'</span>);
+ylabel(<span class="string">'Delay [ps]'</span>);
+title(<span class="string">'Transient X-ray Reflectivity convoluted in \theta and Delay'</span>);
+view(0,90);
+box <span class="string">on</span>;
+set(gca, <span class="string">'XMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'YMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'TickDir'</span>, <span class="string">'out'</span>);
+</pre><img vspace="5" hspace="5" src="XRDExample_06.png" alt=""> <p class="footer"><br>
+      Published with MATLAB&reg; 7.14<br></p></div><!--
+##### SOURCE BEGIN #####
+%% XRD Example
+% In this example we show how to carry out XRD simulations for the static
+% and transient case.
+%
+% Before we can start a XRD simulation we need to build a sample
+% structure. For the transient XRD simulations also according lattice 
+% dynamics are necessary as input.
+%
+% Be sure to include all folders of the udkm1dsim toolbox to your MATLAB 
+% search path. Especially the _/parameters_ and _/helpers_ folders with all 
+% their subfolders.
+
+%%
+% here we clear the workspace and close all figures
+clear all;
+close all;
+% these are some units and constants we can use later on
+u            = units;
+const        = constants;
+%% Build a Sample Structure
+O   = atomBase('O');
+Ti  = atomBase('Ti');
+Sr  = atomBase('Sr');
+Ru  = atomBase('Ru');
+Pb  = atomBase('Pb');
+Zr  = atomBase('Zr');
+
+cSTOsub     = 3.905     *u.ang;
+cSRO        = 3.94897   *u.ang;
+svSRO       = 6.312     *u.nm/u.ps;
+svSTO       = 7.800     *u.nm/u.ps;
+
+propSRO.aAxis           = cSTOsub;              % aAxis
+propSRO.bAxis           = cSTOsub;              % bAxis
+propSRO.debWalFac       = 0;                    % Debye-Waller factor
+propSRO.soundVel        = svSRO;                % sound velocity
+propSRO.optPenDepth     = 43.8*u.nm;            % optical penetration depth
+propSRO.thermCond       = 5.72*u.W/(u.m *u.K);  % heat conductivity
+propSRO.linThermExp     = 1.03e-5;              % linear thermal expansion
+propSRO.heatCapacity    = @(T)(455.2 + 0.112.*T - 2.1935e6./T.^2);
+                                                % heat capacity [J/kg K]
+SRO = unitCell('SRO','SRO',cSRO,propSRO);
+SRO.addAtom(O,0);
+SRO.addAtom(Sr,0);
+SRO.addAtom(O,0.5);
+SRO.addAtom(O,0.5);
+SRO.addAtom(Ru,0.5);
+
+propSTOsub.aAxis           = cSTOsub;           % aAxis
+propSTOsub.bAxis           = cSTOsub;           % bAxis
+propSTOsub.debWalFac       = 0;                 % Debye-Waller factor
+propSTOsub.soundVel        = svSTO;             % sound velocity
+propSTOsub.optPenDepth     = Inf;               % optical penetration depth
+propSTOsub.thermCond       = 12*u.W/(u.m *u.K); % heat conductivity
+propSTOsub.linThermExp     = 1e-5;              % linear thermal expansion
+propSTOsub.heatCapacity    = @(T)(733.73 + 0.0248.*T - 6.531e6./T.^2);
+                                                % heat capacity [J/kg K]
+STOsub = unitCell('STOsub', 'STOsub', cSTOsub, propSTOsub);
+STOsub.addAtom(O,0);
+STOsub.addAtom(Sr,0);
+STOsub.addAtom(O,0.5);
+STOsub.addAtom(O,0.5);
+STOsub.addAtom(Ti,0.5);
+
+S = structure('Single Layer');
+S.addSubStructure(SRO,100);    % add 100 layers of SRO to sample
+S.addSubStructure(STOsub,1000);% add 1000 layers of STO substrate
+
+distances = S.getDistancesOfUnitCells();
+
+%% set the parameters for the XRD simulations
+forceRecalc     = false;
+cacheDir        = './cache';
+E               = 8047*u.eV; % X-ray energy
+pol             = 0.5; % mixed X-ray polarization
+theta           = (22:0.0001:24)*u.deg; % theta-range
+
+% initialize the kinematical XRD simulation
+K = XRDkin(S,forceRecalc,E,pol);
+K.setCacheDir(cacheDir); % set the cache directory 
+K.setQzByTheta(theta); % set the theta range
+% calculate the static rocking curve for the homogenous sample in 1 line
+Rkin = K.homogeneousReflectivity();
+
+% initialize the dynamical XRD simulation
+D = XRDdyn(S,forceRecalc,E,pol);
+D.setCacheDir(cacheDir); % set the cache directory
+D.setQzByTheta(theta); % set the theta range
+% calculate the static rocking curve for the homogenous sample in 1 line
+Rdyn = D.homogeneousReflectivity();
+%% Static Rocking Curves - thin sample
+% For the this sampple, both kinematical and dynamical XRD theory nealry
+% coincident. However, the slight offset of the two dataset is due to the
+% neglect of refraction in the kinematical model. The oscillations on both
+% curves are so-called Kiessig fringes which originate from the finite
+% thickness of the sample, which is smaller than the absorption/extinction
+% depth of the X-ray photons.
+figure(1);
+semilogy(theta/u.deg,Rkin, '-k'); hold on;
+semilogy(theta/u.deg,Rdyn, '-r');
+ylim([1e-7 1]);
+xlabel('\theta [deg.]');
+ylabel('Reflectivity');
+title('Static Rocking Curve');
+legend('kinematical', 'dynamical');
+set(gca, 'XMinorTick', 'on', 'YMinorTick', 'on', 'TickDir', 'out');
+
+%% Add static substrate
+% In order to simulate rocking curves of samples having a quasi-infinite
+% substrate, one can add such a static substrate to the sample structure as
+% an special substructure. This substrate substructure is not considered in
+% the _heat_ and _phonon_ simulations and only acts in XRD simulations.
+substrate = structure('STOsubstrate');
+substrate.addSubStructure(STOsub,100000);
+% add the substrate to the sample
+S.addSubstrate(substrate);
+
+%% Recalculate the static rocking curves
+Rkin = K.homogeneousReflectivity();
+Rdyn = D.homogeneousReflectivity();
+
+%% Static Rocking Curves - thick sample
+% Obviously, the kinematical simulation fails at maximum of the substrate
+% peak, since reflectivities greater than 1 are simulated. Furthermore, the
+% kinematical result still shows Kiessig fringes which are vanished in the
+% dynamical simulation. Both effects can be explained by the neglect of
+% absorption in the kinematical approach. However, only dynamical theory is
+% capable to calculate the Darwin width of the intensie subsrtate peak
+% correctly, which is observable in the strong zoom of this Bragg peak.
+figure(2);
+subplot(2,1,1);
+semilogy(theta/u.deg,Rkin, '-k'); hold on;
+semilogy(theta/u.deg,Rdyn, '-r');
+ylim([1e-7 10000]);
+xlabel('\theta [deg.]');
+ylabel('Reflectivity');
+title('Static Rocking Curve incl. Static Substrate');
+legend('kinematical', 'dynamical');
+box on;
+subplot(2,1,2);
+semilogy(theta/u.deg,Rdyn, '-r');
+ylim([1e-4 1]);
+xlim([23.2 23.28]);
+xlabel('\theta [deg.]');
+ylabel('Reflectivity');
+title('Darwin Width');
+box on;
+set(gca, 'XMinorTick', 'on', 'YMinorTick', 'on', 'TickDir', 'out');
+
+%% Initialize Heat Simulation
+H = heat(S,forceRecalc);
+H.setCacheDir(cacheDir); % set the cache directory
+time        = (-10:0.1:40)*u.ps;
+fluence     = 20*u.mJ/u.cm^2;
+initTemp    = 300*u.K;
+
+%% Excitation
+% Calculate the temperature map after instantaneous excitation at $t=0$.
+% For the phonon simulations also the differential temperature map 
+% _deltaTempMap_ in time is necessary:
+[tempMap deltaTempMap] = H.getTempMap(time,fluence,initTemp);
+%%
+% plot the results:
+figure(3)
+plot(distances/u.nm,deltaTempMap(time == 0,:));
+xlabel('z [nm]');
+ylabel('\Delta T [K]');
+title('Temperature profile after optical excitation');
+box on;
+set(gca, 'XMinorTick', 'on', 'YMinorTick', 'on', 'TickDir', 'out');
+
+%% Initialize Phonon Simulation
+P = phononNum(S,forceRecalc);
+P.setCacheDir(cacheDir); % set the cache directory
+%% 
+% Calculate coherent phonon dynamics (strainMap) providing the _time_, and 
+% temperature inputs of the heat simulation:
+strainMap = P.getStrainMap(time,tempMap,deltaTempMap);
+% calculate a reduced number of strains per unique unit cell in order to
+% save computational time for the transient XRD simulation
+strainVectors = P.getReducedStrainsPerUniqueUnitCell(strainMap);
+%%
+% plot the results:
+figure(4)
+kk = surf(distances/u.nm,time/u.ps,strainMap);
+set(kk,'LineStyle', 'none');
+xlabel('z [nm]');
+ylabel('Delay [ps]');
+title('Strain - Coherent Phonon Dynamics');
+axis([distances(1)/u.nm distances(end)/u.nm time(1)/u.ps time(end)/u.ps])
+box on; colorbar; colormap(fireice(255));
+caxis([-max(max(strainMap)) max(max(strainMap))]);
+set(gca, 'XMinorTick', 'on', 'YMinorTick', 'on', 'TickDir', 'out');
+
+%% Calculate transient XRD
+% Reduce the number of angular steps, to save computational time
+theta = (22:0.01:24)*u.deg;
+D.setQzByTheta(theta);
+% This is the parallel calculation of the transient XRD for the given 
+% _strainMap_ 
+R = D.getInhomogeneousReflectivity(strainMap,strainVectors);
+
+%%
+% plot the results:
+figure(5)
+kk = surf(theta/u.deg,time/u.ps,log10(R));
+set(kk,'LineStyle', 'none');
+colorbar; colormap(fireice(255));
+axis xy;
+xlabel('\theta [deg.]');
+ylabel('Delay [ps]');
+title('Transient X-ray Reflectivity');
+view(0,90); box on;
+set(gca, 'XMinorTick', 'on', 'YMinorTick', 'on', 'TickDir', 'out');
+
+%%
+% convolute the results with an angular instrument function (Pseudo Voigt)
+% and temporal instrument function (Gauss)
+instFunc = @(theta)(pseudo_voigt(theta,0.02*u.deg));
+Rconv = D.convWithInstrumentFunction(R,theta,instFunc);
+Rconv = D.convWithTemporalResolution(Rconv,time,1*u.ps);
+
+%%
+% plot the convoluted results:
+figure(6)
+kk = surf(theta/u.deg,time/u.ps,log10(Rconv));
+set(kk,'LineStyle', 'none');
+colorbar; colormap(fireice);
+axis xy;
+xlabel('\theta [deg.]');
+ylabel('Delay [ps]');
+title('Transient X-ray Reflectivity convoluted in \theta and Delay');
+view(0,90);
+box on;
+set(gca, 'XMinorTick', 'on', 'YMinorTick', 'on', 'TickDir', 'out');
+##### SOURCE END #####
+--></body></html>

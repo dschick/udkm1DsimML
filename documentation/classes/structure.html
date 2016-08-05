@@ -1,0 +1,1187 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>structure</title><meta name="generator" content="MATLAB 7.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-07-31"><meta name="DC.source" content="structure.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+
+  </style></head><body><div class="content"><h1>structure</h1><!--introduction--><p>The structure class can hold various substructures. Each substructure can be either a layer of N unitCell objects or a structure by itself. Thus it is possible to recursively build up 1D structures</p><p>Copyright (c) 2013, Daniel Schick, Andr&eacute; Bojahr, Marc Herzog, Roman Shayduk, Clemens von Korff Schmising All rights reserved.</p><p>License: BSD (use/copy/change/redistribute on own risk, mention the authors)</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Classdef</a></li><li><a href="#2">Properties</a></li><li><a href="#3">Constructor</a></li><li><a href="#4">disp</a></li><li><a href="#5">displayTab</a></li><li><a href="#6">visualize</a></li><li><a href="#7">getHash</a></li><li><a href="#8">Build Structure from Object</a></li><li><a href="#9">addSubStructure</a></li><li><a href="#10">addSubstrate</a></li><li><a href="#11">Build Structure from XML Struct</a></li><li><a href="#12">buildStructureFromXML</a></li><li><a href="#13">buildAtomsFromXMLStruct</a></li><li><a href="#14">buildUnitCellsFromXMLStruct</a></li><li><a href="#15">addSubstructuresFromXMLStruct</a></li><li><a href="#16">addSubstrateFromXMLStruct</a></li><li><a href="#17">Returns Properties of Structure</a></li><li><a href="#18">getNumberOfSubStructures</a></li><li><a href="#19">getNumberOfUnitCells</a></li><li><a href="#20">getNumberOfUniqueUnitCells</a></li><li><a href="#21">getLength</a></li><li><a href="#22">getUniqueUnitCells</a></li><li><a href="#23">getUnitCellVectors</a></li><li><a href="#24">getAllPositionsPerUniqueUnitCell</a></li><li><a href="#25">getDistancesOfUnitCells</a></li><li><a href="#26">getDistancesOfInterfaces</a></li><li><a href="#27">interpDistanceAtInterfaces</a></li><li><a href="#28">getUnitCellPropertyVector</a></li><li><a href="#29">getUnitCellHandle</a></li></ul></div><h2>Classdef<a name="1"></a></h2><p>Each structure instance and all inherited class objects follow handle semantics. Hence a copy of such object will not copy the object itself, but only a handle to that object.</p><pre class="codeinput"><span class="keyword">classdef</span> structure &lt; handle
+</pre><h2>Properties<a name="2"></a></h2><pre class="codeinput">    properties (SetAccess=public,GetAccess=public)
+        name                <span class="comment">% STRING name of sample</span>
+        substructures = {}; <span class="comment">% CELL ARRAY of structures in sample</span>
+        substrate           <span class="comment">% OBJECT HANDLE structure of the substrate</span>
+        numSubSystems = 1;  <span class="comment">% INTEGER number of subsystems for heat and phonons (electronic, lattice, spins, ...)</span>
+    <span class="keyword">end</span><span class="comment">%properties</span>
+    <span class="comment">%%Methods</span>
+    methods
+</pre><h2>Constructor<a name="3"></a></h2><p>Is executed each time an instance of this class is created. Only the <i>name</i> input is obligatory. If you input a valid path to an xml structure definition file, the structure is automatically loaded form this xml file. Also the name is taken from the xml file and the first input of the constructor method becomes unneccessary.</p><pre class="codeinput">        <span class="keyword">function</span> obj = structure(name,varargin)
+            <span class="comment">% initialize input parser and define defaults and validators</span>
+            p = inputParser;
+            p.addRequired(<span class="string">'name'</span>        , @ischar);
+            p.addOptional(<span class="string">'xmlPath'</span>,<span class="string">''</span>  , @ischar);
+            <span class="comment">% parse the input</span>
+            p.parse(name,varargin{:});
+            <span class="comment">% assign parser results to object properties</span>
+            obj.name    = p.Results.name;
+            <span class="keyword">if</span> ~isempty(p.Results.xmlPath)
+                <span class="comment">% an _xmlPath_ is given so we build the structure from the</span>
+                <span class="comment">% xml structure file.</span>
+                obj.buildStructureFromXML(p.Results.xmlPath);
+            <span class="keyword">end</span><span class="comment">%if</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>disp<a name="4"></a></h2><p>This is just a wrapper to call the display function displayTab, because, the disp method does not accept input parameters.</p><pre class="codeinput">        <span class="keyword">function</span> disp(obj)
+            obj.displayTab();
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>displayTab<a name="5"></a></h2><p>This method is called to display informations of the instance. If an integer input is given the output is tabbed by this amount. This is used for nested structures.</p><pre class="codeinput">        <span class="keyword">function</span> displayTab(obj,tabs)
+            <span class="comment">% check for the numbers of tabs added at the beginning</span>
+            <span class="keyword">if</span> nargin &lt; 2
+                tabs = 0;
+            <span class="keyword">end</span><span class="comment">%if</span>
+            tabstr = <span class="string">''</span>;
+            <span class="keyword">for</span> i = 1:tabs
+                tabstr = strcat(tabstr, <span class="string">'\t'</span>);
+            <span class="keyword">end</span><span class="comment">%for</span>
+            <span class="comment">% plot the properties</span>
+            fprintf([tabstr <span class="string">'Structure properties:\n'</span>]);
+            fprintf([tabstr <span class="string">'Name  : %s\n'</span>], obj.name);
+            fprintf([tabstr <span class="string">'Length: %0.2f nm\n'</span>], obj.getLength()/units.nm);
+            fprintf([tabstr <span class="string">'----\n'</span>]);
+            <span class="comment">% traverse all substructures</span>
+            <span class="keyword">for</span> i = 1:size(obj.substructures,1)
+                <span class="keyword">if</span> isa(obj.substructures{i,1},<span class="string">'unitCell'</span>)
+                    <span class="comment">% the substructure is an unitCell</span>
+                    fprintf([tabstr <span class="string">'%d times %s: %0.2f nm\n'</span>], obj.substructures{i,2},<span class="keyword">...</span>
+                        obj.substructures{i,1}.name, obj.substructures{i,2}*obj.substructures{i,1}.cAxis/units.nm);
+                <span class="keyword">else</span>
+                    <span class="comment">% the substructure is a structure instance by itself</span>
+                    <span class="comment">% call the display() method recursively</span>
+                    fprintf([tabstr <span class="string">'SubStructure %d times:\n'</span>],<span class="keyword">...</span>
+                        obj.substructures{i,2});
+                    obj.substructures{i,1}.displayTab(tabs+1);
+                <span class="keyword">end</span><span class="comment">%if</span>
+            <span class="keyword">end</span><span class="comment">%for</span>
+            fprintf([tabstr <span class="string">'----\n'</span>]);
+            <span class="comment">% check for a substrate</span>
+            <span class="keyword">if</span> isa(obj.substrate,<span class="string">'structure'</span>)
+                fprintf([tabstr <span class="string">'Substrate:\n'</span>]);
+                fprintf([tabstr <span class="string">'----\n'</span>]);
+                fprintf([tabstr <span class="string">'%d times %s: %0.2f nm\n'</span>], obj.substrate.substructures{1,2},<span class="keyword">...</span>
+                    obj.substrate.substructures{1,1}.name, <span class="keyword">...</span>
+                    obj.substrate.substructures{1,2}*obj.substrate.substructures{1,1}.cAxis/units.nm);
+            <span class="keyword">end</span><span class="comment">%if</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>visualize<a name="6"></a></h2><p>plots the atoms in the unitCell for a given strain. You can input a figure handle.</p><pre class="codeinput">        <span class="keyword">function</span> visualize(obj,varargin)
+            <span class="comment">% initialize input parser and define defaults and validators</span>
+            p = inputParser;
+            p.addRequired(<span class="string">'obj'</span>      , @(x)isa(x,<span class="string">'structure'</span>));
+            p.addParamValue(<span class="string">'handle'</span>, <span class="string">''</span>, @ishandle);
+            <span class="comment">% parse the input</span>
+            p.parse(obj,varargin{:});
+            <span class="comment">% assign parser results to object properties</span>
+            <span class="keyword">if</span> isempty(p.Results.handle)
+                h = figure;
+            <span class="keyword">else</span>
+                h = p.Results.handle;
+            <span class="keyword">end</span><span class="comment">%if</span>
+            a = obj.getUniqueUnitCells();
+            N = size(a,1);
+            figure(h);
+            distances = obj.getDistancesOfUnitCells/units.nm;
+            stairs(distances,obj.getUnitCellVectors, <span class="string">'LineWidth'</span>, 2);
+            axis([min(distances) max(distances) 0.9 length(obj.getUniqueUnitCells)+0.1]);
+            xlabel(<span class="string">'Distance [nm]'</span>);
+            title(<span class="string">'Structure Visualization'</span>);
+            set(gca,<span class="string">'YTick'</span>,1:N,<span class="string">'YTickLabel'</span>, a(:,1));
+        <span class="keyword">end</span>
+</pre><h2>getHash<a name="7"></a></h2><p>Returns a unique hash from all unitCell IDs in the correct order in the structure.</p><pre class="codeinput">        <span class="keyword">function</span> hash = getHash(obj,varargin)
+            UCs = obj.getUniqueUnitCells();
+            param = cell(size(UCs,1),1);
+            <span class="keyword">for</span> i=1:size(UCs,1)
+                param{i} = UCs{i,2}.getPropertyStruct(varargin{:});
+            <span class="keyword">end</span><span class="comment">%for</span>
+            [~, IDs] = obj.getUnitCellVectors();
+            param(end+1) = {IDs};
+            <span class="comment">% dataHash is an external function</span>
+            hash = dataHash(param);
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>Build Structure from Object<a name="8"></a></h2><h2>addSubStructure<a name="9"></a></h2><p>Add a substructure of N unitCells or N structures to the structure.</p><pre class="codeinput">        <span class="keyword">function</span> addSubStructure(obj,subStructure,N)
+            <span class="comment">% check of the substructure is an instance of the unitCell of</span>
+            <span class="comment">% structure class</span>
+            <span class="keyword">if</span> ~isa(subStructure,<span class="string">'unitCell'</span>) &amp;&amp; ~isa(subStructure,<span class="string">'structure'</span>)
+                error([<span class="string">'Class '</span> class(subStructure) <span class="string">' is no possible sub structure. Only unitCell and structure classes are allowed!'</span>]);
+            <span class="keyword">end</span><span class="comment">%if</span>
+            <span class="comment">% if a structure is added as a substructrue, the substructure</span>
+            <span class="comment">% can not have a substrate!</span>
+            <span class="keyword">if</span> isa(subStructure,<span class="string">'structure'</span>)
+                <span class="keyword">if</span> ~isempty(subStructure.substrate)
+                    error(<span class="string">'No substrate in substructure allowed!'</span>);
+                <span class="keyword">end</span><span class="comment">%if</span>
+            <span class="keyword">end</span><span class="comment">%if</span>
+            <span class="comment">% check the number of subsystems of the substructure</span>
+            <span class="keyword">if</span> obj.numSubSystems &gt; 1 &amp;&amp; subStructure.numSubSystems ~= obj.numSubSystems
+                error(<span class="string">'The number of subsystems in each substructure must be the same!'</span>);
+            <span class="keyword">else</span>
+                obj.numSubSystems = subStructure.numSubSystems;
+            <span class="keyword">end</span><span class="comment">%if</span>
+            <span class="comment">% add a substructure of N repetitions to the structure with</span>
+            obj.substructures(end+1,:) =  {subStructure N};
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>addSubstrate<a name="10"></a></h2><p>Add a structure as static substrate to the structure</p><pre class="codeinput">        <span class="keyword">function</span> addSubstrate(obj,subStructure)
+            <span class="keyword">if</span> ~isa(subStructure,<span class="string">'structure'</span>)
+                error([<span class="string">'Class '</span> class(subStructure) <span class="string">' is no possible substrate. Only structure class is allowed!'</span>]);
+            <span class="keyword">end</span><span class="comment">%if</span>
+            obj.substrate =  subStructure;
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>Build Structure from XML Struct<a name="11"></a></h2><h2>buildStructureFromXML<a name="12"></a></h2><p>The xml structure definition file given vy the <i>xmlPath</i> is parsed by the <i>xml_read</i> function (MATLAB Central) and all required objects for the structure are created and finally added to the structure. There is a bug in the original xml_read function from the xml_io_tools lib: you have to replace the line 452 with the following: digits = '(Inf)|(NaN)|(pi)|[\t\n\d\+\-\*\.ei EI\;\,]'; Otherwise arrays are not parsed correctley.</p><pre class="codeinput">        <span class="keyword">function</span> buildStructureFromXML(obj,xmlPath)
+            <span class="comment">% parse the xml structure file</span>
+            s_sample = xml_read(xmlPath);
+            obj.name = s_sample.ATTRIBUTE.name; <span class="comment">% set the name of the structure</span>
+            <span class="comment">% build the atoms from the xml struct</span>
+            disp([<span class="string">'Building Sample: '</span> s_sample.ATTRIBUTE.name <span class="string">' from File'</span>]);
+            disp(<span class="string">'Loading Atoms into Workspace...'</span>);
+            obj.buildAtomsFromXMLStruct(s_sample.atoms);
+            disp(<span class="string">'... Atoms loaded!'</span>);
+            <span class="comment">% build the unit cells from the xml struct</span>
+            disp(<span class="string">'Loading UnitCells into Workspace...'</span>);
+            obj.buildUnitCellsFromXMLStruct(s_sample.unitCells);
+            disp(<span class="string">'... UnitCells loaded!'</span>);
+            <span class="comment">% add the substructures to the structure (recursive method)</span>
+            disp(<span class="string">'Building Substructures ...'</span>);
+            obj.addSubStructuresFromXMLStruct(s_sample.structure.substructure);
+            disp(<span class="string">'... Substructures built!'</span>);
+            <span class="comment">% check if substrate has to be added</span>
+            <span class="keyword">if</span> isfield(s_sample, <span class="string">'substrate'</span>)
+                <span class="comment">% add the substrate from the xml struct</span>
+                obj.addSubstrateFromXMLStruct(s_sample.substrate);
+                disp(<span class="string">'Substrate added!'</span>);
+            <span class="keyword">end</span><span class="comment">%if</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>buildAtomsFromXMLStruct<a name="13"></a></h2><p>From the <i>atoms</i> field in the xml struct <i>atomBase</i> and <i>atomMixed</i> objects are created in the <i>base workspace</i> and their IDs are returned.</p><pre class="codeinput">        <span class="keyword">function</span> atomIDs = buildAtomsFromXMLStruct(obj,s_atoms)
+            <span class="comment">% build all atomBase objects from atoms struct</span>
+            s_atomsBase = s_atoms.atom;
+            atomIDs = cell(length(s_atomsBase),1);
+            <span class="keyword">for</span> i=1:length(s_atomsBase)
+                <span class="comment">% get attributes of atomBase</span>
+                attributes = s_atomsBase(i).ATTRIBUTE;
+                <span class="comment">% first set the required fields</span>
+                symbol = attributes.symbol;
+                <span class="comment">% now remove the required fields from the rest of the</span>
+                <span class="comment">% attributes</span>
+                required_fields = {<span class="string">'symbol'</span>};
+                attributes = rmfield(attributes, required_fields);
+                <span class="comment">% create the atomBase object and assign it to the base</span>
+                <span class="comment">% workspace</span>
+                atomBaseObject = atomBase(symbol,attributes);
+                ID = atomBaseObject.ID;
+                assignin(<span class="string">'base'</span>, ID, atomBaseObject);
+                atomIDs(i) = {ID}; <span class="comment">% add the atomBase ID to the output array</span>
+            <span class="keyword">end</span><span class="comment">%for</span>
+            clear <span class="string">atomBaseObject</span>;
+            <span class="comment">% check for mixed atoms</span>
+            <span class="keyword">if</span> isfield(s_atoms, <span class="string">'atomMixed'</span>)
+                <span class="comment">% build all atomMixed objects from atoms struct</span>
+                s_atomsMixed = s_atoms.atomMixed;
+                <span class="keyword">for</span> i=1:length(s_atomsMixed)
+                    <span class="comment">% get attributes of atomMixed</span>
+                    attributes = s_atomsMixed(i).ATTRIBUTE;
+                    <span class="comment">% first set the required fields</span>
+                    symbol = attributes.symbol;
+                    <span class="comment">% now remove the required fields from the rest of the</span>
+                    <span class="comment">% attributes</span>
+                    required_fields = {<span class="string">'symbol'</span>};
+                    attributes = rmfield(attributes, required_fields);
+                    <span class="comment">% create the atomMixed object, add the corresponding</span>
+                    <span class="comment">% atomBase objects and their fractions, and assign it</span>
+                    <span class="comment">% to the base workspace</span>
+                    atomMixedObject = atomMixed(symbol,attributes);
+                    ID = atomMixedObject.ID;
+                    <span class="comment">% traverse constituents of a mixed atom</span>
+                    <span class="keyword">for</span> j=1:length(s_atomsMixed(i).atom)
+                        atomMixedObject.addAtom(<span class="keyword">...</span>
+                            evalin(<span class="string">'base'</span>,s_atomsMixed(i).atom(j).ATTRIBUTE.ID),<span class="keyword">...</span>
+                            s_atomsMixed(i).atom(j).ATTRIBUTE.fraction);
+                    <span class="keyword">end</span><span class="comment">%for</span>
+                    assignin(<span class="string">'base'</span>, ID, atomMixedObject);
+                    <span class="comment">% add the atomMixed ID to the output array</span>
+                    atomIDs(end+1) = {ID};
+                <span class="keyword">end</span><span class="comment">%for</span>
+                clear <span class="string">atomMixedObject</span>;
+            <span class="keyword">end</span><span class="comment">%if</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>buildUnitCellsFromXMLStruct<a name="14"></a></h2><p>From the <i>unitCells</i> field in the xml struct <i>unitCells</i> objects are created in the <i>base workspace</i> and their IDs are returned.</p><pre class="codeinput">        <span class="keyword">function</span> unitCellIDs = buildUnitCellsFromXMLStruct(obj,unitCellsStruct)
+            s_unitCells = unitCellsStruct.unitCell;
+            unitCellIDs = cell(length(s_unitCells),1);
+            <span class="keyword">for</span> i=1:length(s_unitCells)
+                <span class="comment">% get attributes of the unitCell</span>
+                attributes = s_unitCells(i).ATTRIBUTE;
+                <span class="comment">% first set the required fields</span>
+                ID = attributes.ID;
+                nameUC = attributes.name;
+                cAxis = attributes.cAxis;
+                <span class="comment">% now remove the required fields from the rest of the</span>
+                <span class="comment">% attributes</span>
+                required_fields = {<span class="string">'name'</span>, <span class="string">'ID'</span>, <span class="string">'cAxis'</span>};
+                attributes = rmfield(attributes, required_fields);
+                <span class="comment">% create the unitCell object with all optinal parameters as</span>
+                <span class="comment">% name/value pair; add the corresponding</span>
+                <span class="comment">% atom objects and their postions; and assign it</span>
+                <span class="comment">% to the base workspace</span>
+                unitCellObject = unitCell(ID,nameUC,cAxis,attributes);
+                ID = unitCellObject.ID;
+                <span class="keyword">for</span> j=1:length(s_unitCells(i).atom)
+                    <span class="comment">% add atom to unitCell</span>
+                    unitCellObject.addAtom(<span class="keyword">...</span>
+                        evalin(<span class="string">'base'</span>,s_unitCells(i).atom(j).ATTRIBUTE.ID),<span class="keyword">...</span>
+                        s_unitCells(i).atom(j).ATTRIBUTE.position);
+                <span class="keyword">end</span><span class="comment">%for</span>
+                assignin(<span class="string">'base'</span>, ID, unitCellObject);
+                <span class="comment">% add the unitCell ID to the output array</span>
+                unitCellIDs(i) = {ID};
+            <span class="keyword">end</span><span class="comment">%for</span>
+            clear <span class="string">unitCellObject</span>;
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>addSubstructuresFromXMLStruct<a name="15"></a></h2><p><i>Recursive Method</i> - builds substructures from the given xml struct and add them to the structureObj.</p><pre class="codeinput">        <span class="keyword">function</span> addSubStructuresFromXMLStruct(obj,s_substructures,structureObj)
+            <span class="comment">% if no structureObj is given this is the first recursion layer</span>
+            <span class="comment">% and we assign the callign structure object itself</span>
+            <span class="keyword">if</span> nargin &lt; 3
+                structureObj = obj;
+            <span class="keyword">end</span><span class="comment">%if</span>
+            <span class="comment">% traverse the substructure struct</span>
+            <span class="keyword">for</span> i=1:length(s_substructures)
+                <span class="comment">% get the number of repetitions of the substructre</span>
+                N = s_substructures(i).ATTRIBUTE.N;
+                <span class="keyword">if</span> isfield(s_substructures(i),<span class="string">'substructure'</span>)<span class="keyword">...</span>
+                       &amp;&amp; ~isempty(s_substructures(i).substructure)
+                    <span class="comment">% this substructure is a structure object itself</span>
+                    nameS = s_substructures(i).ATTRIBUTE.name;
+                    <span class="comment">% create the structure object of the substructre</span>
+                    substructureObject = structure(nameS);
+                    <span class="comment">% recursive call to add layers and/or substructures to</span>
+                    <span class="comment">% the substructre</span>
+                    obj.addSubStructuresFromXMLStruct(<span class="keyword">...</span>
+                       s_substructures(i).substructure,substructureObject);
+
+                    <span class="comment">% add the substructre to the given structure object</span>
+                    structureObj.addSubStructure(substructureObject,N);
+                    <span class="comment">% assign the substructure structure object to the _base</span>
+                    <span class="comment">% workspace_</span>
+                    assignin(<span class="string">'base'</span>, genvarname(nameS), substructureObject);
+                    clear <span class="string">substructureObject</span>;
+               <span class="keyword">else</span>
+                    <span class="comment">% this substructure is a simple layer</span>
+                    structureObj.addSubStructure(<span class="keyword">...</span>
+                        evalin(<span class="string">'base'</span>,s_substructures(i).ATTRIBUTE.unitCellID),N);
+                <span class="keyword">end</span><span class="comment">%if</span>
+            <span class="keyword">end</span><span class="comment">%for</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>addSubstrateFromXMLStruct<a name="16"></a></h2><p>Adds a simple substrate made of a single layer of N unitCells from the substrate struct to the structure.</p><pre class="codeinput">        <span class="keyword">function</span> addSubstrateFromXMLStruct(obj,substrate)
+            <span class="comment">% create the substrate structre object</span>
+            substrateObject = structure(<span class="string">'substrate'</span>);
+            <span class="comment">% add the N unitCells to the substrate</span>
+            substrateObject.addSubStructure(<span class="keyword">...</span>
+                evalin(<span class="string">'base'</span>,substrate.ATTRIBUTE.unitCellID),<span class="keyword">...</span>
+                substrate.ATTRIBUTE.N);
+            <span class="comment">% add the substrate structure object to the _base workspace_</span>
+            <span class="comment">% and add it to the structure</span>
+            assignin(<span class="string">'base'</span>, <span class="string">'substrate'</span>, substrateObject);
+            obj.addSubstrate(substrateObject);
+            clear <span class="string">substrateObject</span>;
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>Returns Properties of Structure<a name="17"></a></h2><h2>getNumberOfSubStructures<a name="18"></a></h2><p>Returns the number of all sub structures. This methods does not return the number of all unitCells in the structure, see getNumberOfUnitCells().</p><pre class="codeinput">        <span class="keyword">function</span> N = getNumberOfSubStructures(obj)
+            N = 0;
+            <span class="comment">%traverse the substructres</span>
+            <span class="keyword">for</span> i = 1:size(obj.substructures,1)
+                <span class="keyword">if</span> isa(obj.substructures{i,1},<span class="string">'unitCell'</span>)
+                    <span class="comment">% its a unitCell so add 1</span>
+                    N = N+1;
+                <span class="keyword">else</span>
+                    <span class="comment">% its a sturcture, so call the method recursively</span>
+                    N = N + obj.substructures{i,1}.getNumberOfSubStructures();
+                <span class="keyword">end</span><span class="comment">%if</span>
+            <span class="keyword">end</span><span class="comment">%for</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>getNumberOfUnitCells<a name="19"></a></h2><p>Returns the number of all unitCells in the structure.</p><pre class="codeinput">        <span class="keyword">function</span> N = getNumberOfUnitCells(obj)
+            N = 0;
+            <span class="comment">%traverse the substructres</span>
+            <span class="keyword">for</span> i = 1:size(obj.substructures,1)
+                <span class="keyword">if</span> isa(obj.substructures{i,1},<span class="string">'unitCell'</span>)
+                    <span class="comment">% its a unitCell so add m unitCells</span>
+                    N = N + obj.substructures{i,2};
+                <span class="keyword">else</span>
+                    <span class="comment">% its a sturcture, so call the method recursively</span>
+                    N = N + obj.substructures{i,1}.getNumberOfUnitCells()<span class="keyword">...</span>
+                        *obj.substructures{i,2};
+                <span class="keyword">end</span><span class="comment">%if</span>
+            <span class="keyword">end</span><span class="comment">%for</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>getNumberOfUniqueUnitCells<a name="20"></a></h2><p>Returns the number of unique unitCells in the structure.</p><pre class="codeinput">        <span class="keyword">function</span> N = getNumberOfUniqueUnitCells(obj)
+            N = size(obj.getUniqueUnitCells(),1);
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>getLength<a name="21"></a></h2><p>Retruns the length from surface to bottom of the structure</p><pre class="codeinput">        <span class="keyword">function</span> L = getLength(obj)
+           [~, dEnd] = obj.getDistancesOfUnitCells();
+           L = dEnd(end);
+        <span class="keyword">end</span>
+</pre><h2>getUniqueUnitCells<a name="22"></a></h2><p>Returns a cell array of IDs and handles of all unique unitCell instances in the structure. The uniqueness is determined by the ID of each unitCell instance.</p><pre class="codeinput">        <span class="keyword">function</span> UCs = getUniqueUnitCells(obj)
+            UCs = {}; <span class="comment">% {:,1} IDs as STRINGS, {:,2} OBJECT UnitCell Handle</span>
+            <span class="comment">%traverse the substructres</span>
+            <span class="keyword">for</span> i = 1:size(obj.substructures,1)
+                <span class="keyword">if</span> isa(obj.substructures{i,1},<span class="string">'unitCell'</span>)
+                    <span class="comment">% its a UnitCell</span>
+                    ID = obj.substructures{i,1}.ID;
+                    <span class="keyword">if</span> isempty(UCs)
+                        <span class="comment">% the cell array is empty at the beginning so add</span>
+                        <span class="comment">% the first unitCell</span>
+                        UCs{1,1} = ID;
+                        UCs{1,2} = obj.substructures{i,1};
+                    <span class="keyword">else</span>
+                        <span class="comment">% the cell array is not empty so check if the ID is</span>
+                        <span class="comment">% already in the UCs ID vector</span>
+                        <span class="keyword">if</span> sum(strcmp(ID,UCs(:,1))) == 0
+                            <span class="comment">% ID not in list, so add it</span>
+                            UCs = vertcat(UCs,{ID obj.substructures{i,1}});
+                        <span class="keyword">end</span><span class="comment">%if</span>
+                    <span class="keyword">end</span><span class="comment">%if</span>
+                <span class="keyword">else</span>
+                    <span class="comment">% its a substructure</span>
+                    <span class="keyword">if</span> isempty(UCs)
+                        <span class="comment">% the cell array is empty at the beginning so call</span>
+                        <span class="comment">% the method recursively and add the result to the</span>
+                        <span class="comment">% UCs array</span>
+                        UCs = obj.substructures{i,1}.getUniqueUnitCells();
+                    <span class="keyword">else</span>
+                        <span class="comment">% the cell array is not empty so check if the IDs</span>
+                        <span class="comment">% from the recursive call are already in the UCs ID</span>
+                        <span class="comment">% vector.</span>
+                        temp = obj.substructures{i,1}.getUniqueUnitCells();
+                        <span class="keyword">for</span> j = 1:length(temp(:,1))
+                           <span class="comment">% check all IDs from recursive call</span>
+                           <span class="keyword">if</span> sum(strcmp(temp{j,1},UCs(:,1))) == 0
+                               <span class="comment">% IDs not in list, so add them</span>
+                               UCs = vertcat(UCs,temp(j,:));
+                           <span class="keyword">end</span><span class="comment">%if</span>
+                        <span class="keyword">end</span><span class="comment">%for</span>
+                    <span class="keyword">end</span><span class="comment">%if</span>
+                <span class="keyword">end</span><span class="comment">%if</span>
+            <span class="keyword">end</span><span class="comment">%for</span>
+        <span class="keyword">end</span><span class="comment">% function</span>
+</pre><h2>getUnitCellVectors<a name="23"></a></h2><p>Returns three vectors with the numeric index of all unit cells in a structure given by the getUniqueUnitCells() method and addidionally vectors with the IDs and Handles of the corresponding unitCell instances. The list and order of the unique unitCells can be either handed as an input parameter or is requested at the beginning.</p><pre class="codeinput">        <span class="keyword">function</span> [Indices IDs Handles] = getUnitCellVectors(obj,UCs)
+            Indices = [];
+            IDs = {};
+            Handles = {};
+            <span class="comment">% if no UCs (UniqueUnitCells) are given, we have to get them</span>
+            <span class="keyword">if</span> nargin &lt; 2
+                UCs = obj.getUniqueUnitCells();
+            <span class="keyword">end</span><span class="comment">%if</span>
+            <span class="comment">%traverse the substructres</span>
+            <span class="keyword">for</span> i = 1:size(obj.substructures,1)
+                <span class="keyword">if</span> isa(obj.substructures{i,1},<span class="string">'unitCell'</span>)
+                    <span class="comment">% its a UnitCell</span>
+                    <span class="comment">% find the index of the current UC ID in the unique</span>
+                    <span class="comment">% unitCell vector</span>
+                    Index = find(strcmp(UCs(:,1),obj.substructures{i,1}.ID));
+                    <span class="comment">% add the index N times to the Indices vector</span>
+                    Indices = vertcat(Indices, Index*ones(obj.substructures{i,2},1));
+                    <span class="comment">% create a cell array of N unitCell IDs and add them to</span>
+                    <span class="comment">% the IDs cell array</span>
+                    temp = cell(obj.substructures{i,2},1);
+                    temp(:,1) = {obj.substructures{i,1}.ID};
+                    IDs = vertcat(IDs, temp);
+                    <span class="comment">% create a cell array of N unitCell handles and add them to</span>
+                    <span class="comment">% the Handles cell array</span>
+                    temp = cell(obj.substructures{i,2},1);
+                    temp(:,1) = {obj.substructures{i,1}};
+                    Handles = vertcat(Handles, temp);
+                <span class="keyword">else</span>
+                    <span class="comment">% its a structure</span>
+                    <span class="comment">% make a recursive call and hand in the same unique</span>
+                    <span class="comment">% unit cell vector as we used before</span>
+                    [temp1 temp2 temp3] = obj.substructures{i,1}.getUnitCellVectors(UCs);
+                    temp11 = [];
+                    temp22 = {};
+                    temp33 = {};
+                    <span class="comment">% concat the temporary arrays N times</span>
+                    <span class="keyword">for</span> j = 1:obj.substructures{i,2}
+                        temp11 = vertcat(temp11, temp1);
+                        temp22 = vertcat(temp22, temp2);
+                        temp33 = vertcat(temp33, temp3);
+                    <span class="keyword">end</span><span class="comment">%for</span>
+                    <span class="comment">% add the temporary arrays to the outputs</span>
+                    Indices = vertcat(Indices, temp11);
+                    IDs = vertcat(IDs, temp22);
+                    Handles = vertcat(Handles, temp33);
+                <span class="keyword">end</span><span class="comment">%if</span>
+            <span class="keyword">end</span><span class="comment">%for</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>getAllPositionsPerUniqueUnitCell<a name="24"></a></h2><p>Returns a cell array with one vector of position indices for each unique unitCell in the structure.</p><pre class="codeinput">        <span class="keyword">function</span> Pos = getAllPositionsPerUniqueUnitCell(obj)
+            UCs = obj.getUniqueUnitCells();
+            Indices = obj.getUnitCellVectors();
+            Pos = cell(length(UCs(:,1)),1);
+            <span class="keyword">for</span> i = 1:length(UCs(:,1))
+               Pos{i} = find(Indices == i);
+            <span class="keyword">end</span><span class="comment">%for</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>getDistancesOfUnitCells<a name="25"></a></h2><p>Returns a vector of the distance from the surface for each unit cell starting at 0 (dStart) and starting at the end of the first UC (dEnd) and from the center of each UC (dMid).</p><pre class="codeinput">        <span class="keyword">function</span> [dStart dEnd dMid] = getDistancesOfUnitCells(obj)
+            cAxises = obj.getUnitCellPropertyVector(<span class="string">'cAxis'</span>);
+            dEnd    = cumsum(cAxises);
+            dStart  = vertcat(0, dEnd(1:end-1));
+            dMid    = dStart + cAxises./2;
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>getDistancesOfInterfaces<a name="26"></a></h2><p>Returns the distances from the surface of each interface of the structure.</p><pre class="codeinput">        <span class="keyword">function</span> [distIntf Indices] = getDistancesOfInterfaces(obj)
+            [dStart dEnd]   = obj.getDistancesOfUnitCells();
+            Indices         = [1 diff(obj.getUnitCellVectors())'];
+            distIntf        = [dStart(Indices ~= 0)' dEnd(end)]';
+        <span class="keyword">end</span>
+</pre><h2>interpDistanceAtInterfaces<a name="27"></a></h2><p>Returns a distance Vector of the center of UCs interpolated by an odd number N at the interface of sturctures.</p><pre class="codeinput">        <span class="keyword">function</span> [distInterp originalIndicies] = interpDistanceAtInterfaces(obj,N)
+            [dStart,dEnd,dMid] = obj.getDistancesOfUnitCells();
+            <span class="comment">% these are the distances of the interfaces</span>
+            distIntf = obj.getDistancesOfInterfaces();
+            <span class="comment">% we start with the distances of the centers of the unit cells</span>
+            distInterp = dMid;
+
+            N = floor(N); <span class="comment">% make N an integer</span>
+            <span class="keyword">if</span> mod(N,2) == 0
+                <span class="comment">% we want to have odd numbers</span>
+                N = N+1;
+            <span class="keyword">end</span><span class="comment">%if</span>
+
+            <span class="comment">% traverse all distances</span>
+            <span class="keyword">for</span> i=1:length(distIntf)
+                x = distIntf(i); <span class="comment">% this is the distance of an interface</span>
+
+                inda = finderb(x,dStart); <span class="comment">% this is the index of an UC after the interface</span>
+                indb = inda-1; <span class="comment">% this is the index of an UC before the interface</span>
+
+                <span class="comment">% now interpolate linearly N new distances at the interface</span>
+                <span class="keyword">if</span> indb == 0 <span class="comment">% this is the surface interface</span>
+                    distInterp = vertcat(distInterp,linspace(0,dMid(inda),2+(N-1)/2)');
+                <span class="keyword">elseif</span> inda &gt;= length(dMid) <span class="comment">% this is the bottom interface</span>
+                    distInterp = vertcat(distInterp,linspace(dMid(inda),dEnd(end),2+(N-1)/2)');
+                <span class="keyword">else</span> <span class="comment">% this is a surface inside the structure</span>
+                    distInterp = vertcat(distInterp,linspace(dMid(indb),dMid(inda),2+N)');
+                <span class="keyword">end</span><span class="comment">%if</span>
+            <span class="keyword">end</span><span class="comment">%for</span>
+
+            distInterp = unique(sort(distInterp)); <span class="comment">% sort and unify the distances</span>
+            <span class="comment">% these are the indicies of the original distances in the interpolated new vector</span>
+            originalIndicies = finderb(dMid,distInterp);
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>getUnitCellPropertyVector<a name="28"></a></h2><p>Returns a vector for a property of all unitCells in the structure. The property is determined by the propertyName and returns a scalar value or a function handle.</p><pre class="codeinput">        <span class="keyword">function</span> Prop = getUnitCellPropertyVector(obj,propertyName)
+            <span class="comment">% get the Handle to all unitCells in the Structure</span>
+            [~, ~, Handles] = obj.getUnitCellVectors();
+
+            <span class="keyword">if</span> isa(Handles{1}.(propertyName),<span class="string">'function_handle'</span>)
+                Prop = cell(obj.getNumberOfUnitCells(),1);
+                <span class="keyword">for</span> i = 1:obj.getNumberOfUnitCells()
+                    Prop(i) = Handles{i}.(propertyName);
+                <span class="keyword">end</span><span class="comment">%for</span>
+            <span class="keyword">elseif</span> iscell(Handles{1}.(propertyName))
+                Prop = cell(obj.getNumberOfUnitCells(),length(Handles{1}.(propertyName)));
+                <span class="keyword">for</span> i = 1:obj.getNumberOfUnitCells()
+                    Prop(i,:) = Handles{i}.(propertyName);
+                <span class="keyword">end</span><span class="comment">%for</span>
+            <span class="keyword">else</span>
+                UCs = obj.getUniqueUnitCells();
+
+                <span class="keyword">for</span> i = 1:size(UCs,1)
+                    temp(i) = length(UCs{i,2}.(propertyName));
+                <span class="keyword">end</span><span class="comment">%for</span>
+                Prop = zeros(obj.getNumberOfUnitCells(),max(temp));
+                clear <span class="string">temp</span>;
+                <span class="comment">% traverse all unitCells</span>
+                <span class="keyword">for</span> i = 1:obj.getNumberOfUnitCells()
+                    temp = Handles{i}.(propertyName);
+                    Prop(i,1:length(temp)) = temp;
+                <span class="keyword">end</span><span class="comment">%for</span>
+            <span class="keyword">end</span><span class="comment">%if</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>getUnitCellHandle<a name="29"></a></h2><p>Returns the handle to the unitCell at position <img src="structure_eq28128.png" alt="$i$"> in the structure.</p><pre class="codeinput">        <span class="keyword">function</span> Handle = getUnitCellHandle(obj,i)
+            [~, ~, Handles] = obj.getUnitCellVectors();
+            Handle = Handles{i};
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><pre class="codeinput">    <span class="keyword">end</span><span class="comment">% methods</span>
+</pre><pre class="codeinput"><span class="keyword">end</span><span class="comment">% class</span>
+</pre><p class="footer"><br>
+      Published with MATLAB&reg; 7.14<br></p></div><!--
+##### SOURCE BEGIN #####
+%% structure
+% The structure class can hold various substructures. Each substructure can
+% be either a layer of N unitCell objects or a structure by itself. Thus it
+% is possible to recursively build up 1D structures
+%
+% Copyright (c) 2013, Daniel Schick, André Bojahr, Marc Herzog, Roman Shayduk, Clemens von Korff Schmising
+% All rights reserved.
+%
+% License: BSD (use/copy/change/redistribute on own risk, mention the authors)
+
+%% Classdef
+% Each structure instance and all inherited class objects follow handle
+% semantics. Hence a copy of such object will not copy the object itself,
+% but only a handle to that object.
+classdef structure < handle
+    %% Properties
+    properties (SetAccess=public,GetAccess=public)
+        name                % STRING name of sample
+        substructures = {}; % CELL ARRAY of structures in sample 
+        substrate           % OBJECT HANDLE structure of the substrate
+        numSubSystems = 1;  % INTEGER number of subsystems for heat and phonons (electronic, lattice, spins, ...)
+    end%properties
+    %%Methods
+    methods
+        %% Constructor
+        % Is executed each time an instance of this class is created. Only
+        % the _name_ input is obligatory. If you input a valid path to an
+        % xml structure definition file, the structure is automatically
+        % loaded form this xml file. Also the name is taken from the xml
+        % file and the first input of the constructor method becomes
+        % unneccessary.
+        function obj = structure(name,varargin)
+            % initialize input parser and define defaults and validators
+            p = inputParser;
+            p.addRequired('name'        , @ischar);
+            p.addOptional('xmlPath',''  , @ischar);
+            % parse the input
+            p.parse(name,varargin{:});
+            % assign parser results to object properties
+            obj.name    = p.Results.name;
+            if ~isempty(p.Results.xmlPath)
+                % an _xmlPath_ is given so we build the structure from the
+                % xml structure file.
+                obj.buildStructureFromXML(p.Results.xmlPath);
+            end%if
+        end%function
+        
+        %% disp
+        % This is just a wrapper to call the display function displayTab,
+        % because, the disp method does not accept input parameters.
+        function disp(obj)
+            obj.displayTab();
+        end%function
+        
+        %% displayTab
+        % This method is called to display informations of the instance.
+        % If an integer input is given the output is tabbed by this amount.
+        % This is used for nested structures.
+        function displayTab(obj,tabs)
+            % check for the numbers of tabs added at the beginning
+            if nargin < 2
+                tabs = 0;
+            end%if
+            tabstr = '';
+            for i = 1:tabs
+                tabstr = strcat(tabstr, '\t');
+            end%for
+            % plot the properties
+            fprintf([tabstr 'Structure properties:\n']);
+            fprintf([tabstr 'Name  : %s\n'], obj.name);
+            fprintf([tabstr 'Length: %0.2f nm\n'], obj.getLength()/units.nm);
+            fprintf([tabstr 'REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH\n']);
+            % traverse all substructures
+            for i = 1:size(obj.substructures,1)
+                if isa(obj.substructures{i,1},'unitCell')
+                    % the substructure is an unitCell
+                    fprintf([tabstr '%d times %s: %0.2f nm\n'], obj.substructures{i,2},...
+                        obj.substructures{i,1}.name, obj.substructures{i,2}*obj.substructures{i,1}.cAxis/units.nm);
+                else
+                    % the substructure is a structure instance by itself
+                    % call the display() method recursively
+                    fprintf([tabstr 'SubStructure %d times:\n'],...
+                        obj.substructures{i,2});
+                    obj.substructures{i,1}.displayTab(tabs+1);
+                end%if                  
+            end%for
+            fprintf([tabstr 'REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH\n']);
+            % check for a substrate
+            if isa(obj.substrate,'structure')
+                fprintf([tabstr 'Substrate:\n']);
+                fprintf([tabstr 'REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH\n']);
+                fprintf([tabstr '%d times %s: %0.2f nm\n'], obj.substrate.substructures{1,2},...
+                    obj.substrate.substructures{1,1}.name, ...
+                    obj.substrate.substructures{1,2}*obj.substrate.substructures{1,1}.cAxis/units.nm);
+            end%if
+        end%function
+        
+        %% visualize
+        % plots the atoms in the unitCell for a given strain. You can input
+        % a figure handle.
+        function visualize(obj,varargin)
+            % initialize input parser and define defaults and validators
+            p = inputParser;
+            p.addRequired('obj'      , @(x)isa(x,'structure'));
+            p.addParamValue('handle', '', @ishandle);
+            % parse the input
+            p.parse(obj,varargin{:});
+            % assign parser results to object properties 
+            if isempty(p.Results.handle)
+                h = figure;
+            else
+                h = p.Results.handle;
+            end%if
+            a = obj.getUniqueUnitCells();
+            N = size(a,1);
+            figure(h);
+            distances = obj.getDistancesOfUnitCells/units.nm;
+            stairs(distances,obj.getUnitCellVectors, 'LineWidth', 2);
+            axis([min(distances) max(distances) 0.9 length(obj.getUniqueUnitCells)+0.1]);
+            xlabel('Distance [nm]');
+            title('Structure Visualization');
+            set(gca,'YTick',1:N,'YTickLabel', a(:,1)); 
+        end
+        
+        %% getHash
+        % Returns a unique hash from all unitCell IDs in the correct order
+        % in the structure.
+        function hash = getHash(obj,varargin)            
+            UCs = obj.getUniqueUnitCells();
+            param = cell(size(UCs,1),1);
+            for i=1:size(UCs,1)
+                param{i} = UCs{i,2}.getPropertyStruct(varargin{:});
+            end%for           
+            [~, IDs] = obj.getUnitCellVectors();
+            param(end+1) = {IDs};
+            % dataHash is an external function
+            hash = dataHash(param);
+        end%function
+                
+        %% Build Structure from Object
+        %
+        
+        %% addSubStructure
+        % Add a substructure of N unitCells or N structures to the
+        % structure.
+        function addSubStructure(obj,subStructure,N)
+            % check of the substructure is an instance of the unitCell of
+            % structure class
+            if ~isa(subStructure,'unitCell') && ~isa(subStructure,'structure')
+                error(['Class ' class(subStructure) ' is no possible sub structure. Only unitCell and structure classes are allowed!']);
+            end%if
+            % if a structure is added as a substructrue, the substructure
+            % can not have a substrate!
+            if isa(subStructure,'structure')
+                if ~isempty(subStructure.substrate)
+                    error('No substrate in substructure allowed!');
+                end%if
+            end%if
+            % check the number of subsystems of the substructure
+            if obj.numSubSystems > 1 && subStructure.numSubSystems ~= obj.numSubSystems
+                error('The number of subsystems in each substructure must be the same!');
+            else
+                obj.numSubSystems = subStructure.numSubSystems;
+            end%if
+            % add a substructure of N repetitions to the structure with
+            obj.substructures(end+1,:) =  {subStructure N};
+        end%function
+        
+        %% addSubstrate
+        % Add a structure as static substrate to the structure
+        function addSubstrate(obj,subStructure)
+            if ~isa(subStructure,'structure')
+                error(['Class ' class(subStructure) ' is no possible substrate. Only structure class is allowed!']);
+            end%if
+            obj.substrate =  subStructure;
+        end%function
+        
+        %% Build Structure from XML Struct
+        %
+        
+        %% buildStructureFromXML
+        % The xml structure definition file given vy the _xmlPath_ is
+        % parsed by the _xml_read_ function (MATLAB Central) and all
+        % required objects for the structure are created and finally added
+        % to the structure.
+        % There is a bug in the original xml_read function from the
+        % xml_io_tools lib: you have to replace the line 452 with the
+        % following: digits = '(Inf)|(NaN)|(pi)|[\t\n\d\+\-\*\.ei EI\;\,]';
+        % Otherwise arrays are not parsed correctley.
+        function buildStructureFromXML(obj,xmlPath)
+            % parse the xml structure file
+            s_sample = xml_read(xmlPath);
+            obj.name = s_sample.ATTRIBUTE.name; % set the name of the structure
+            % build the atoms from the xml struct
+            disp(['Building Sample: ' s_sample.ATTRIBUTE.name ' from File']);
+            disp('Loading Atoms into Workspace...');
+            obj.buildAtomsFromXMLStruct(s_sample.atoms);
+            disp('... Atoms loaded!');
+            % build the unit cells from the xml struct
+            disp('Loading UnitCells into Workspace...');
+            obj.buildUnitCellsFromXMLStruct(s_sample.unitCells);
+            disp('... UnitCells loaded!');
+            % add the substructures to the structure (recursive method)
+            disp('Building Substructures ...');
+            obj.addSubStructuresFromXMLStruct(s_sample.structure.substructure);
+            disp('... Substructures built!');
+            % check if substrate has to be added
+            if isfield(s_sample, 'substrate')
+                % add the substrate from the xml struct
+                obj.addSubstrateFromXMLStruct(s_sample.substrate);
+                disp('Substrate added!');
+            end%if            
+        end%function
+        
+        %% buildAtomsFromXMLStruct
+        % From the _atoms_ field in the xml struct _atomBase_ and
+        % _atomMixed_ objects are created in the _base workspace_ and their
+        % IDs are returned.
+        function atomIDs = buildAtomsFromXMLStruct(obj,s_atoms)
+            % build all atomBase objects from atoms struct
+            s_atomsBase = s_atoms.atom;
+            atomIDs = cell(length(s_atomsBase),1);
+            for i=1:length(s_atomsBase)
+                % get attributes of atomBase
+                attributes = s_atomsBase(i).ATTRIBUTE;
+                % first set the required fields
+                symbol = attributes.symbol;
+                % now remove the required fields from the rest of the
+                % attributes
+                required_fields = {'symbol'};
+                attributes = rmfield(attributes, required_fields);
+                % create the atomBase object and assign it to the base
+                % workspace
+                atomBaseObject = atomBase(symbol,attributes);
+                ID = atomBaseObject.ID;
+                assignin('base', ID, atomBaseObject);
+                atomIDs(i) = {ID}; % add the atomBase ID to the output array
+            end%for
+            clear atomBaseObject;
+            % check for mixed atoms
+            if isfield(s_atoms, 'atomMixed')
+                % build all atomMixed objects from atoms struct
+                s_atomsMixed = s_atoms.atomMixed;
+                for i=1:length(s_atomsMixed)
+                    % get attributes of atomMixed
+                    attributes = s_atomsMixed(i).ATTRIBUTE;
+                    % first set the required fields
+                    symbol = attributes.symbol;
+                    % now remove the required fields from the rest of the
+                    % attributes
+                    required_fields = {'symbol'};
+                    attributes = rmfield(attributes, required_fields);
+                    % create the atomMixed object, add the corresponding 
+                    % atomBase objects and their fractions, and assign it 
+                    % to the base workspace
+                    atomMixedObject = atomMixed(symbol,attributes);
+                    ID = atomMixedObject.ID;
+                    % traverse constituents of a mixed atom
+                    for j=1:length(s_atomsMixed(i).atom)
+                        atomMixedObject.addAtom(...
+                            evalin('base',s_atomsMixed(i).atom(j).ATTRIBUTE.ID),...
+                            s_atomsMixed(i).atom(j).ATTRIBUTE.fraction);
+                    end%for
+                    assignin('base', ID, atomMixedObject);
+                    % add the atomMixed ID to the output array
+                    atomIDs(end+1) = {ID};  
+                end%for
+                clear atomMixedObject;
+            end%if
+        end%function
+        
+        %% buildUnitCellsFromXMLStruct
+        % From the _unitCells_ field in the xml struct _unitCells_ objects 
+        % are created in the _base workspace_ and their IDs are returned.
+        function unitCellIDs = buildUnitCellsFromXMLStruct(obj,unitCellsStruct)
+            s_unitCells = unitCellsStruct.unitCell;
+            unitCellIDs = cell(length(s_unitCells),1);
+            for i=1:length(s_unitCells)
+                % get attributes of the unitCell
+                attributes = s_unitCells(i).ATTRIBUTE;
+                % first set the required fields
+                ID = attributes.ID;
+                nameUC = attributes.name;
+                cAxis = attributes.cAxis;
+                % now remove the required fields from the rest of the
+                % attributes
+                required_fields = {'name', 'ID', 'cAxis'};
+                attributes = rmfield(attributes, required_fields);
+                % create the unitCell object with all optinal parameters as
+                % name/value pair; add the corresponding 
+                % atom objects and their postions; and assign it 
+                % to the base workspace                    
+                unitCellObject = unitCell(ID,nameUC,cAxis,attributes);
+                ID = unitCellObject.ID;
+                for j=1:length(s_unitCells(i).atom)
+                    % add atom to unitCell
+                    unitCellObject.addAtom(...
+                        evalin('base',s_unitCells(i).atom(j).ATTRIBUTE.ID),...
+                        s_unitCells(i).atom(j).ATTRIBUTE.position);
+                end%for
+                assignin('base', ID, unitCellObject);
+                % add the unitCell ID to the output array
+                unitCellIDs(i) = {ID};
+            end%for
+            clear unitCellObject;            
+        end%function
+        
+        %% addSubstructuresFromXMLStruct
+        % _Recursive Method_ - builds substructures from the given xml
+        % struct and add them to the structureObj.
+        function addSubStructuresFromXMLStruct(obj,s_substructures,structureObj)
+            % if no structureObj is given this is the first recursion layer
+            % and we assign the callign structure object itself
+            if nargin < 3
+                structureObj = obj;
+            end%if
+            % traverse the substructure struct
+            for i=1:length(s_substructures)
+                % get the number of repetitions of the substructre
+                N = s_substructures(i).ATTRIBUTE.N;
+                if isfield(s_substructures(i),'substructure')...
+                       && ~isempty(s_substructures(i).substructure)
+                    % this substructure is a structure object itself 
+                    nameS = s_substructures(i).ATTRIBUTE.name;
+                    % create the structure object of the substructre
+                    substructureObject = structure(nameS);
+                    % recursive call to add layers and/or substructures to
+                    % the substructre
+                    obj.addSubStructuresFromXMLStruct(...
+                       s_substructures(i).substructure,substructureObject);
+                    
+                    % add the substructre to the given structure object
+                    structureObj.addSubStructure(substructureObject,N);
+                    % assign the substructure structure object to the _base
+                    % workspace_
+                    assignin('base', genvarname(nameS), substructureObject);
+                    clear substructureObject;
+               else
+                    % this substructure is a simple layer
+                    structureObj.addSubStructure(...
+                        evalin('base',s_substructures(i).ATTRIBUTE.unitCellID),N);
+                end%if
+            end%for
+        end%function
+        
+        %% addSubstrateFromXMLStruct
+        % Adds a simple substrate made of a single layer of N unitCells 
+        % from the substrate struct to the structure.
+        function addSubstrateFromXMLStruct(obj,substrate)
+            % create the substrate structre object
+            substrateObject = structure('substrate');
+            % add the N unitCells to the substrate
+            substrateObject.addSubStructure(...
+                evalin('base',substrate.ATTRIBUTE.unitCellID),...
+                substrate.ATTRIBUTE.N);
+            % add the substrate structure object to the _base workspace_
+            % and add it to the structure
+            assignin('base', 'substrate', substrateObject);
+            obj.addSubstrate(substrateObject);
+            clear substrateObject;
+        end%function
+        
+        %% Returns Properties of Structure
+        %
+        
+        %% getNumberOfSubStructures
+        % Returns the number of all sub structures. This methods does not
+        % return the number of all unitCells in the structure, see
+        % getNumberOfUnitCells().
+        function N = getNumberOfSubStructures(obj)
+            N = 0;
+            %traverse the substructres
+            for i = 1:size(obj.substructures,1)
+                if isa(obj.substructures{i,1},'unitCell')
+                    % its a unitCell so add 1
+                    N = N+1;
+                else
+                    % its a sturcture, so call the method recursively
+                    N = N + obj.substructures{i,1}.getNumberOfSubStructures();
+                end%if
+            end%for             
+        end%function
+        
+        %% getNumberOfUnitCells
+        % Returns the number of all unitCells in the structure.
+        function N = getNumberOfUnitCells(obj)
+            N = 0;
+            %traverse the substructres
+            for i = 1:size(obj.substructures,1)
+                if isa(obj.substructures{i,1},'unitCell')
+                    % its a unitCell so add m unitCells
+                    N = N + obj.substructures{i,2};
+                else
+                    % its a sturcture, so call the method recursively
+                    N = N + obj.substructures{i,1}.getNumberOfUnitCells()...
+                        *obj.substructures{i,2};
+                end%if
+            end%for             
+        end%function
+        
+        %% getNumberOfUniqueUnitCells
+        % Returns the number of unique unitCells in the structure.
+        function N = getNumberOfUniqueUnitCells(obj)
+            N = size(obj.getUniqueUnitCells(),1);
+        end%function
+        
+        %% getLength
+        % Retruns the length from surface to bottom of the structure
+        function L = getLength(obj)
+           [~, dEnd] = obj.getDistancesOfUnitCells();
+           L = dEnd(end);
+        end
+        
+        %% getUniqueUnitCells
+        % Returns a cell array of IDs and handles of all unique unitCell instances
+        % in the structure. The uniqueness is determined by the ID of each
+        % unitCell instance.
+        function UCs = getUniqueUnitCells(obj)
+            UCs = {}; % {:,1} IDs as STRINGS, {:,2} OBJECT UnitCell Handle
+            %traverse the substructres
+            for i = 1:size(obj.substructures,1)
+                if isa(obj.substructures{i,1},'unitCell')
+                    % its a UnitCell
+                    ID = obj.substructures{i,1}.ID;
+                    if isempty(UCs)
+                        % the cell array is empty at the beginning so add
+                        % the first unitCell
+                        UCs{1,1} = ID;
+                        UCs{1,2} = obj.substructures{i,1};
+                    else
+                        % the cell array is not empty so check if the ID is
+                        % already in the UCs ID vector
+                        if sum(strcmp(ID,UCs(:,1))) == 0
+                            % ID not in list, so add it    
+                            UCs = vertcat(UCs,{ID obj.substructures{i,1}}); 
+                        end%if
+                    end%if
+                else
+                    % its a substructure
+                    if isempty(UCs)
+                        % the cell array is empty at the beginning so call
+                        % the method recursively and add the result to the
+                        % UCs array
+                        UCs = obj.substructures{i,1}.getUniqueUnitCells();
+                    else
+                        % the cell array is not empty so check if the IDs
+                        % from the recursive call are already in the UCs ID
+                        % vector.
+                        temp = obj.substructures{i,1}.getUniqueUnitCells();
+                        for j = 1:length(temp(:,1))
+                           % check all IDs from recursive call
+                           if sum(strcmp(temp{j,1},UCs(:,1))) == 0
+                               % IDs not in list, so add them
+                               UCs = vertcat(UCs,temp(j,:)); 
+                           end%if
+                        end%for
+                    end%if
+                end%if
+            end%for     
+        end% function
+        
+        %% getUnitCellVectors
+        % Returns three vectors with the numeric index of all unit cells
+        % in a structure given by the getUniqueUnitCells() method and
+        % addidionally vectors with the IDs and Handles of the corresponding 
+        % unitCell instances. The list and order of the unique unitCells
+        % can be either handed as an input parameter or is requested at the
+        % beginning.
+        function [Indices IDs Handles] = getUnitCellVectors(obj,UCs)
+            Indices = [];
+            IDs = {};
+            Handles = {};
+            % if no UCs (UniqueUnitCells) are given, we have to get them
+            if nargin < 2
+                UCs = obj.getUniqueUnitCells();
+            end%if
+            %traverse the substructres
+            for i = 1:size(obj.substructures,1)
+                if isa(obj.substructures{i,1},'unitCell')
+                    % its a UnitCell
+                    % find the index of the current UC ID in the unique
+                    % unitCell vector
+                    Index = find(strcmp(UCs(:,1),obj.substructures{i,1}.ID));
+                    % add the index N times to the Indices vector
+                    Indices = vertcat(Indices, Index*ones(obj.substructures{i,2},1)); 
+                    % create a cell array of N unitCell IDs and add them to
+                    % the IDs cell array
+                    temp = cell(obj.substructures{i,2},1);
+                    temp(:,1) = {obj.substructures{i,1}.ID};
+                    IDs = vertcat(IDs, temp); 
+                    % create a cell array of N unitCell handles and add them to
+                    % the Handles cell array
+                    temp = cell(obj.substructures{i,2},1);
+                    temp(:,1) = {obj.substructures{i,1}};
+                    Handles = vertcat(Handles, temp); 
+                else
+                    % its a structure
+                    % make a recursive call and hand in the same unique
+                    % unit cell vector as we used before
+                    [temp1 temp2 temp3] = obj.substructures{i,1}.getUnitCellVectors(UCs);
+                    temp11 = [];
+                    temp22 = {};
+                    temp33 = {};
+                    % concat the temporary arrays N times
+                    for j = 1:obj.substructures{i,2}
+                        temp11 = vertcat(temp11, temp1); 
+                        temp22 = vertcat(temp22, temp2); 
+                        temp33 = vertcat(temp33, temp3); 
+                    end%for
+                    % add the temporary arrays to the outputs
+                    Indices = vertcat(Indices, temp11); 
+                    IDs = vertcat(IDs, temp22);         
+                    Handles = vertcat(Handles, temp33);  
+                end%if
+            end%for
+        end%function
+        
+        %% getAllPositionsPerUniqueUnitCell
+        % Returns a cell array with one vector of position indices for each
+        % unique unitCell in the structure.
+        function Pos = getAllPositionsPerUniqueUnitCell(obj)
+            UCs = obj.getUniqueUnitCells();
+            Indices = obj.getUnitCellVectors();
+            Pos = cell(length(UCs(:,1)),1);
+            for i = 1:length(UCs(:,1))
+               Pos{i} = find(Indices == i);
+            end%for
+        end%function
+        
+        %% getDistancesOfUnitCells
+        % Returns a vector of the distance from the surface for each unit
+        % cell starting at 0 (dStart) and starting at the end of the first UC 
+        % (dEnd) and from the center of each UC (dMid).
+        function [dStart dEnd dMid] = getDistancesOfUnitCells(obj)
+            cAxises = obj.getUnitCellPropertyVector('cAxis');
+            dEnd    = cumsum(cAxises);
+            dStart  = vertcat(0, dEnd(1:end-1));            
+            dMid    = dStart + cAxises./2;
+        end%function
+        
+        %% getDistancesOfInterfaces
+        % Returns the distances from the surface of each interface of the
+        % structure.
+        function [distIntf Indices] = getDistancesOfInterfaces(obj)
+            [dStart dEnd]   = obj.getDistancesOfUnitCells();
+            Indices         = [1 diff(obj.getUnitCellVectors())'];
+            distIntf        = [dStart(Indices ~= 0)' dEnd(end)]';
+        end
+        
+        %% interpDistanceAtInterfaces
+        % Returns a distance Vector of the center of UCs interpolated by an
+        % odd number N at the interface of sturctures.
+        function [distInterp originalIndicies] = interpDistanceAtInterfaces(obj,N)
+            [dStart,dEnd,dMid] = obj.getDistancesOfUnitCells();
+            % these are the distances of the interfaces
+            distIntf = obj.getDistancesOfInterfaces();
+            % we start with the distances of the centers of the unit cells
+            distInterp = dMid;
+            
+            N = floor(N); % make N an integer
+            if mod(N,2) == 0
+                % we want to have odd numbers
+                N = N+1;
+            end%if
+            
+            % traverse all distances
+            for i=1:length(distIntf)
+                x = distIntf(i); % this is the distance of an interface
+                
+                inda = finderb(x,dStart); % this is the index of an UC after the interface
+                indb = inda-1; % this is the index of an UC before the interface
+                
+                % now interpolate linearly N new distances at the interface
+                if indb == 0 % this is the surface interface
+                    distInterp = vertcat(distInterp,linspace(0,dMid(inda),2+(N-1)/2)');
+                elseif inda >= length(dMid) % this is the bottom interface
+                    distInterp = vertcat(distInterp,linspace(dMid(inda),dEnd(end),2+(N-1)/2)');
+                else % this is a surface inside the structure
+                    distInterp = vertcat(distInterp,linspace(dMid(indb),dMid(inda),2+N)');
+                end%if
+            end%for
+            
+            distInterp = unique(sort(distInterp)); % sort and unify the distances
+            % these are the indicies of the original distances in the interpolated new vector
+            originalIndicies = finderb(dMid,distInterp);
+        end%function
+                
+        %% getUnitCellPropertyVector
+        % Returns a vector for a property of all unitCells in the
+        % structure. The property is determined by the propertyName and
+        % returns a scalar value or a function handle.
+        function Prop = getUnitCellPropertyVector(obj,propertyName)
+            % get the Handle to all unitCells in the Structure
+            [~, ~, Handles] = obj.getUnitCellVectors();
+            
+            if isa(Handles{1}.(propertyName),'function_handle')
+                Prop = cell(obj.getNumberOfUnitCells(),1);
+                for i = 1:obj.getNumberOfUnitCells()
+                    Prop(i) = Handles{i}.(propertyName);
+                end%for
+            elseif iscell(Handles{1}.(propertyName))
+                Prop = cell(obj.getNumberOfUnitCells(),length(Handles{1}.(propertyName)));
+                for i = 1:obj.getNumberOfUnitCells()
+                    Prop(i,:) = Handles{i}.(propertyName);
+                end%for
+            else
+                UCs = obj.getUniqueUnitCells();
+                
+                for i = 1:size(UCs,1)
+                    temp(i) = length(UCs{i,2}.(propertyName));
+                end%for
+                Prop = zeros(obj.getNumberOfUnitCells(),max(temp));
+                clear temp;
+                % traverse all unitCells
+                for i = 1:obj.getNumberOfUnitCells()
+                    temp = Handles{i}.(propertyName);
+                    Prop(i,1:length(temp)) = temp;
+                end%for
+            end%if
+        end%function
+        
+        %% getUnitCellHandle
+        % Returns the handle to the unitCell at position $i$ in the
+        % structure.
+        function Handle = getUnitCellHandle(obj,i)
+            [~, ~, Handles] = obj.getUnitCellVectors();
+            Handle = Handles{i};
+        end%function
+    end% methods
+end% class
+##### SOURCE END #####
+--></body></html>

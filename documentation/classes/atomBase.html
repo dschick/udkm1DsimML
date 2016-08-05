@@ -1,0 +1,328 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>atomBase</title><meta name="generator" content="MATLAB 7.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-07-31"><meta name="DC.source" content="atomBase.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+
+  </style></head><body><div class="content"><h1>atomBase</h1><!--introduction--><p>The atomBase class is the smallest structural unit of which one can build larger structures. It holds real physical properties of atoms defined in the <i>properties</i> section can return parameters and data necessary for different simulation types.</p><p>Copyright (c) 2013, Daniel Schick, Andr&eacute; Bojahr, Marc Herzog, Roman Shayduk, Clemens von Korff Schmising All rights reserved.</p><p>License: BSD (use/copy/change/redistribute on own risk, mention the authors)</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Classdef</a></li><li><a href="#2">Properties</a></li><li><a href="#3">Methods</a></li><li><a href="#4">Constructor</a></li><li><a href="#5">Display</a></li><li><a href="#6">readAtomicFormFactorCoeff</a></li><li><a href="#7">getAtomicFormFactor</a></li><li><a href="#8">readCromerMannCoeff</a></li><li><a href="#9">getCMAtomicFormFactor</a></li><li><a href="#16">References</a></li></ul></div><h2>Classdef<a name="1"></a></h2><p>Each atomBase instance and all inherited class objects follow handle semantics. Hence a copy of such object will not copy the object itself, but only a handle to that object.</p><pre class="codeinput"><span class="keyword">classdef</span> atomBase &lt; handle
+</pre><h2>Properties<a name="2"></a></h2><pre class="codeinput">    properties(SetAccess=public,GetAccess=public)
+        symbol                                  <span class="comment">% STRING symbol of the element</span>
+        ID                                      <span class="comment">% STRING identifier of the atom, may be different from symbol and/or name</span>
+        name                                    <span class="comment">% STRING name of the element (generic)</span>
+        atomicNumberZ           = 0;            <span class="comment">% FLOAT Z atomic number</span>
+        massNumberA             = 0;            <span class="comment">% FLOAT A atomic mass number</span>
+        ionicity                = 0;            <span class="comment">% INTEGER ionicity of the atom</span>
+        mass                    = 0;            <span class="comment">% FLOAT mass of the atom [kg]</span>
+        atomicFormFactorCoeff   = 0;            <span class="comment">% VECTOR atomic form factor coefficients for energy-dependent atomic form factor</span>
+        cromerMannCoeff         = zeros(1,6);   <span class="comment">% VECTOR cromer-mann coefficients for angular-dependent atomic form factor</span>
+    <span class="keyword">end</span><span class="comment">%properties</span>
+</pre><h2>Methods<a name="3"></a></h2><pre class="codeinput">    methods
+</pre><h2>Constructor<a name="4"></a></h2><p>Is executed each time an instance of this class is created. Only the <i>symbol</i> input is obligatory.</p><pre class="codeinput">        <span class="keyword">function</span> obj = atomBase(symbol,varargin)
+            <span class="comment">% initialize input parser and define defaults and validators</span>
+            p = inputParser;
+            p.addRequired(<span class="string">'symbol'</span>          , @ischar);
+            p.addOptional(<span class="string">'ID'</span>      , symbol, @ischar);
+            p.addOptional(<span class="string">'ionicity'</span>, 0     , @(x)(isnumeric(x)));
+            <span class="comment">% parse the input</span>
+            p.parse(symbol,varargin{:});
+            <span class="comment">% assign parser results to object properties</span>
+            obj.symbol   = p.Results.symbol;
+            obj.ID       = genvarname(p.Results.ID);
+            obj.ionicity = p.Results.ionicity;
+            <span class="comment">% Check if constructor call is from a sub-class</span>
+            <span class="keyword">if</span> ~isa(obj,<span class="string">'atomMixed'</span>) <span class="comment">% call is from atomBase instance</span>
+                <span class="comment">% read element specific data from file with the following</span>
+                <span class="comment">% headers: symbol name atomicNumberZ massNumberA</span>
+                filename = <span class="string">'elements.dat'</span>;
+                <span class="keyword">if</span> exist(filename,<span class="string">'file'</span>)
+                    fid = fopen(filename);
+                    temp = textscan(fid, <span class="string">'%s %s %u %f'</span>, <span class="string">'HeaderLines'</span>, 1);
+                    fclose(fid);
+                <span class="keyword">else</span>
+                    error(<span class="string">'File %s not found!\nMake sure the path "/parameters/elements/" is in your MATLAB SearchPath!'</span>, filename);
+                <span class="keyword">end</span><span class="comment">%if</span>
+                <span class="comment">% Find the data entry for the atom.</span>
+                row = find(ismember(temp{1}, symbol)==1);
+                obj.name = temp{2}{row};
+                obj.atomicNumberZ = double(temp{3}(row));
+                obj.massNumberA = temp{4}(row);
+                obj.mass = obj.massNumberA * constants.u;
+                <span class="comment">% Read the atomic form factors and Cromer-Mann coefficients</span>
+                <span class="comment">% from file.</span>
+                obj.atomicFormFactorCoeff = obj.readAtomicFormFactorCoeff;
+                obj.cromerMannCoeff = obj.readCromerMannCoeff();
+            <span class="keyword">end</span><span class="comment">%if</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>Display<a name="5"></a></h2><p>This method is called to display informations of the instance.</p><pre class="codeinput">        <span class="keyword">function</span> disp(obj)
+            disp(<span class="string">'Atom with the following properties'</span>)
+            disp([<span class="string">'ID                 : '</span> obj.ID]);
+            disp([<span class="string">'symbol             : '</span> obj.symbol]);
+            disp([<span class="string">'name               : '</span> obj.name]);
+            disp([<span class="string">'atomic number Z    : '</span> num2str(obj.atomicNumberZ)]);
+            disp([<span class="string">'mass number   A    : '</span> num2str(obj.massNumberA)]);
+            disp([<span class="string">'mass [kg]          : '</span> num2str(obj.mass)]);
+            disp([<span class="string">'ionicity           : '</span> num2str(obj.ionicity)]);
+            disp([<span class="string">'Cromer Mann coeff. : '</span> num2str(obj.cromerMannCoeff)]);
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>readAtomicFormFactorCoeff<a name="6"></a></h2><p>The atomic form factor <img src="atomBase_eq85998.png" alt="$f$"> in dependence from the energy <img src="atomBase_eq85525.png" alt="$E$"> is read from a parameter file given by Ref. [3].</p><pre class="codeinput">        <span class="keyword">function</span> f = readAtomicFormFactorCoeff(obj)
+            filename = [lower(obj.symbol) <span class="string">'.nff'</span>];
+            <span class="keyword">if</span> exist(filename,<span class="string">'file'</span>)
+                temp = importdata(filename,<span class="string">'\t'</span>,1);
+                f = temp.data;
+            <span class="keyword">else</span>
+                error(<span class="string">'File %s not found!\nMake sure the path "/parameters/atomicFormFactors/" is in your MATLAB SearchPath!'</span>, filename);
+            <span class="keyword">end</span><span class="comment">%if</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>getAtomicFormFactor<a name="7"></a></h2><p>Returns the complex atomic form factor <img src="atomBase_eq84879.png" alt="$f(E)=f_1-\i f_2$"> for the energy <img src="atomBase_eq85525.png" alt="$E$"> [J].</p><pre class="codeinput">        <span class="keyword">function</span> f = getAtomicFormFactor(obj,E)
+            E = E/constants.e_0; <span class="comment">% convert energy from [J] in [eV]</span>
+            <span class="comment">% interpolate the real and imaginary part in dependence of E</span>
+            f1 = interp1(obj.atomicFormFactorCoeff(:,1),obj.atomicFormFactorCoeff(:,2), E ,<span class="string">'cubic'</span>);
+            f2 = interp1(obj.atomicFormFactorCoeff(:,1),obj.atomicFormFactorCoeff(:,3), E ,<span class="string">'cubic'</span>);
+            <span class="comment">% Convention of Ref. [2] (p. 11, footnote) is a negative $f_2$</span>
+            f = f1 - f2*1i;
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>readCromerMannCoeff<a name="8"></a></h2><p>The Cromer-Mann coefficients (Ref. [1]) are read from a parameter file and are returned in the following order:</p><p><img src="atomBase_eq39377.png" alt="$$ a_1\; a_2\; a_3\; a_4\; b_1\; b_2\; b_3\; b_4\; c $$"></p><pre class="codeinput">        <span class="comment">%for the element with atomic number $Z$ and ionicity (unique index).</span>
+        <span class="keyword">function</span> CM = readCromerMannCoeff(obj)
+            filename = <span class="string">'cromermann.txt'</span>;
+            <span class="keyword">if</span> exist(filename,<span class="string">'file'</span>)
+                 temp = importdata(filename,<span class="string">'\t'</span>,1);
+                 c = temp.data;
+            <span class="keyword">else</span>
+                error(<span class="string">'File %s not found!\nMake sure the path "/parameters/atomicFormFactors/" is in your MATLAB SearchPath!'</span>, filename);
+            <span class="keyword">end</span><span class="comment">%if</span>
+            CM = c(c(:,1) == obj.atomicNumberZ &amp; c(:,2) == obj.ionicity,3:end);
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>getCMAtomicFormFactor<a name="9"></a></h2><p>Returns the atomic form factor <img src="atomBase_eq85998.png" alt="$f$"> in dependence of the energy <img src="atomBase_eq85525.png" alt="$E$"> [J] and the <img src="atomBase_eq88768.png" alt="$z$">-component of the scattering vector <img src="atomBase_eq04092.png" alt="$q_z$"> [m^-1] (Ref. [1]). Since the CM coefficients are fitted for <img src="atomBase_eq04092.png" alt="$q_z$"> in [Ang^-1] we have to convert it before!</p><pre class="codeinput">        <span class="keyword">function</span> f = getCMAtomicFormFactor(obj,E,qz)
+</pre><pre class="codeinput">            qz = qz/units.ang^-1; <span class="comment">% qz in [Ang^-1]</span>
+</pre><p>See Ref. [2] (p. 235).</p><p><img src="atomBase_eq81518.png" alt="$$f(q_z,E) = f_{CM}(q_z) + \delta f_1(E) -\i f_2(E)$$"></p><p><img src="atomBase_eq08946.png" alt="$f_{CM}(q_z)$"> is given in Ref. 1:</p><p><img src="atomBase_eq50764.png" alt="$$f_{CM}(q_z) = \sum(a_i \, \exp(-b_i \, (q_z/4\pi)^2))+ c$$"></p><pre class="codeinput">            f_CM = obj.cromerMannCoeff(1:4) * exp(-obj.cromerMannCoeff(5:8)' *(qz./(4*pi)).^2) + obj.cromerMannCoeff(9);
+</pre><p><img src="atomBase_eq01728.png" alt="$\delta f_1(E)$"> is the dispersion correction:</p><p><img src="atomBase_eq75258.png" alt="$$ \delta f_1(E) = f_1(E) - \left(\sum^4_i(a_i) + c\right)$$"></p><p>Thus:</p><p><img src="atomBase_eq45877.png" alt="$$ f(q_z,E) = \sum(a_i \, \exp(b_i \, q_z/2\pi)) + c + f_1(E)-\i f_2(E) - \left(\sum(a_i) + c\right) $$"></p><p><img src="atomBase_eq05852.png" alt="$$ f(q_z,E) = \sum(a_i \, \exp(b_i \, q_z/2\pi)) + f_1(E) -\i f_2(E) - \sum(a_i) $$"></p><pre class="codeinput">            f = f_CM + obj.getAtomicFormFactor(E) - (sum(obj.cromerMannCoeff(1:4)) + obj.cromerMannCoeff(9));
+</pre><pre class="codeinput">        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><pre class="codeinput">    <span class="keyword">end</span><span class="comment">%methods</span>
+</pre><pre class="codeinput"><span class="keyword">end</span><span class="comment">%classdef</span>
+</pre><h2>References<a name="16"></a></h2><div><ol><li>D. T. Cromer &amp; J. B. Mann (1968). <i>X-ray scattering factors computed from numerical Hartree&#8211;Fock wave functions</i>. Acta Crystallographica Section A, 24(2), 321&#8211;324. doi:10.1107/S0567739468000550</li><li>J. Als-Nielson, &amp; D. McMorrow (2001). <i>Elements of Modern X-Ray Physics</i>. New York: John Wiley &amp; Sons, Ltd. doi:10.1002/9781119998365</li><li>B. L. Henke, E. M. Gullikson &amp; J. C. Davis (1993). <i>X-Ray Interactions: Photoabsorption, Scattering, Transmission, and Reflection at E = 50-30,000 eV, Z = 1-92</i>. Atomic Data and Nuclear Data Tables, 54(2), 181&#8211;342. doi:10.1006/adnd.1993.1013</li></ol></div><p class="footer"><br>
+      Published with MATLAB&reg; 7.14<br></p></div><!--
+##### SOURCE BEGIN #####
+%% atomBase
+% The atomBase class is the smallest structural unit of which one can build
+% larger structures. It holds real physical properties of atoms defined in
+% the _properties_ section can return parameters and data necessary for
+% different simulation types.
+%
+% Copyright (c) 2013, Daniel Schick, André Bojahr, Marc Herzog, Roman Shayduk, Clemens von Korff Schmising
+% All rights reserved.
+%
+% License: BSD (use/copy/change/redistribute on own risk, mention the authors)
+
+%% Classdef
+% Each atomBase instance and all inherited class objects follow handle
+% semantics. Hence a copy of such object will not copy the object itself,
+% but only a handle to that object.
+classdef atomBase < handle
+    %% Properties    
+    properties(SetAccess=public,GetAccess=public)
+        symbol                                  % STRING symbol of the element
+        ID                                      % STRING identifier of the atom, may be different from symbol and/or name
+        name                                    % STRING name of the element (generic)
+        atomicNumberZ           = 0;            % FLOAT Z atomic number
+        massNumberA             = 0;            % FLOAT A atomic mass number
+        ionicity                = 0;            % INTEGER ionicity of the atom
+        mass                    = 0;            % FLOAT mass of the atom [kg]       
+        atomicFormFactorCoeff   = 0;            % VECTOR atomic form factor coefficients for energy-dependent atomic form factor
+        cromerMannCoeff         = zeros(1,6);   % VECTOR cromer-mann coefficients for angular-dependent atomic form factor
+    end%properties
+    
+    %% Methods    
+    methods
+        %% Constructor
+        % Is executed each time an instance of this class is created.
+        % Only the _symbol_ input is obligatory.
+        function obj = atomBase(symbol,varargin)                    
+            % initialize input parser and define defaults and validators
+            p = inputParser;
+            p.addRequired('symbol'          , @ischar);
+            p.addOptional('ID'      , symbol, @ischar);
+            p.addOptional('ionicity', 0     , @(x)(isnumeric(x)));
+            % parse the input
+            p.parse(symbol,varargin{:});
+            % assign parser results to object properties
+            obj.symbol   = p.Results.symbol;
+            obj.ID       = genvarname(p.Results.ID);
+            obj.ionicity = p.Results.ionicity;
+            % Check if constructor call is from a sub-class
+            if ~isa(obj,'atomMixed') % call is from atomBase instance
+                % read element specific data from file with the following
+                % headers: symbol name atomicNumberZ massNumberA
+                filename = 'elements.dat';
+                if exist(filename,'file')
+                    fid = fopen(filename);
+                    temp = textscan(fid, '%s %s %u %f', 'HeaderLines', 1);
+                    fclose(fid);
+                else
+                    error('File %s not found!\nMake sure the path "/parameters/elements/" is in your MATLAB SearchPath!', filename);
+                end%if
+                % Find the data entry for the atom.
+                row = find(ismember(temp{1}, symbol)==1);
+                obj.name = temp{2}{row};
+                obj.atomicNumberZ = double(temp{3}(row));
+                obj.massNumberA = temp{4}(row);   
+                obj.mass = obj.massNumberA * constants.u;
+                % Read the atomic form factors and Cromer-Mann coefficients 
+                % from file.                    
+                obj.atomicFormFactorCoeff = obj.readAtomicFormFactorCoeff;
+                obj.cromerMannCoeff = obj.readCromerMannCoeff();
+            end%if
+        end%function
+        
+        %% Display
+        % This method is called to display informations of the instance.
+        function disp(obj)            
+            disp('Atom with the following properties')
+            disp(['ID                 : ' obj.ID]);
+            disp(['symbol             : ' obj.symbol]);
+            disp(['name               : ' obj.name]);
+            disp(['atomic number Z    : ' num2str(obj.atomicNumberZ)]);
+            disp(['mass number   A    : ' num2str(obj.massNumberA)]);
+            disp(['mass [kg]          : ' num2str(obj.mass)]);
+            disp(['ionicity           : ' num2str(obj.ionicity)]);
+            disp(['Cromer Mann coeff. : ' num2str(obj.cromerMannCoeff)]);
+        end%function
+        
+        %% readAtomicFormFactorCoeff
+        % The atomic form factor $f$ in dependence from the energy $E$ is
+        % read from a parameter file given by Ref. [3].
+        function f = readAtomicFormFactorCoeff(obj)
+            filename = [lower(obj.symbol) '.nff'];
+            if exist(filename,'file')
+                temp = importdata(filename,'\t',1);
+                f = temp.data;
+            else
+                error('File %s not found!\nMake sure the path "/parameters/atomicFormFactors/" is in your MATLAB SearchPath!', filename);
+            end%if
+        end%function
+        
+        %% getAtomicFormFactor
+        % Returns the complex atomic form factor $f(E)=f_1-\i f_2$ for the
+        % energy $E$ [J].
+        function f = getAtomicFormFactor(obj,E)            
+            E = E/constants.e_0; % convert energy from [J] in [eV] 
+            % interpolate the real and imaginary part in dependence of E 
+            f1 = interp1(obj.atomicFormFactorCoeff(:,1),obj.atomicFormFactorCoeff(:,2), E ,'cubic');
+            f2 = interp1(obj.atomicFormFactorCoeff(:,1),obj.atomicFormFactorCoeff(:,3), E ,'cubic');  
+            % Convention of Ref. [2] (p. 11, footnote) is a negative $f_2$ 
+            f = f1 - f2*1i;
+        end%function
+        
+        %% readCromerMannCoeff
+        % The Cromer-Mann coefficients (Ref. [1]) are read from a parameter file and
+        % are returned in the following order:
+        %
+        % $$ a_1\; a_2\; a_3\; a_4\; b_1\; b_2\; b_3\; b_4\; c $$
+        % 
+        %for the element with atomic number $Z$ and ionicity (unique index).
+        function CM = readCromerMannCoeff(obj)            
+            filename = 'cromermann.txt';
+            if exist(filename,'file')
+                 temp = importdata(filename,'\t',1);
+                 c = temp.data;
+            else
+                error('File %s not found!\nMake sure the path "/parameters/atomicFormFactors/" is in your MATLAB SearchPath!', filename);
+            end%if
+            CM = c(c(:,1) == obj.atomicNumberZ & c(:,2) == obj.ionicity,3:end);
+        end%function
+        
+        %% getCMAtomicFormFactor
+        % Returns the atomic form factor $f$ in dependence of the energy 
+        % $E$ [J] and the $z$-component of the scattering vector $q_z$ 
+        % [m^-1] (Ref. [1]). 
+        % Since the CM coefficients are fitted for $q_z$ in [Ang^-1] 
+        % we have to convert it before!
+        function f = getCMAtomicFormFactor(obj,E,qz)            
+            qz = qz/units.ang^-1; % qz in [Ang^-1]
+            %%
+            % See Ref. [2] (p. 235).
+            % 
+            % $$f(q_z,E) = f_{CM}(q_z) + \delta f_1(E) -\i f_2(E)$$
+            %
+            % $f_{CM}(q_z)$ is given in Ref. 1: 
+            % 
+            % $$f_{CM}(q_z) = \sum(a_i \, \exp(-b_i \, (q_z/4\pi)^2))+ c$$
+            f_CM = obj.cromerMannCoeff(1:4) * exp(-obj.cromerMannCoeff(5:8)' *(qz./(4*pi)).^2) + obj.cromerMannCoeff(9);
+            %%
+            % $\delta f_1(E)$ is the dispersion correction: 
+            % 
+            % $$ \delta f_1(E) = f_1(E) - \left(\sum^4_i(a_i) + c\right)$$ 
+            % 
+            % Thus: 
+            % 
+            % $$ f(q_z,E) = \sum(a_i \, \exp(b_i \, q_z/2\pi)) + c + f_1(E)-\i f_2(E) - \left(\sum(a_i) + c\right) $$
+            % 
+            % $$ f(q_z,E) = \sum(a_i \, \exp(b_i \, q_z/2\pi)) + f_1(E) -\i f_2(E) - \sum(a_i) $$
+            f = f_CM + obj.getAtomicFormFactor(E) - (sum(obj.cromerMannCoeff(1:4)) + obj.cromerMannCoeff(9));
+        end%function
+    end%methods
+end%classdef
+
+%% References
+%
+% # D. T. Cromer & J. B. Mann (1968). _X-ray scattering factors computed from 
+% numerical Hartree–Fock wave functions_. Acta Crystallographica Section A, 
+% 24(2), 321–324. doi:10.1107/S0567739468000550
+% # J. Als-Nielson, & D. McMorrow (2001). _Elements of Modern X-Ray 
+% Physics_. New York: John Wiley & Sons, Ltd. doi:10.1002/9781119998365
+% # B. L. Henke, E. M. Gullikson & J. C. Davis (1993). _X-Ray Interactions: 
+% Photoabsorption, Scattering, Transmission, and Reflection at 
+% E = 50-30,000 eV, Z = 1-92_. Atomic Data and Nuclear Data Tables, 54(2), 
+% 181–342. doi:10.1006/adnd.1993.1013
+##### SOURCE END #####
+--></body></html>

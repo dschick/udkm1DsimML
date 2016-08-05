@@ -1,0 +1,465 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Heat Example</title><meta name="generator" content="MATLAB 7.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-05-02"><meta name="DC.source" content="heatExample.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+
+  </style></head><body><div class="content"><h1>Heat Example</h1><!--introduction--><p>In this example we show how to use the heat simulations in order to calculate the excitation of a sample and its according temperature evolution.</p><p>Before we can start a heat simulation we need to build a sample structure. Be aware of that heat diffusion simulations can take a tremendous amount of time, especially for structures with a large number of unit cells.</p><p>Be sure to include all folders of the udkm1dsim toolbox to your MATLAB search path. Especially the <i>/parameters</i> and <i>/helpers</i> folders with all their subfolders.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Build a Sample Structure</a></li><li><a href="#3">SrRuO3 unit cell</a></li><li><a href="#4">Initialize Heat Simulation</a></li><li><a href="#6">Simple Excitation</a></li><li><a href="#8">Excitation with Heat Diffusion</a></li><li><a href="#10">Heat Diffusion Parameters</a></li></ul></div><p>here we clear the workspace and close all figures</p><pre class="codeinput">clear <span class="string">all</span>;
+close <span class="string">all</span>;
+<span class="comment">% these are some units and constants we can use later on</span>
+u            = units;
+const        = constants;
+</pre><h2>Build a Sample Structure<a name="2"></a></h2><pre class="codeinput"><span class="comment">% create atoms</span>
+O   = atomBase(<span class="string">'O'</span>);
+Ti  = atomBase(<span class="string">'Ti'</span>);
+Sr  = atomBase(<span class="string">'Sr'</span>);
+Ru  = atomBase(<span class="string">'Ru'</span>);
+Pb  = atomBase(<span class="string">'Pb'</span>);
+Zr  = atomBase(<span class="string">'Zr'</span>);
+
+<span class="comment">% c-axis lattice constants of the two materials</span>
+cSTOsub     = 3.905     *u.ang;
+cSRO        = 3.94897   *u.ang;
+<span class="comment">% sound velocities [nm/ps] of the materials</span>
+svSRO       = 6.312     *u.nm/u.ps;
+svSTO       = 7.800     *u.nm/u.ps;
+</pre><h2>SrRuO3 unit cell<a name="3"></a></h2><pre class="codeinput">propSRO.aAxis           = cSTOsub;              <span class="comment">% aAxis</span>
+propSRO.bAxis           = cSTOsub;              <span class="comment">% bAxis</span>
+propSRO.debWalFac       = 0;                    <span class="comment">% Debye-Waller factor</span>
+propSRO.soundVel        = svSRO;                <span class="comment">% sound velocity</span>
+propSRO.optPenDepth     = 43.8*u.nm;            <span class="comment">% optical penetration depth</span>
+propSRO.thermCond       = 5.72*u.W/(u.m *u.K);  <span class="comment">% heat conductivity</span>
+propSRO.linThermExp     = 1.03e-5;              <span class="comment">% linear thermal expansion</span>
+propSRO.heatCapacity    = @(T)(455.2 + 0.112.*T - 2.1935e6./T.^2);
+                                                <span class="comment">% heat capacity [J/kg K]</span>
+SRO = unitCell(<span class="string">'SRO'</span>,<span class="string">'SRO'</span>,cSRO,propSRO);
+SRO.addAtom(O,0);
+SRO.addAtom(Sr,0);
+SRO.addAtom(O,0.5);
+SRO.addAtom(O,0.5);
+SRO.addAtom(Ru,0.5);
+
+<span class="comment">% SrTiO3 substrate</span>
+propSTOsub.aAxis           = cSTOsub;           <span class="comment">% aAxis</span>
+propSTOsub.bAxis           = cSTOsub;           <span class="comment">% bAxis</span>
+propSTOsub.debWalFac       = 0;                 <span class="comment">% Debye-Waller factor</span>
+propSTOsub.soundVel        = svSTO;             <span class="comment">% sound velocity</span>
+propSTOsub.optPenDepth     = Inf;               <span class="comment">% optical penetration depth</span>
+propSTOsub.thermCond       = 12*u.W/(u.m *u.K); <span class="comment">% heat conductivity</span>
+propSTOsub.linThermExp     = 1e-5;              <span class="comment">% linear thermal expansion</span>
+propSTOsub.heatCapacity    = @(T)(733.73 + 0.0248.*T - 6.531e6./T.^2);
+                                                <span class="comment">% heat capacity [J/kg K]</span>
+STOsub = unitCell(<span class="string">'STOsub'</span>, <span class="string">'STOsub'</span>, cSTOsub, propSTOsub);
+STOsub.addAtom(O,0);
+STOsub.addAtom(Sr,0);
+STOsub.addAtom(O,0.5);
+STOsub.addAtom(O,0.5);
+STOsub.addAtom(Ti,0.5);
+
+<span class="comment">% build the structure</span>
+S = structure(<span class="string">'Single Layer'</span>);
+S.addSubStructure(SRO,100);     <span class="comment">% add 100 layers of SRO to sample</span>
+S.addSubStructure(STOsub,200);  <span class="comment">% add 250 layers of STO substrate</span>
+
+distances = S.getDistancesOfUnitCells();
+</pre><h2>Initialize Heat Simulation<a name="4"></a></h2><p>Before we start the real simulation we have to initialize a heat simulation object and set some of its properties. These properties are common for all simulation objects in the package.</p><pre class="codeinput"><span class="comment">% Set a valid path as _cacheDir_, where data will be saved to be reused at</span>
+<span class="comment">% later times. This path must exist on your disk, e.g. 'C:\...\Cache'</span>
+cacheDir = <span class="string">'./cache'</span>; <span class="comment">% the current path</span>
+<span class="comment">% This boolean defines, if data is loaded from the cache or is recalculated.</span>
+forceRecalc = false;
+<span class="comment">% Display settings</span>
+dispMessages = true;   <span class="comment">% enable any message during simulations</span>
+dispCalcTime = true;   <span class="comment">% enable displaying calculation time of simulations</span>
+progressBar  = <span class="string">'text'</span>; <span class="comment">% set the type of progress bars in simulations:</span>
+                       <span class="comment">% 'text', 'gui', 'none'</span>
+
+<span class="comment">% Initialize the heat simulation obeject with the sample structure and the</span>
+<span class="comment">% foreRecalc boolean</span>
+H = heat(S,forceRecalc);
+H.setCacheDir(cacheDir); <span class="comment">% set the cache directory</span>
+<span class="comment">% set the display parameters for this simulation object</span>
+H.dispMessages      = dispMessages;
+H.dispCalcTime      = dispCalcTime;
+H.progressBarType   = progressBar;
+</pre><p>We can also display the settings of the properties of the simulation instance:</p><pre class="codeinput">H.disp();
+</pre><pre class="codeoutput">Heat simulation properties:
+heat diffusion                 : false
+interpolate at interfaces      : 11
+no distance mesh is set for heat diffusion calculations.
+ode options                         :
+    RelTol: 1.0000e-03
+
+left boundary type                 : isolator
+right boundary type            : isolator
+This is the current structure for the simulations:
+__________________________________________________
+Structure properties:
+Name  : Single Layer
+Length: 117.59 nm
+----
+100 times SRO: 39.49 nm
+200 times STOsub: 78.10 nm
+----
+__________________________________________________
+Display properties
+force recalc             : false
+cache directory          : ./cache
+display messages         : true
+display calculation time : true
+progress bar type        : text
+</pre><h2>Simple Excitation<a name="6"></a></h2><p>Now we want to calculate the temperature of the sample after an instantaneous excitation. Therefor we need to define a time vector on which we want to retrieve the results and the exciting fluenece, as well as an initial temperature for the sample structure. The initial temperature can be either a scalar which is then the constant temperature of the whole sample structure, of the initial temperature can be a vector of temperatures for each single unit cell. The result of the simulation mainly depends on the optical penetration depth, volume, and heat capacity of the involved unit cells.</p><pre class="codeinput">time        = (-10:0.1:200)*u.ps;
+fluence     = 20*u.mJ/u.cm^2;
+initTemp    = 300*u.K;
+
+<span class="comment">% The resulting temperature profile is calculated in one line:</span>
+tempMap = H.getTempMap(time,fluence,initTemp);
+</pre><pre class="codeoutput">Elapsed time for _temperatureAfterDeltaExcitation_: 0.35648 seconds.
+Elapsed time for _tempMap_: 0.41105 seconds.
+_tempMap_ saved to file .\cache\tempMap_3a6e1dd66ca5f2a993b7927c81ef487a_be9129053319d07d55f0bd5422da1449.mat
+</pre><p>plot the results:</p><pre class="codeinput">figure(1)
+subplot(2,1,1)
+plot(distances/u.nm, tempMap(time == 0,:));
+xlabel(<span class="string">'z [nm]'</span>); ylabel(<span class="string">'Temperature [K]'</span>);
+box <span class="string">on</span>;
+set(gca, <span class="string">'XMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'YMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'TickDir'</span>, <span class="string">'out'</span>);
+subplot(2,1,2)
+kk = surf(distances/u.nm,time/u.ps,tempMap);
+set(kk, <span class="string">'LineStyle'</span>, <span class="string">'none'</span>);
+title(<span class="string">'Temperature [K]'</span>);
+xlabel(<span class="string">'z [nm]'</span>); ylabel(<span class="string">'Delay [ps]'</span>);
+axis([distances(1)/u.nm distances(end)/u.nm time(1)/u.ps time(end)/u.ps])
+box; colorbar; colormap(jet(255));
+set(gca, <span class="string">'XMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'YMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'TickDir'</span>, <span class="string">'out'</span>);
+</pre><img vspace="5" hspace="5" src="heatExample_01.png" alt=""> <h2>Excitation with Heat Diffusion<a name="8"></a></h2><p>In order to include heat diffusion we have to change an internal boolean of the heat simulation instance which is default false - for no heat diffusion. This can also be done during the initialization...</p><pre class="codeinput">H.heatDiffusion = true;
+
+<span class="comment">% The resulting temperature profile is calculated in one line:</span>
+tempMap = H.getTempMap(time,fluence,initTemp);
+</pre><pre class="codeoutput">Calculating _heatDiffusion_ ...
+Elapsed time for _heatDiffusion_: 1.7871 seconds.
+Elapsed time for _temperatureAfterDeltaExcitation_: 0.23377 seconds.
+Calculating _heatDiffusion_ ...
+Elapsed time for _heatDiffusion_: 12.5081 seconds.
+Elapsed time for _tempMap_: 14.5447 seconds.
+_tempMap_ saved to file .\cache\tempMap_3a6e1dd66ca5f2a993b7927c81ef487a_721cd1b25ac95ded71971abd071a0049.mat
+</pre><p>plot the results:</p><pre class="codeinput">figure(2)
+kk = surf(distances/u.nm,time/u.ps,tempMap);
+set(kk, <span class="string">'LineStyle'</span>, <span class="string">'none'</span>);
+title(<span class="string">'Temperature [K]'</span>); xlabel(<span class="string">'z [nm]'</span>); ylabel(<span class="string">'Delay [ps]'</span>);
+axis([distances(1)/u.nm distances(end)/u.nm time(1)/u.ps time(end)/u.ps])
+box; colorbar; colormap(jet(255));
+set(gca, <span class="string">'XMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'YMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'TickDir'</span>, <span class="string">'out'</span>);
+</pre><img vspace="5" hspace="5" src="heatExample_02.png" alt=""> <h2>Heat Diffusion Parameters<a name="10"></a></h2><p>For heat diffusion simulations various parameters for the underlying MATLAB pdepe solver can be altered. First of all we can set all direct solver setting using the H.odeOptions struct. See the MATLAB odeset documentations for further information on this topic. Here we can increase the relative error tolerance for the simulation in order to speed things up:</p><pre class="codeinput">H.odeOptions.RelTol = 0.1;
+<span class="comment">% We can also easily alter the spacial grid for the solver by setting the</span>
+<span class="comment">% property H.distances. Less spaces in space are generally faster to solve.</span>
+H.distances = linspace(0,distances(end), 100);
+<span class="comment">% In case of large gradients or even steps at interface we can increase the</span>
+<span class="comment">% number of interpolations points at interfaces. The value is set to 11 by</span>
+<span class="comment">% default and should be an odd integer. Note, that the interpolation at the</span>
+<span class="comment">% interfaces is not included if you define your own spacial grid with the</span>
+<span class="comment">% H.distance property above.</span>
+disp(H.intpAtInterface);
+</pre><pre class="codeoutput">    11
+
+</pre><p>Finally we can also set boundary conditions for the heat diffusion. The default for the left (x = 0) and right side (x = x_end) is an isolating boundary. The two other possibilities are <i>temperature</i> and <i>flux</i>. In the latter cases you also have to provide a value for the temperature/flux:</p><pre class="codeinput">H.setBoundaryCondition(<span class="string">'side'</span>, <span class="string">'left'</span>, <span class="string">'type'</span>, <span class="string">'flux'</span>, <span class="string">'value'</span>, 5e11*u.W/u.m^2);
+H.setBoundaryCondition(<span class="string">'side'</span>, <span class="string">'right'</span>, <span class="string">'type'</span>, <span class="string">'temperature'</span>, <span class="string">'value'</span>, 300*u.K);
+</pre><pre class="codeinput">H.disp();
+</pre><pre class="codeoutput">Heat simulation properties:
+heat diffusion                 : true
+interpolate at interfaces      : 11
+a distance mesh is set for heat diffusion calculations.
+ode options                         :
+    RelTol: 0.1000
+
+left boundary type                 : flux
+left boundary flux [W/m^2]     : 500000000000
+right boundary type            : temperature
+right boundary temperature [K] : 300
+This is the current structure for the simulations:
+__________________________________________________
+Structure properties:
+Name  : Single Layer
+Length: 117.59 nm
+----
+100 times SRO: 39.49 nm
+200 times STOsub: 78.10 nm
+----
+__________________________________________________
+Display properties
+force recalc             : false
+cache directory          : ./cache
+display messages         : true
+display calculation time : true
+progress bar type        : text
+</pre><pre class="codeinput"><span class="comment">%The resulting temperature profile is calculated in one line:</span>
+tempMap = H.getTempMap(time,fluence,initTemp);
+</pre><pre class="codeoutput">Calculating _heatDiffusion_ ...
+Elapsed time for _heatDiffusion_: 0.54689 seconds.
+Elapsed time for _temperatureAfterDeltaExcitation_: 0.22932 seconds.
+Calculating _heatDiffusion_ ...
+Elapsed time for _heatDiffusion_: 0.89527 seconds.
+Elapsed time for _tempMap_: 1.6821 seconds.
+_tempMap_ saved to file .\cache\tempMap_3a6e1dd66ca5f2a993b7927c81ef487a_162339da7fc1bc72a62a008b28cbf2ed.mat
+</pre><p>plot the results:</p><pre class="codeinput">figure(3)
+kk = surf(distances/u.nm,time/u.ps,tempMap);
+set(kk, <span class="string">'LineStyle'</span>, <span class="string">'none'</span>);
+title(<span class="string">'Temperature [K]'</span>); xlabel(<span class="string">'z [nm]'</span>); ylabel(<span class="string">'Delay [ps]'</span>);
+axis([distances(1)/u.nm distances(end)/u.nm time(1)/u.ps time(end)/u.ps])
+box; colorbar; colormap(jet(255));
+set(gca, <span class="string">'XMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'YMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'TickDir'</span>, <span class="string">'out'</span>);
+</pre><img vspace="5" hspace="5" src="heatExample_03.png" alt=""> <p class="footer"><br>
+      Published with MATLAB&reg; 7.14<br></p></div><!--
+##### SOURCE BEGIN #####
+%% Heat Example
+% In this example we show how to use the heat simulations in order to
+% calculate the excitation of a sample and its according temperature
+% evolution.
+%
+% Before we can start a heat simulation we need to build a sample
+% structure. Be aware of that heat diffusion simulations can take a
+% tremendous amount of time, especially for structures with a large number
+% of unit cells.
+%
+% Be sure to include all folders of the udkm1dsim toolbox to your MATLAB 
+% search path. Especially the _/parameters_ and _/helpers_ folders with all 
+% their subfolders.
+
+%%
+% here we clear the workspace and close all figures
+clear all;
+close all;
+% these are some units and constants we can use later on
+u            = units;
+const        = constants;
+%% Build a Sample Structure
+
+% create atoms
+O   = atomBase('O');
+Ti  = atomBase('Ti');
+Sr  = atomBase('Sr');
+Ru  = atomBase('Ru');
+Pb  = atomBase('Pb');
+Zr  = atomBase('Zr');
+
+% c-axis lattice constants of the two materials
+cSTOsub     = 3.905     *u.ang;
+cSRO        = 3.94897   *u.ang;
+% sound velocities [nm/ps] of the materials
+svSRO       = 6.312     *u.nm/u.ps;
+svSTO       = 7.800     *u.nm/u.ps;
+
+%% SrRuO3 unit cell
+propSRO.aAxis           = cSTOsub;              % aAxis
+propSRO.bAxis           = cSTOsub;              % bAxis
+propSRO.debWalFac       = 0;                    % Debye-Waller factor
+propSRO.soundVel        = svSRO;                % sound velocity
+propSRO.optPenDepth     = 43.8*u.nm;            % optical penetration depth
+propSRO.thermCond       = 5.72*u.W/(u.m *u.K);  % heat conductivity
+propSRO.linThermExp     = 1.03e-5;              % linear thermal expansion
+propSRO.heatCapacity    = @(T)(455.2 + 0.112.*T - 2.1935e6./T.^2);
+                                                % heat capacity [J/kg K]
+SRO = unitCell('SRO','SRO',cSRO,propSRO);
+SRO.addAtom(O,0);
+SRO.addAtom(Sr,0);
+SRO.addAtom(O,0.5);
+SRO.addAtom(O,0.5);
+SRO.addAtom(Ru,0.5);
+
+% SrTiO3 substrate
+propSTOsub.aAxis           = cSTOsub;           % aAxis
+propSTOsub.bAxis           = cSTOsub;           % bAxis
+propSTOsub.debWalFac       = 0;                 % Debye-Waller factor
+propSTOsub.soundVel        = svSTO;             % sound velocity
+propSTOsub.optPenDepth     = Inf;               % optical penetration depth
+propSTOsub.thermCond       = 12*u.W/(u.m *u.K); % heat conductivity
+propSTOsub.linThermExp     = 1e-5;              % linear thermal expansion
+propSTOsub.heatCapacity    = @(T)(733.73 + 0.0248.*T - 6.531e6./T.^2);
+                                                % heat capacity [J/kg K]
+STOsub = unitCell('STOsub', 'STOsub', cSTOsub, propSTOsub);
+STOsub.addAtom(O,0);
+STOsub.addAtom(Sr,0);
+STOsub.addAtom(O,0.5);
+STOsub.addAtom(O,0.5);
+STOsub.addAtom(Ti,0.5);
+
+% build the structure
+S = structure('Single Layer');
+S.addSubStructure(SRO,100);     % add 100 layers of SRO to sample
+S.addSubStructure(STOsub,200);  % add 250 layers of STO substrate
+
+distances = S.getDistancesOfUnitCells();
+%% Initialize Heat Simulation
+% Before we start the real simulation we have to initialize a heat simulation
+% object and set some of its properties. These properties are common for
+% all simulation objects in the package.
+
+% Set a valid path as _cacheDir_, where data will be saved to be reused at 
+% later times. This path must exist on your disk, e.g. 'C:\...\Cache'
+cacheDir = './cache'; % the current path
+% This boolean defines, if data is loaded from the cache or is recalculated.
+forceRecalc = false; 
+% Display settings
+dispMessages = true;   % enable any message during simulations
+dispCalcTime = true;   % enable displaying calculation time of simulations
+progressBar  = 'text'; % set the type of progress bars in simulations:
+                       % 'text', 'gui', 'none'
+
+% Initialize the heat simulation obeject with the sample structure and the
+% foreRecalc boolean
+H = heat(S,forceRecalc);
+H.setCacheDir(cacheDir); % set the cache directory
+% set the display parameters for this simulation object
+H.dispMessages      = dispMessages;
+H.dispCalcTime      = dispCalcTime;
+H.progressBarType   = progressBar;
+
+%%
+% We can also display the settings of the properties of the simulation
+% instance:
+H.disp();
+
+%% Simple Excitation
+% Now we want to calculate the temperature of the sample after an
+% instantaneous excitation. Therefor we need to define a time vector on
+% which we want to retrieve the results and the exciting fluenece, as well
+% as an initial temperature for the sample structure. The initial
+% temperature can be either a scalar which is then the constant temperature
+% of the whole sample structure, of the initial temperature can be a vector
+% of temperatures for each single unit cell. The result of the simulation
+% mainly depends on the optical penetration depth, volume, and heat capacity 
+% of the involved unit cells. 
+time        = (-10:0.1:200)*u.ps;
+fluence     = 20*u.mJ/u.cm^2;
+initTemp    = 300*u.K;
+
+% The resulting temperature profile is calculated in one line:
+tempMap = H.getTempMap(time,fluence,initTemp);
+
+%%
+% plot the results:
+figure(1)
+subplot(2,1,1)
+plot(distances/u.nm, tempMap(time == 0,:));
+xlabel('z [nm]'); ylabel('Temperature [K]');
+box on;
+set(gca, 'XMinorTick', 'on', 'YMinorTick', 'on', 'TickDir', 'out');
+subplot(2,1,2)
+kk = surf(distances/u.nm,time/u.ps,tempMap);
+set(kk, 'LineStyle', 'none');
+title('Temperature [K]'); 
+xlabel('z [nm]'); ylabel('Delay [ps]');
+axis([distances(1)/u.nm distances(end)/u.nm time(1)/u.ps time(end)/u.ps])
+box; colorbar; colormap(jet(255));
+set(gca, 'XMinorTick', 'on', 'YMinorTick', 'on', 'TickDir', 'out');
+
+%% Excitation with Heat Diffusion
+% In order to include heat diffusion we have to change an internal boolean
+% of the heat simulation instance which is default false - for no heat
+% diffusion. This can also be done during the initialization...
+H.heatDiffusion = true;
+
+% The resulting temperature profile is calculated in one line:
+tempMap = H.getTempMap(time,fluence,initTemp);
+
+%%
+% plot the results:
+figure(2)
+kk = surf(distances/u.nm,time/u.ps,tempMap);
+set(kk, 'LineStyle', 'none');
+title('Temperature [K]'); xlabel('z [nm]'); ylabel('Delay [ps]');
+axis([distances(1)/u.nm distances(end)/u.nm time(1)/u.ps time(end)/u.ps])
+box; colorbar; colormap(jet(255));
+set(gca, 'XMinorTick', 'on', 'YMinorTick', 'on', 'TickDir', 'out');
+
+%% Heat Diffusion Parameters
+% For heat diffusion simulations various parameters for the underlying
+% MATLAB pdepe solver can be altered. First of all we can set all direct
+% solver setting using the H.odeOptions struct. See the MATLAB odeset
+% documentations for further information on this topic. Here we can
+% increase the relative error tolerance for the simulation in order to
+% speed things up:
+H.odeOptions.RelTol = 0.1;
+% We can also easily alter the spacial grid for the solver by setting the
+% property H.distances. Less spaces in space are generally faster to solve.
+H.distances = linspace(0,distances(end), 100);
+% In case of large gradients or even steps at interface we can increase the
+% number of interpolations points at interfaces. The value is set to 11 by
+% default and should be an odd integer. Note, that the interpolation at the
+% interfaces is not included if you define your own spacial grid with the
+% H.distance property above.
+disp(H.intpAtInterface);
+%%
+% Finally we can also set boundary conditions for the heat diffusion. The
+% default for the left (x = 0) and right side (x = x_end) is an isolating
+% boundary. The two other possibilities are _temperature_ and _flux_. In
+% the latter cases you also have to provide a value for the
+% temperature/flux:
+H.setBoundaryCondition('side', 'left', 'type', 'flux', 'value', 5e11*u.W/u.m^2);
+H.setBoundaryCondition('side', 'right', 'type', 'temperature', 'value', 300*u.K);
+
+%%
+H.disp();
+%%
+%The resulting temperature profile is calculated in one line:
+tempMap = H.getTempMap(time,fluence,initTemp);
+%%
+% plot the results:
+figure(3)
+kk = surf(distances/u.nm,time/u.ps,tempMap);
+set(kk, 'LineStyle', 'none');
+title('Temperature [K]'); xlabel('z [nm]'); ylabel('Delay [ps]');
+axis([distances(1)/u.nm distances(end)/u.nm time(1)/u.ps time(end)/u.ps])
+box; colorbar; colormap(jet(255));
+set(gca, 'XMinorTick', 'on', 'YMinorTick', 'on', 'TickDir', 'out');
+##### SOURCE END #####
+--></body></html>

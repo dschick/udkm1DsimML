@@ -1,0 +1,491 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Phonon Wave packet</title><meta name="generator" content="MATLAB 7.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-05-15"><meta name="DC.source" content="phononWavePacketExample.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+
+  </style></head><body><div class="content"><h1>Phonon Wave Packet</h1><!--introduction--><p>In this example a 15nm metallic SRO thin film on dielectric STO substrate is excited by a multipulse sequence of ultrashort laser pulses with a pulse distance of 7.2ps in order to generate a quasi-monochromatic phonon wave packet. The phonon wave packet is evidenced as separate side-bands of the substrate peak Bragg reflection.</p><p>The simulation can be compared to the experiments given in Ref. [1].</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">general setting</a></li><li><a href="#2">Set simulation parameters</a></li><li><a href="#3">Initialize the Sample</a></li><li><a href="#4">Initialize the atoms of the Sample Structure</a></li><li><a href="#5">Initialize the unitCells of the Sample</a></li><li><a href="#6">SRO layer</a></li><li><a href="#7">STO substrate</a></li><li><a href="#8">Initialize the Sample Structure</a></li><li><a href="#9">Initialize the Heat Diffusion Simulation</a></li><li><a href="#10">Define the Multi-Pulse Excitation</a></li><li><a href="#11">Calculate Temperature Pattern</a></li><li><a href="#12">Plot the Results of the Heat Simulations</a></li><li><a href="#13">Initialize the Phonon Dynamics Simulation</a></li><li><a href="#14">Calculate Strain Pattern</a></li><li><a href="#15">Plot the Results of the Phonon Dynamics Simulations</a></li><li><a href="#16">Initilaize dynamic XRD Simulation</a></li><li><a href="#17">Homogeneous Dynamic XRD Simulations</a></li><li><a href="#18">Inhomogeneous Dynamic XRD Simulations</a></li><li><a href="#20">Plot the Results of the Dynamic XRD Simulations</a></li><li><a href="#23">References</a></li></ul></div><h2>general setting<a name="1"></a></h2><pre class="codeinput">close <span class="string">all</span>; <span class="comment">% close all previous figures</span>
+clear <span class="string">all</span>; <span class="comment">% clear the previous workspace</span>
+cacheDir = <span class="string">'./cache'</span>; <span class="comment">% set the cache folder</span>
+forceRecalc = false;   <span class="comment">% force the simulations to recalc</span>
+
+<span class="comment">% define units and constants objects</span>
+u = units;
+const = constants;
+</pre><h2>Set simulation parameters<a name="2"></a></h2><pre class="codeinput">time            = (-5:0.5:100)*u.ps;          <span class="comment">% the time we want to simulate</span>
+E               = 12000*u.eV;               <span class="comment">% energy of X-rays</span>
+sp              = 0;                        <span class="comment">% polarization factor:</span>
+                                            <span class="comment">% 0 -&gt; S; 0.5 -&gt; mixed; 1 -&gt; P</span>
+qz              = (3.1:0.0005:3.3)*u.ang^-1; <span class="comment">% qz range</span>
+initTemp        = 300*u.K;                  <span class="comment">% initial temperature of the sample</span>
+heatDiffusion   = false;                    <span class="comment">% disable heat diffusion</span>
+</pre><h2>Initialize the Sample<a name="3"></a></h2><pre class="codeinput">disp(<span class="string">'Initialize sample ...'</span>);
+</pre><pre class="codeoutput">Initialize sample ...
+</pre><h2>Initialize the atoms of the Sample Structure<a name="4"></a></h2><pre class="codeinput">O  = atomBase(<span class="string">'O'</span>);
+Ti = atomBase(<span class="string">'Ti'</span>);
+Sr = atomBase(<span class="string">'Sr'</span>);
+Ru = atomBase(<span class="string">'Ru'</span>);
+</pre><h2>Initialize the unitCells of the Sample<a name="5"></a></h2><p>lattice constants in Angstrom</p><pre class="codeinput">cSTOsub     = 3.905     *u.ang;
+cSRO        = 3.9493    *u.ang;
+
+<span class="comment">% sound velocities [nm/ps]</span>
+svSRO       = 6.312     *u.nm/u.ps;
+svSTO       = 7.900     *u.nm/u.ps;
+</pre><h2>SRO layer<a name="6"></a></h2><pre class="codeinput">propSRO.aAxis           = cSTOsub;              <span class="comment">% aAxis</span>
+propSRO.bAxis           = cSTOsub;              <span class="comment">% bAxis</span>
+propSRO.debWalFac       = 0;                    <span class="comment">% Debye-Waller factor</span>
+propSRO.soundVel        = svSRO;                <span class="comment">% sound velocity</span>
+propSRO.optPenDepth     = 52*u.nm;              <span class="comment">% optical penetration depth [nm]</span>
+propSRO.thermCond       = 5.72*u.W/(u.m *u.K);  <span class="comment">% heat conductivity [W/m K]</span>
+propSRO.linThermExp     = 1.03e-5;              <span class="comment">% linear thermal expansion</span>
+propSRO.heatCapacity    = 464.419;              <span class="comment">% heat capacity [J /kg K]</span>
+
+SRO = unitCell(<span class="string">'SRO'</span>,<span class="string">'SRO'</span>,cSRO,propSRO);
+SRO.addAtom(O,0);
+SRO.addAtom(Sr,0);
+SRO.addAtom(O,0.5);
+SRO.addAtom(O,0.5);
+SRO.addAtom(Ru,0.5);
+</pre><h2>STO substrate<a name="7"></a></h2><pre class="codeinput">propSTOsub.aAxis           = cSTOsub;           <span class="comment">% aAxis</span>
+propSTOsub.bAxis           = cSTOsub;           <span class="comment">% bAxis</span>
+propSTOsub.debWalFac       = 0;                 <span class="comment">% Debye-Waller factor</span>
+propSTOsub.soundVel        = svSTO;             <span class="comment">% sound velocity</span>
+propSTOsub.optPenDepth     = Inf;               <span class="comment">% optical penetration depth [nm]</span>
+propSTOsub.thermCond       = 12*u.W/(u.m *u.K); <span class="comment">% heat conductivity [W/m K]</span>
+propSTOsub.linThermExp     = 1e-5;              <span class="comment">% linear thermal expansion</span>
+propSTOsub.heatCapacity    = @(T)(733.73 + 0.0248.*T - 6.531e6./T.^2);
+                                                <span class="comment">% heat capacity [J/kg K]</span>
+STOsub = unitCell(<span class="string">'STOsub'</span>, <span class="string">'STOsub'</span>, cSTOsub, propSTOsub);
+STOsub.addAtom(O,0);
+STOsub.addAtom(Sr,0);
+STOsub.addAtom(O,0.5);
+STOsub.addAtom(O,0.5);
+STOsub.addAtom(Ti,0.5);
+
+STOsub.phononDamping = 1e-12; <span class="comment">% phonon damping [kg/s]</span>
+</pre><h2>Initialize the Sample Structure<a name="8"></a></h2><pre class="codeinput">S = structure(<span class="string">'SRO on STO'</span>);
+<span class="comment">% add unit cells to the structure</span>
+S.addSubStructure(SRO,38);
+S.addSubStructure(STOsub,5000);
+<span class="comment">% add a static substrate to the sample structure</span>
+substrate = structure(<span class="string">'STOsubstrate'</span>);
+substrate.addSubStructure(STOsub,1000000)<span class="comment">%</span>
+S.addSubstrate(substrate);
+
+distances = S.getDistancesOfUnitCells(); <span class="comment">% these are the distances of each unitCell from the surface</span>
+</pre><h2>Initialize the Heat Diffusion Simulation<a name="9"></a></h2><p>Provide the sample structure for the heat simulation.</p><pre class="codeinput">H = heat(S,forceRecalc,heatDiffusion);
+H.setCacheDir(cacheDir); <span class="comment">% set the cache directory</span>
+</pre><h2>Define the Multi-Pulse Excitation<a name="10"></a></h2><pre class="codeinput">pulseWidth      = 0*u.ps;
+pulseSep        = 7.2*u.ps;
+fluence         = 5.5*u.mJ/u.cm^2;
+
+excitation(1,:) = fluence*ones(8,1); <span class="comment">% fluence</span>
+excitation(2,:) = (0:7)*pulseSep; <span class="comment">% time when the excitation happens</span>
+excitation(3,:) = pulseWidth;   <span class="comment">% pulse width of the excitation</span>
+</pre><h2>Calculate Temperature Pattern<a name="11"></a></h2><p>Here calculate the temperature map and temperature difference map for the given time, fluence and initial temperature.</p><pre class="codeinput">[tempMap deltaTempMap] = H.getTempMap(time,excitation,initTemp);
+</pre><pre class="codeoutput">Elapsed time for _temperatureAfterDeltaExcitation_: 1.0029 seconds.
+Elapsed time for _temperatureAfterDeltaExcitation_: 0.81316 seconds.
+Elapsed time for _temperatureAfterDeltaExcitation_: 0.81661 seconds.
+Elapsed time for _temperatureAfterDeltaExcitation_: 0.80606 seconds.
+Elapsed time for _temperatureAfterDeltaExcitation_: 0.84294 seconds.
+Elapsed time for _temperatureAfterDeltaExcitation_: 0.83891 seconds.
+Elapsed time for _temperatureAfterDeltaExcitation_: 0.81316 seconds.
+Elapsed time for _temperatureAfterDeltaExcitation_: 0.80154 seconds.
+Elapsed time for _tempMap_: 7.0903 seconds.
+_tempMap_ saved to file .\cache\tempMap_57576572029f5665bd74ea4ff04bd39b_bd1dc1da6bdeefd903db0b7b5d9e756a.mat
+</pre><h2>Plot the Results of the Heat Simulations<a name="12"></a></h2><pre class="codeinput">figure(1)
+<span class="comment">% plot the temperature map</span>
+kk = surf(distances/u.nm,time/u.ps,tempMap);
+set(kk, <span class="string">'LineStyle'</span>, <span class="string">'none'</span>);
+xlabel(<span class="string">'z [nm]'</span>);
+ylabel(<span class="string">'Delay [ps]'</span>);
+title(<span class="string">'Temperature [K]'</span>);
+set(gca, <span class="string">'XMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'YMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'TickDir'</span>, <span class="string">'out'</span>);
+axis([0 100 time(1)/u.ps time(end)/u.ps]);
+box <span class="string">on</span>; colorbar(<span class="string">'Location'</span>, <span class="string">'EastOutside'</span>); colormap <span class="string">jet(255)</span>;
+</pre><img vspace="5" hspace="5" src="phononWavePacketExample_01.png" alt=""> <h2>Initialize the Phonon Dynamics Simulation<a name="13"></a></h2><p>Provide the sample structure for the phonon dynamics simulation</p><pre class="codeinput">P = phononNum(S,forceRecalc);
+P.setCacheDir(cacheDir); <span class="comment">% set the cache directory</span>
+</pre><h2>Calculate Strain Pattern<a name="14"></a></h2><p>Here we calculate the strain map for the given temperature, and temperature difference map and the time vector.</p><pre class="codeinput">strainMap = P.getStrainMap(time,tempMap,deltaTempMap);
+</pre><pre class="codeoutput">Calculating linear thermal expansion ...
+Calculating coherent dynamics with ODE solver ...
+ODE integration: 100%    [..................................................]
+Elapsed time for _strainMap_: 25.2911 seconds.
+_strainMap_ saved to file .\cache\strainMapNum_9264115b4dd15a73860771017586ce40_ca8649dff3f47d5ef61f2fe9184348dd.mat
+</pre><h2>Plot the Results of the Phonon Dynamics Simulations<a name="15"></a></h2><pre class="codeinput">figure(2);
+kk = surf(distances/u.nm,time/u.ps,100*strainMap);
+set(kk, <span class="string">'FaceColor'</span>, <span class="string">'interp'</span>, <span class="string">'LineStyle'</span>, <span class="string">'none'</span>);
+set(gca, <span class="string">'XMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'YMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'TickDir'</span>, <span class="string">'out'</span>);
+axis([0 800 time(1)/u.ps time(end)/u.ps])
+caxis([-10*max(max(strainMap)) 10*max(max(strainMap))]);
+colormap <span class="string">fireice(255)</span>;
+colorbar(<span class="string">'location'</span>, <span class="string">'EastOutside'</span>);
+xlabel(<span class="string">'z [nm]'</span>);
+ylabel(<span class="string">'Delay [ps]'</span>);
+title(<span class="string">'Strain [%]'</span>);
+</pre><img vspace="5" hspace="5" src="phononWavePacketExample_02.png" alt=""> <h2>Initilaize dynamic XRD Simulation<a name="16"></a></h2><pre class="codeinput">disp(<span class="string">'Initilaize dynamic XRD Simulation'</span>);
+D = XRDdyn(S,forceRecalc,E,sp); <span class="comment">% set main parameters</span>
+D.setCacheDir(cacheDir); <span class="comment">% set the cache directory</span>
+D.setQz(qz); <span class="comment">% set q_z range</span>
+</pre><pre class="codeoutput">Initilaize dynamic XRD Simulation
+</pre><h2>Homogeneous Dynamic XRD Simulations<a name="17"></a></h2><p>Here we calculate the rocking curve for no strain at all for the full sample .</p><pre class="codeinput">Rh = D.homogeneousReflectivity(); <span class="comment">% thats all</span>
+
+<span class="comment">% define an instrumental function to convolute the result with:</span>
+mu          = 0.1;
+width       = 0.001*u.ang^-1;
+instFunc    = @(qz)(pseudo_voigt(qz,width,mu));
+
+<span class="comment">% carry out the convolution with the instrumental function</span>
+[Rhi xc] = D.convWithInstrumentFunction(Rh,qz,instFunc);
+
+<span class="comment">% Plot the Results of the homogeneous Dynamic XRD Simulations</span>
+figure(3)
+semilogy(qz/u.ang^-1, Rh, <span class="string">'-b'</span>, <span class="string">'LineWidth'</span>, 1);
+hold <span class="string">on</span>
+semilogy(qz/u.ang^-1, instFunc(qz-xc)/2, <span class="string">'-k'</span>, <span class="string">'LineWidth'</span>, 1);
+semilogy(qz/u.ang^-1, Rhi, <span class="string">'-r'</span>, <span class="string">'LineWidth'</span>, 2);
+hold <span class="string">off</span>
+axis([qz(1)/u.ang^-1 qz(end)/u.ang^-1 1e-6 1]);
+set(gca,<span class="string">'YScale'</span>, <span class="string">'log'</span>);
+grid <span class="string">on</span>; box <span class="string">on</span>;
+title(<span class="string">'Homogeneous XRD'</span>);
+xlabel(<span class="string">'q_z [Ang.^{-1}]'</span>);
+ylabel(<span class="string">'Reflectivity'</span>);
+lh = legend(<span class="string">'Rock. Curve'</span>, <span class="string">'Inst. Func.'</span>, <span class="string">'Conv. Rock. Curve'</span>);
+set(lh, <span class="string">'Location'</span>, <span class="string">'NorthWest'</span>, <span class="string">'FontSize'</span>, 10);
+set(gca, <span class="string">'Ydir'</span>, <span class="string">'normal'</span>, <span class="string">'XMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'YMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'TickDir'</span>, <span class="string">'out'</span>);
+</pre><pre class="codeoutput">Calculating _homogenousReflectivity_ ...
+Elapsed time for _homogenousReflectivity_: 0.13365 seconds.
+</pre><img vspace="5" hspace="5" src="phononWavePacketExample_03.png" alt=""> <h2>Inhomogeneous Dynamic XRD Simulations<a name="18"></a></h2><p>Now we calculate the inhomogeneous dynamic XRD simulation for each time step each single strain for each unit cell in the sample</p><p>Calculate all strains that should be applied to all unique types of unit cells in the sample structure in order to save computational time.</p><pre class="codeinput">strainVectors = P.getReducedStrainsPerUniqueUnitCell(strainMap,100);
+
+R = D.getInhomogeneousReflectivity(strainMap,strainVectors); <span class="comment">% thats all</span>
+</pre><pre class="codeoutput">Caclulate all _refTransMatricies_ ...
+Elapsed time for _refTransMatricies_: 2.2883 seconds.
+_refTransMatrices_ saved to file .\cache\allRefTransMatrices_d8338a2e73373d52bda57ff21e83f699_6ba5c19a79b6307f2b3713e4c9c65f99.mat
+Calculating _inhomogenousReflectivity_ ...
+No matlab pool was opened in advance, so lets do it now with the default configuration!
+Starting matlabpool using the 'local' profile ... connected to 12 labs.
+Elapsed time for _inhomogeneousReflectivity_: 87.5212 seconds.
+_inhomogeneousReflectivity_ saved to file .\cache\inhomogeneousReflectivityDyn_d8338a2e73373d52bda57ff21e83f699_193ee179f3d4896a9f0bf6c56290cdf9.mat
+</pre><h2>Plot the Results of the Dynamic XRD Simulations<a name="20"></a></h2><pre class="codeinput"><span class="comment">% convolute with instrument function first</span>
+RI = D.convWithInstrumentFunction(R,qz,instFunc);
+
+figure(4)
+kk = surf(qz/u.ang^-1,time/u.ps,log10(RI));
+set(kk, <span class="string">'LineStyle'</span>, <span class="string">'none'</span>);
+axis([qz(1)/u.ang^-1 qz(end)/u.ang^-1 time(1)/u.ps time(end)/u.ps])
+box <span class="string">on</span>; colorbar; colormap(fireice(256));
+caxis([-5 -2]);
+xlabel(<span class="string">'q_z [Ang^{-1}])'</span>);
+ylabel(<span class="string">'Delay [ps]'</span>);
+title(<span class="string">'Transient X-ray Reflectivity'</span>);
+set(gca, <span class="string">'XMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'YMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'TickDir'</span>, <span class="string">'out'</span>);
+</pre><img vspace="5" hspace="5" src="phononWavePacketExample_04.png" alt=""> <pre class="codeinput">tPlot   = (0:7.2:60)*u.ps;
+figure(5)
+kk = waterfall(qz/u.ang^-1,tPlot/u.ps,log10(RI(finderb(tPlot,time),:)));
+set(kk, <span class="string">'LineWidth'</span>, 2);
+xlabel(<span class="string">'q_z [Ang^{-1}])'</span>);
+ylabel(<span class="string">'Delay [ps]'</span>);
+zlabel(<span class="string">'Reflectivity'</span>);
+title(<span class="string">'Transient Substrate Side Peaks'</span>);
+view([0,0]);
+zlim([-4.5 -2.5]);
+xlim([3.225 3.245]);
+caxis([-4 -2]);
+colormap(winter);
+set(gca, <span class="string">'XMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'YMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'TickDir'</span>, <span class="string">'out'</span>);
+box <span class="string">off</span>; grid <span class="string">on</span>;
+</pre><pre class="codeinput">disp(<span class="string">'finished'</span>);
+</pre><pre class="codeoutput">finished
+</pre><img vspace="5" hspace="5" src="phononWavePacketExample_05.png" alt=""> <h2>References<a name="23"></a></h2><div><ol><li>M. Herzog, A. Bojahr, J. Goldshteyn, W. Leitenberger, I. Vrejoiu, D. Khakhulin, M. Wulff et al. (2012). <i>Detecting optically synthesized quasi-monochromatic sub-terahertz phonon wavepackets by ultrafast x-ray diffraction</i>. Applied Physics Letters, 100(9), 94101. doi:10.1063/1.3688492</li></ol></div><p class="footer"><br>
+      Published with MATLAB&reg; 7.14<br></p></div><!--
+##### SOURCE BEGIN #####
+%% Phonon Wave packet
+% In this example a 15nm metallic SRO thin film on dielectric STO substrate
+% is excited by a multipulse sequence of ultrashort laser pulses with a 
+% pulse distance of 7.2ps in order to generate a quasi-monochromatic phonon 
+% wave packet. The phonon wave packet is evidenced as separate side-bands of the 
+% substrate peak Bragg reflection.
+%
+% The simulation can be compared to the experiments given in Ref. [1].
+
+%% general setting
+close all; % close all previous figures
+clear all; % clear the previous workspace
+cacheDir = './cache'; % set the cache folder
+forceRecalc = false;   % force the simulations to recalc
+
+% define units and constants objects
+u = units;
+const = constants;
+
+%% Set simulation parameters
+time            = (-5:0.5:100)*u.ps;          % the time we want to simulate
+E               = 12000*u.eV;               % energy of X-rays
+sp              = 0;                        % polarization factor: 
+                                            % 0 -> S; 0.5 -> mixed; 1 -> P
+qz              = (3.1:0.0005:3.3)*u.ang^-1; % qz range
+initTemp        = 300*u.K;                  % initial temperature of the sample
+heatDiffusion   = false;                    % disable heat diffusion
+
+%% Initialize the Sample
+disp('Initialize sample ...');
+
+%% Initialize the atoms of the Sample Structure
+O  = atomBase('O');
+Ti = atomBase('Ti');
+Sr = atomBase('Sr');
+Ru = atomBase('Ru');
+
+%% Initialize the unitCells of the Sample
+% lattice constants in Angstrom
+cSTOsub     = 3.905     *u.ang;
+cSRO        = 3.9493    *u.ang;
+
+% sound velocities [nm/ps]
+svSRO       = 6.312     *u.nm/u.ps;
+svSTO       = 7.900     *u.nm/u.ps;
+
+%%% SRO layer
+propSRO.aAxis           = cSTOsub;              % aAxis
+propSRO.bAxis           = cSTOsub;              % bAxis
+propSRO.debWalFac       = 0;                    % Debye-Waller factor
+propSRO.soundVel        = svSRO;                % sound velocity
+propSRO.optPenDepth     = 52*u.nm;              % optical penetration depth [nm]
+propSRO.thermCond       = 5.72*u.W/(u.m *u.K);  % heat conductivity [W/m K]
+propSRO.linThermExp     = 1.03e-5;              % linear thermal expansion
+propSRO.heatCapacity    = 464.419;              % heat capacity [J /kg K]
+
+SRO = unitCell('SRO','SRO',cSRO,propSRO);
+SRO.addAtom(O,0);
+SRO.addAtom(Sr,0);
+SRO.addAtom(O,0.5);
+SRO.addAtom(O,0.5);
+SRO.addAtom(Ru,0.5);
+
+%%% STO substrate
+propSTOsub.aAxis           = cSTOsub;           % aAxis
+propSTOsub.bAxis           = cSTOsub;           % bAxis
+propSTOsub.debWalFac       = 0;                 % Debye-Waller factor
+propSTOsub.soundVel        = svSTO;             % sound velocity
+propSTOsub.optPenDepth     = Inf;               % optical penetration depth [nm]
+propSTOsub.thermCond       = 12*u.W/(u.m *u.K); % heat conductivity [W/m K]
+propSTOsub.linThermExp     = 1e-5;              % linear thermal expansion
+propSTOsub.heatCapacity    = @(T)(733.73 + 0.0248.*T - 6.531e6./T.^2);
+                                                % heat capacity [J/kg K]
+STOsub = unitCell('STOsub', 'STOsub', cSTOsub, propSTOsub);
+STOsub.addAtom(O,0);
+STOsub.addAtom(Sr,0);
+STOsub.addAtom(O,0.5);
+STOsub.addAtom(O,0.5);
+STOsub.addAtom(Ti,0.5);
+
+STOsub.phononDamping = 1e-12; % phonon damping [kg/s]
+
+%% Initialize the Sample Structure
+S = structure('SRO on STO');
+% add unit cells to the structure
+S.addSubStructure(SRO,38);
+S.addSubStructure(STOsub,5000);
+% add a static substrate to the sample structure
+substrate = structure('STOsubstrate');
+substrate.addSubStructure(STOsub,1000000)% 
+S.addSubstrate(substrate);
+
+distances = S.getDistancesOfUnitCells(); % these are the distances of each unitCell from the surface
+
+%% Initialize the Heat Diffusion Simulation
+% Provide the sample structure for the heat simulation.
+H = heat(S,forceRecalc,heatDiffusion);
+H.setCacheDir(cacheDir); % set the cache directory
+
+%% Define the Multi-Pulse Excitation
+pulseWidth      = 0*u.ps; 
+pulseSep        = 7.2*u.ps; 
+fluence         = 5.5*u.mJ/u.cm^2;
+
+excitation(1,:) = fluence*ones(8,1); % fluence
+excitation(2,:) = (0:7)*pulseSep; % time when the excitation happens
+excitation(3,:) = pulseWidth;   % pulse width of the excitation
+
+%% Calculate Temperature Pattern
+% Here calculate the temperature map and temperature difference map for the
+% given time, fluence and initial temperature.
+[tempMap deltaTempMap] = H.getTempMap(time,excitation,initTemp);
+%% Plot the Results of the Heat Simulations
+figure(1)
+% plot the temperature map
+kk = surf(distances/u.nm,time/u.ps,tempMap);
+set(kk, 'LineStyle', 'none');
+xlabel('z [nm]'); 
+ylabel('Delay [ps]');
+title('Temperature [K]');
+set(gca, 'XMinorTick', 'on', 'YMinorTick', 'on', 'TickDir', 'out');
+axis([0 100 time(1)/u.ps time(end)/u.ps]);
+box on; colorbar('Location', 'EastOutside'); colormap jet(255);
+
+%% Initialize the Phonon Dynamics Simulation
+% Provide the sample structure for the phonon dynamics simulation
+P = phononNum(S,forceRecalc);
+P.setCacheDir(cacheDir); % set the cache directory
+
+%% Calculate Strain Pattern
+% Here we calculate the strain map for the given temperature, and 
+% temperature difference map and the time vector.
+strainMap = P.getStrainMap(time,tempMap,deltaTempMap);
+
+%% Plot the Results of the Phonon Dynamics Simulations
+figure(2);
+kk = surf(distances/u.nm,time/u.ps,100*strainMap);
+set(kk, 'FaceColor', 'interp', 'LineStyle', 'none');
+set(gca, 'XMinorTick', 'on', 'YMinorTick', 'on', 'TickDir', 'out');
+axis([0 800 time(1)/u.ps time(end)/u.ps])
+caxis([-10*max(max(strainMap)) 10*max(max(strainMap))]);
+colormap fireice(255);
+colorbar('location', 'EastOutside');
+xlabel('z [nm]');
+ylabel('Delay [ps]');
+title('Strain [%]');
+
+%% Initilaize dynamic XRD Simulation
+disp('Initilaize dynamic XRD Simulation');
+D = XRDdyn(S,forceRecalc,E,sp); % set main parameters
+D.setCacheDir(cacheDir); % set the cache directory
+D.setQz(qz); % set q_z range
+
+%% Homogeneous Dynamic XRD Simulations
+% Here we calculate the rocking curve for no strain at all for the full 
+% sample .
+Rh = D.homogeneousReflectivity(); % thats all
+
+% define an instrumental function to convolute the result with:
+mu          = 0.1;
+width       = 0.001*u.ang^-1;
+instFunc    = @(qz)(pseudo_voigt(qz,width,mu));
+
+% carry out the convolution with the instrumental function 
+[Rhi xc] = D.convWithInstrumentFunction(Rh,qz,instFunc);
+
+% Plot the Results of the homogeneous Dynamic XRD Simulations
+figure(3)
+semilogy(qz/u.ang^-1, Rh, '-b', 'LineWidth', 1);
+hold on
+semilogy(qz/u.ang^-1, instFunc(qz-xc)/2, '-k', 'LineWidth', 1);
+semilogy(qz/u.ang^-1, Rhi, '-r', 'LineWidth', 2);
+hold off
+axis([qz(1)/u.ang^-1 qz(end)/u.ang^-1 1e-6 1]);
+set(gca,'YScale', 'log');
+grid on; box on;
+title('Homogeneous XRD');
+xlabel('q_z [Ang.^{-1}]'); 
+ylabel('Reflectivity');
+lh = legend('Rock. Curve', 'Inst. Func.', 'Conv. Rock. Curve');
+set(lh, 'Location', 'NorthWest', 'FontSize', 10);
+set(gca, 'Ydir', 'normal', 'XMinorTick', 'on', 'YMinorTick', 'on', 'TickDir', 'out');
+
+%% Inhomogeneous Dynamic XRD Simulations
+% Now we calculate the inhomogeneous dynamic XRD simulation for each time
+% step each single strain for each unit cell in the sample
+
+%%% 
+% Calculate all strains that should be applied to all 
+% unique types of unit cells in the sample structure in order to save
+% computational time.
+strainVectors = P.getReducedStrainsPerUniqueUnitCell(strainMap,100);
+
+R = D.getInhomogeneousReflectivity(strainMap,strainVectors); % thats all
+
+%% Plot the Results of the Dynamic XRD Simulations
+
+% convolute with instrument function first
+RI = D.convWithInstrumentFunction(R,qz,instFunc);
+
+figure(4)
+kk = surf(qz/u.ang^-1,time/u.ps,log10(RI));
+set(kk, 'LineStyle', 'none');
+axis([qz(1)/u.ang^-1 qz(end)/u.ang^-1 time(1)/u.ps time(end)/u.ps])
+box on; colorbar; colormap(fireice(256));
+caxis([-5 -2]);
+xlabel('q_z [Ang^{-1}])'); 
+ylabel('Delay [ps]');
+title('Transient X-ray Reflectivity');
+set(gca, 'XMinorTick', 'on', 'YMinorTick', 'on', 'TickDir', 'out');
+
+%%
+tPlot   = (0:7.2:60)*u.ps;
+figure(5)
+kk = waterfall(qz/u.ang^-1,tPlot/u.ps,log10(RI(finderb(tPlot,time),:)));
+set(kk, 'LineWidth', 2);
+xlabel('q_z [Ang^{-1}])'); 
+ylabel('Delay [ps]');
+zlabel('Reflectivity');
+title('Transient Substrate Side Peaks');
+view([0,0]);
+zlim([-4.5 -2.5]);
+xlim([3.225 3.245]);
+caxis([-4 -2]);
+colormap(winter);
+set(gca, 'XMinorTick', 'on', 'YMinorTick', 'on', 'TickDir', 'out');
+box off; grid on;
+%%%
+disp('finished');
+
+%% References
+%
+% # M. Herzog, A. Bojahr, J. Goldshteyn, W. Leitenberger, I. Vrejoiu, 
+% D. Khakhulin, M. Wulff et al. (2012). _Detecting optically synthesized 
+% quasi-monochromatic sub-terahertz phonon wavepackets by ultrafast x-ray 
+% diffraction_. Applied Physics Letters, 100(9), 94101. 
+% doi:10.1063/1.3688492
+##### SOURCE END #####
+--></body></html>

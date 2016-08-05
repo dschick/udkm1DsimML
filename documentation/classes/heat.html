@@ -1,0 +1,1270 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>heat</title><meta name="generator" content="MATLAB 7.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-07-31"><meta name="DC.source" content="heat.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+
+  </style></head><body><div class="content"><h1>heat</h1><!--introduction--><p>The heat class simulates optical excitation by heating the sample and heat diffusion on a 1D sample structure.</p><p>Copyright (c) 2013, Daniel Schick, Andr&eacute; Bojahr, Marc Herzog, Roman Shayduk, Clemens von Korff Schmising All rights reserved.</p><p>License: BSD (use/copy/change/redistribute on own risk, mention the authors)</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Classdef</a></li><li><a href="#2">Properties</a></li><li><a href="#3">Methods</a></li><li><a href="#4">Constructor</a></li><li><a href="#5">Display</a></li><li><a href="#6">getHash</a></li><li><a href="#7">setBoundaryCondition</a></li><li><a href="#8">checkInitialTemperature</a></li><li><a href="#9">checkExcitation</a></li><li><a href="#11">getAbsorptionProfile</a></li><li><a href="#12">getTemperatureAfterDeltaExcitation</a></li><li><a href="#13">getTempMap</a></li><li><a href="#14">calcTempMap</a></li><li><a href="#15">calcHeatDiffusion</a></li><li><a href="#16">generateSource</a></li><li><a href="#17">pdeHeatEquation</a></li><li><a href="#18">pdeBoundaryConditions</a></li></ul></div><h2>Classdef<a name="1"></a></h2><p>Each heat instance and all inherited class objects follow handle semantics. Hence a copy of such object will not copy the object itself, but only a handle to that object.</p><pre class="codeinput"><span class="keyword">classdef</span> heat &lt; simulation
+</pre><h2>Properties<a name="2"></a></h2><pre class="codeinput">    properties (SetAccess=public,GetAccess=public)
+        heatDiffusion   = false;    <span class="comment">% BOOLEAN is true when including heat diffusion in the calculations</span>
+        intpAtInterface = 11;       <span class="comment">% INTEGER number of additional spacial points at the interface</span>
+                                    <span class="comment">% of different materials in the heat diffusion simulation</span>
+        distances       = [];       <span class="comment">% FLOAT vector of distances where to calc heat diffusion. If not set</span>
+                                    <span class="comment">% heat diffusion is calculated at each unit cell location</span>
+        odeOptions      = struct(); <span class="comment">% struct with options for the pdepe solver, see odeset, used for heat diffusion.</span>
+        boundaryConditions = struct(<span class="keyword">...</span>
+            <span class="string">'leftType'</span>  , 1 ,<span class="keyword">...</span><span class="comment">    % STRUCT of the left and right type of the boundary conditions for the</span>
+            <span class="string">'leftValue'</span> , [],<span class="keyword">...</span><span class="comment">    % heat diffusion calculation - 1: isolator - 2: temperature - 3: flux</span>
+            <span class="string">'rightType'</span> , 1 ,<span class="keyword">...</span><span class="comment">    % For the last two cases the corresponding value has to be set as Kx1</span>
+            <span class="string">'rightValue'</span>, []);      <span class="comment">% vector, where K is the number of sub-systems</span>
+    <span class="keyword">end</span><span class="comment">%properties</span>
+</pre><h2>Methods<a name="3"></a></h2><pre class="codeinput">    methods
+</pre><h2>Constructor<a name="4"></a></h2><p>Is executed each time an instance of this class is created. Only the <i>structure</i> input is obligatory.</p><pre class="codeinput">        <span class="keyword">function</span> obj = heat(structure,forceRecalc,varargin)
+            obj = obj@simulation(structure,forceRecalc,varargin{3:end});
+            <span class="comment">% initialize input parser and define defaults and validators</span>
+            p = inputParser;
+            p.KeepUnmatched = true;
+            p.addOptional(<span class="string">'heatDiffusion'</span>    , false, @islogical);
+            p.addParamValue(<span class="string">'intpAtInterface'</span>, 11, @isinteger);
+            <span class="comment">% parse the input</span>
+            p.parse(varargin{:});
+            <span class="comment">% assign parser results to object properties</span>
+            obj.heatDiffusion   = p.Results.heatDiffusion;
+            obj.intpAtInterface = p.Results.intpAtInterface;
+            <span class="comment">% set default ode options after initialization of parent class</span>
+            obj.odeOptions.RelTol = 1e-3;
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>Display<a name="5"></a></h2><p>This method is called to display informations of the instance.</p><pre class="codeinput">        <span class="keyword">function</span> disp(obj)
+            disp(<span class="string">'Heat simulation properties:'</span>);
+            disp([<span class="string">'heat diffusion                 : '</span> bool2str(obj.heatDiffusion)]);
+            disp([<span class="string">'interpolate at interfaces      : '</span> num2str(obj.intpAtInterface)]);
+            <span class="keyword">if</span> isempty(obj.distances)
+                disp(<span class="string">'no distance mesh is set for heat diffusion calculations.'</span>);
+            <span class="keyword">else</span>
+                disp(<span class="string">'a distance mesh is set for heat diffusion calculations.'</span>);
+            <span class="keyword">end</span>
+            disp(<span class="string">'ode options                         :'</span>);
+            disp(obj.odeOptions);
+            boundaryTypes = {<span class="string">'isolator'</span>, <span class="string">'temperature'</span>, <span class="string">'flux'</span>};
+            disp([<span class="string">'left boundary type                 : '</span> boundaryTypes{obj.boundaryConditions.leftType}]);
+            <span class="keyword">if</span> obj.boundaryConditions.leftType == 2
+                disp([<span class="string">'left boundary temperature [K]  : '</span> num2str(obj.boundaryConditions.leftValue)]);
+            <span class="keyword">elseif</span> obj.boundaryConditions.leftType == 3
+                disp([<span class="string">'left boundary flux [W/m^2]     : '</span> num2str(obj.boundaryConditions.leftValue)]);
+            <span class="keyword">end</span><span class="comment">%if</span>
+            disp([<span class="string">'right boundary type            : '</span> boundaryTypes{obj.boundaryConditions.rightType}]);
+            <span class="keyword">if</span> obj.boundaryConditions.rightType == 2
+                disp([<span class="string">'right boundary temperature [K] : '</span> num2str(obj.boundaryConditions.rightValue)]);
+            <span class="keyword">elseif</span> obj.boundaryConditions.rightType == 3
+                disp([<span class="string">'right boundary flux [W/m^2]    : '</span> num2str(obj.boundaryConditions.rightValue) <span class="string">'W/m^2'</span>]);
+            <span class="keyword">end</span><span class="comment">%if</span>
+            <span class="comment">% call the parent display method</span>
+            disp@simulation(obj);
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>getHash<a name="6"></a></h2><p>Returns a unique hash for all heat simulation parameters.</p><pre class="codeinput">        <span class="keyword">function</span> hash = getHash(obj,time,excitation,initTemp)
+            <span class="comment">% S.getHash('heat') % hash of the structure only with heat</span>
+            <span class="comment">% spicific parameters</span>
+            hash = [obj.S.getHash(<span class="string">'heat'</span>) <span class="string">'_'</span> dataHash({obj.heatDiffusion obj.intpAtInterface obj.distances time excitation initTemp})];
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>setBoundaryCondition<a name="7"></a></h2><p>Set the boundary conditions</p><pre class="codeinput">        <span class="keyword">function</span> setBoundaryCondition(obj,varargin)
+            p = inputParser;
+            p.KeepUnmatched = true;
+            p.addParamValue(<span class="string">'side'</span>    , <span class="string">'left'</span>    , @(x)(ischar(x) &amp; find(strcmp(x,{<span class="string">'left'</span>, <span class="string">'right'</span>}))));
+            p.addParamValue(<span class="string">'type'</span>    , <span class="string">'isolator'</span>, @(x)(ischar(x) &amp; find(strcmp(x,{<span class="string">'isolator'</span>, <span class="string">'temperature'</span>, <span class="string">'flux'</span>}))));
+            p.addOptional(<span class="string">'value'</span>     , 0         , @isnumeric);
+            <span class="comment">% parse the input</span>
+            p.parse(varargin{:});
+            side = p.Results.side;
+            value = p.Results.value;
+
+            <span class="keyword">switch</span> p.Results.type
+                <span class="keyword">case</span> <span class="string">'temperature'</span>
+                    type = 2;
+                <span class="keyword">case</span> <span class="string">'flux'</span>
+                    type = 3;
+                <span class="keyword">otherwise</span> <span class="comment">% isolator</span>
+                    type = 1;
+            <span class="keyword">end</span><span class="comment">%switch</span>
+
+            K = obj.S.numSubSystems; <span class="comment">% nb of subsystems</span>
+            <span class="keyword">if</span> ~strcmp(type,<span class="string">'isolator'</span>) &amp;&amp; length(value) ~= K
+                error(<span class="string">'Non-isolating boundary conditions must have the same dimensionality as the numer of sub-systems K!'</span>);
+            <span class="keyword">end</span><span class="comment">%if</span>
+
+            <span class="keyword">if</span> strcmp(side,<span class="string">'left'</span>)
+                obj.boundaryConditions.leftType = type;
+                obj.boundaryConditions.leftValue = value;
+            <span class="keyword">else</span>
+                obj.boundaryConditions.rightType = type;
+                obj.boundaryConditions.rightValue = value;
+            <span class="keyword">end</span><span class="comment">%if</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>checkInitialTemperature<a name="8"></a></h2><p>An inital temperature for a heat simulation can be either a single temperature which is assumed to be valid for all unitCells in the structure or a temeprature profile vector is given with one temperature for each unitCell in the structure and for each subsystem.</p><pre class="codeinput">        <span class="keyword">function</span> initTemp = checkInitialTemperature(obj,initTemp)
+            N = obj.S.getNumberOfUnitCells; <span class="comment">% nb of unit cells</span>
+            K = obj.S.numSubSystems; <span class="comment">% nb of subsystems</span>
+            <span class="comment">% transpose the init temp if we have just one subsystem</span>
+            <span class="keyword">if</span> K == 1 &amp;&amp; size(initTemp,1) ~= N
+                initTemp = initTemp';
+            <span class="keyword">end</span>
+            <span class="comment">% check size of initTemp</span>
+            <span class="keyword">if</span> numel(initTemp) == 1
+                <span class="comment">% it is the same initial temperature for all unitCells</span>
+                initTemp = initTemp*ones(N,K);
+            <span class="keyword">elseif</span> ~isequal(size(initTemp),[N K])
+                <span class="comment">% initTemp is a vector but has not as many elements as unitCells</span>
+                error(<span class="string">'The initial temperature vector must have 1 or NxK elements, where N is the number of unitCells in the sample and K the number of subsystems!'</span>);
+            <span class="keyword">end</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>checkExcitation<a name="9"></a></h2><p>The optical excitation is a <img src="heat_eq00715.png" alt="$3 \times N$"> matrix with a fluence <img src="heat_eq86924.png" alt="$F$"> [J/m^2], time <img src="heat_eq07064.png" alt="$t$"> [s] of the pump event, and pulse width <img src="heat_eq89224.png" alt="$\tau$"> [s]. <img src="heat_eq05153.png" alt="$N$"> is the number of pump events.</p><pre class="codeinput">        <span class="keyword">function</span> [res fluence timePump pulseWidth] = checkExcitation(obj,excitation,time)
+            <span class="comment">% check the size of excitation, if we have a multipulse excitation</span>
+            <span class="keyword">if</span> isequal(size(excitation),[1 1])
+                <span class="comment">% we have just a fluence and no timePump or pulseWidth</span>
+                fluence     = excitation;
+                timePump    = 0; <span class="comment">% so we define that the exciation is at t=0</span>
+                pulseWidth  = 0; <span class="comment">% pulse width is 0 by default</span>
+            <span class="keyword">elseif</span> size(excitation,1) == 2
+                fluence     = excitation(1,:); <span class="comment">% set the fluences</span>
+                timePump    = excitation(2,:); <span class="comment">% set the times</span>
+                pulseWidth  = zeros(1,size(excitation,2)); <span class="comment">% set the pulse width to 0 by default</span>
+            <span class="keyword">else</span>
+                fluence     = excitation(1,:); <span class="comment">% set the fluences</span>
+                timePump    = excitation(2,:); <span class="comment">% set the times</span>
+                pulseWidth  = excitation(3,:); <span class="comment">% set the pulse width</span>
+            <span class="keyword">end</span>
+
+            <span class="comment">% check the elements of the timePump vector</span>
+            <span class="keyword">if</span> length(timePump) &lt; length(sort(unique(timePump)))
+                error(<span class="string">'The excitations have to unique in time!'</span>);
+            <span class="keyword">else</span>
+                timePump = sort(unique(timePump));
+            <span class="keyword">end</span>
+
+            <span class="comment">% throw warnings if heat diffusion should be enabled</span>
+            <span class="keyword">if</span> obj.S.numSubSystems &gt; 1 &amp;&amp; ~obj.heatDiffusion
+                warning(<span class="string">'If you are introducing more than 1 subsystem you should enable heat diffusion!'</span>);
+            <span class="keyword">end</span>
+            <span class="keyword">if</span> sum(pulseWidth) &gt; 0 &amp;&amp; ~obj.heatDiffusion
+                pulseWidth(:) = 0;
+                warning(<span class="string">'The effect of finite pulse duration of the excitation is only considered if heat diffusion is enabled! All pulse durations set to 0!'</span>);
+            <span class="keyword">end</span>
+</pre><p>traverse excitation vector to update the timePump <img src="heat_eq42131.png" alt="$t_p$"> vector for finite pulse durations <img src="heat_eq93770.png" alt="$w(i)$"> as follows</p><p><img src="heat_eq77015.png" alt="$$ t_p(i)-\mbox{window}\cdot w(i):w(i)/\mbox{intp}:t_p(i)+\mbox{window}\cdot w(i) $$"></p><p>and to combine excitations which have overlapping intervalls</p><pre class="codeinput">            nExcitation = {}; <span class="comment">% the result of the traversed excitation is a cell vector</span>
+            window      = 1.5; <span class="comment">% window factor for finite pulse duration</span>
+            intp        = 1000; <span class="comment">% interpolation factor for finite pulse duration</span>
+
+            i = 1; <span class="comment">% start counter</span>
+            <span class="keyword">while</span> i &lt;=length(timePump)
+                k = i;
+                temp = [];
+                <span class="comment">% check all upcoming excitations if they overlap with the</span>
+                <span class="comment">% current</span>
+                <span class="keyword">while</span> k &lt;= length(timePump)
+                    temp = vertcat(temp,[timePump(k), pulseWidth(k), fluence(k)]);
+                    <span class="keyword">if</span> k &lt; length(timePump) &amp;&amp; (timePump(k)+window*pulseWidth(k)) &gt;= (timePump(k+1)-window*pulseWidth(k+1))
+                        <span class="comment">% there is an overlap in time so add the next</span>
+                        <span class="comment">% excitation to the current element</span>
+                        k = k+1;
+                        <span class="keyword">if</span> pulseWidth(k) == 0
+                            <span class="comment">% an overlapping pulse cannot have a pulseWidth</span>
+                            <span class="comment">% of 0! Throw an error!</span>
+                            error(<span class="string">'Overlapping pulse must have duration &gt; 0!'</span>);
+                        <span class="keyword">end</span><span class="comment">%if</span>
+                    <span class="keyword">else</span>
+                        <span class="comment">% no overlap, so go to the next iteration of the</span>
+                        <span class="comment">% outer while loop</span>
+                        <span class="keyword">break</span>;
+                    <span class="keyword">end</span><span class="comment">%if</span>
+                <span class="keyword">end</span><span class="comment">%while</span>
+
+                <span class="comment">% caclulate the new time vector of the current excitation</span>
+                intervall = (timePump(i)-window*pulseWidth(i)):(min(pulseWidth(i:k))/intp):(timePump(k)+window*pulseWidth(k));
+                <span class="keyword">if</span> isempty(intervall)
+                    <span class="comment">% its pulseWidth = 0 or no heat diffusion was enabled</span>
+                    <span class="comment">% so we calculate just at a single time step</span>
+                    intervall = timePump(i);
+                <span class="keyword">end</span>
+                <span class="comment">% update the new excitation cell array</span>
+                nExcitation(:,end+1) = {intervall, temp(:,1), temp(:,2), temp(:,3)};
+                i = k+1; <span class="comment">% increase counter</span>
+            <span class="keyword">end</span><span class="comment">%while</span>
+
+            <span class="comment">% traverse the nExcitation cell array and add additional time</span>
+            <span class="comment">% vectors between the pump events for the later temperature</span>
+            <span class="comment">% calculation</span>
+            res = {}; <span class="comment">% initialize the result cell array</span>
+
+            <span class="comment">% check for time &lt; timePump(1)</span>
+            <span class="keyword">if</span> ~isempty(time(time &lt; nExcitation{1,1}(1)))
+                res = {time(time &lt; nExcitation{1,1}(1)); []; []; []};
+            <span class="keyword">elseif</span> isempty(time(time &lt;= nExcitation{1,1}(1)))
+                warning(<span class="string">'Please add more time steps before the first excitation!'</span>);
+            <span class="keyword">end</span><span class="comment">%if</span>
+
+            <span class="comment">% traverse nExcitation</span>
+            <span class="keyword">for</span> i = 1:size(nExcitation,2)
+                clear <span class="string">temp</span>;
+                res = cat(2,res,nExcitation(:,i));
+                <span class="keyword">if</span> i+1 &lt;= size(nExcitation,2)
+                    <span class="comment">% there is an upcoming pump event</span>
+                    <span class="keyword">if</span> ~isempty(time(time &gt; nExcitation{1,i}(end) &amp; time &lt; nExcitation{1,i+1}(1)))
+                        <span class="comment">% there are times between the current and next</span>
+                        <span class="comment">% excitation</span>
+                        temp = {time(time &gt; nExcitation{1,i}(end) &amp; time &lt; nExcitation{1,i+1}(1)); []; []; []};
+                        res = cat(2,res,temp);
+                    <span class="keyword">end</span><span class="comment">%if</span>
+                <span class="keyword">else</span> <span class="comment">% this is the last pump event</span>
+                    <span class="keyword">if</span> ~isempty(time(time &gt; nExcitation{1,i}(end)))
+                        <span class="comment">% there are times after the current last excitation</span>
+                        temp = {time(time &gt; nExcitation{1,i}(end)); []; []; []};
+                        res = cat(2,res,temp);
+                    <span class="keyword">end</span><span class="comment">%if</span>
+                <span class="keyword">end</span><span class="comment">%if</span>
+            <span class="keyword">end</span><span class="comment">%for</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>getAbsorptionProfile<a name="11"></a></h2><p>Returns a vector of the absorption profile derived from Lambert-Beer's law. The transmission is given by:</p><p><img src="heat_eq80664.png" alt="$$ \tau = \frac{I}{I_0} =  \exp(-z/\zeta) $$"></p><p>and the absorption by:</p><p><img src="heat_eq15291.png" alt="$$ \alpha = 1 - \tau =  1 - \exp(-z/\zeta) $$"></p><p>The absorption profile can be derived from the spatial derivative:</p><p><img src="heat_eq92726.png" alt="$$ \frac{d \alpha(z)}{dz} = \frac{1}{\zeta} \exp(-z/\zeta) $$"></p><pre class="codeinput">        <span class="keyword">function</span> dAlphadz = getAbsorptionProfile(obj,dists)
+            <span class="keyword">if</span> nargin &lt; 2
+                <span class="comment">% if no distances are set, we calculate the Extinction on</span>
+                <span class="comment">% the middle of each unit cell</span>
+                [dStart, ~, dists] = obj.S.getDistancesOfUnitCells();
+            <span class="keyword">else</span>
+                dStart = obj.S.getDistancesOfUnitCells();
+            <span class="keyword">end</span>
+
+            dInterfaces = obj.S.getDistancesOfInterfaces(); <span class="comment">% the interfaces</span>
+            N           = length(dists); <span class="comment">% nb of distances</span>
+
+            dAlphadz = zeros(N,1); <span class="comment">% initialize relative absorbed energies</span>
+            I0 = 1; <span class="comment">% initial intensity</span>
+            k  = 1; <span class="comment">% counter for first unit cell in layer</span>
+            <span class="keyword">for</span> i = 2:length(dInterfaces)
+                <span class="comment">% find the first unitCell of the layer and get properties</span>
+                index = finderb(dInterfaces(i-1),dStart);
+                UC = obj.S.getUnitCellHandle(index);
+                optPenDepth = UC.optPenDepth;
+
+                <span class="comment">% get all distances in the current layer we have to</span>
+                <span class="comment">% calculate the absorption profile for</span>
+                <span class="keyword">if</span> i == length(dInterfaces) <span class="comment">% last layer</span>
+                   z = dists(dists &gt;= dInterfaces(i-1) &amp; dists &lt;= dInterfaces(i));
+                <span class="keyword">else</span>
+                   z = dists(dists &gt;= dInterfaces(i-1) &amp; dists &lt; dInterfaces(i));
+                <span class="keyword">end</span>
+
+                m = length(z)-1;
+                <span class="keyword">if</span> ~isinf(optPenDepth)
+                    <span class="comment">% the layer is absorbing</span>
+                    dAlphadz(k:k+m) = I0/optPenDepth*exp(-(z-dInterfaces(i-1))/optPenDepth);
+                    <span class="comment">% calculate the remaining intensity for the next layer</span>
+                    I0 = I0*exp(-(dInterfaces(i)-dInterfaces(i-1))/optPenDepth);
+                <span class="keyword">end</span>
+                k = k+m+1; <span class="comment">% set the counter</span>
+            <span class="keyword">end</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>getTemperatureAfterDeltaExcitation<a name="12"></a></h2><p>Returns a vector of the end temperature and temperature change for each unitCell of the sample structure after an optical exciation with a fluence <img src="heat_eq86924.png" alt="$F$"> [J/m^2] and an inital temperature <img src="heat_eq80137.png" alt="$T_1$"> [K]:</p><p><img src="heat_eq01493.png" alt="$$ \Delta E = \int_{T_1}^{T_2} m \, c(T)\, \mbox{d}T $$"></p><p>where <img src="heat_eq77210.png" alt="$\Delta E$"> is the absorbed energy in each unit cell and <img src="heat_eq85974.png" alt="$c(T)$"> is the temperature-dependent heat capacity [J/kg K] and <img src="heat_eq81831.png" alt="$m$"> is the mass [kg].</p><p>The absorbed energy per unit cell can be linearized from the absorption profile <img src="heat_eq68403.png" alt="$d\alpha/dz$"> as</p><p><img src="heat_eq96500.png" alt="$$ \Delta E = \frac{d\alpha}{dz} \, E_0 \, \Delta z $$"></p><p>where <img src="heat_eq97465.png" alt="$E_0$"> is the initial energy impinging on the first unit cell given by the fluence <img src="heat_eq04162.png" alt="$F = E / A$">. <img src="heat_eq84386.png" alt="$\Delta z$"> is equal to the <img src="heat_eq27869.png" alt="$c$">-axis of each unit cell.</p><p>Finally, one has to minimize the following modulus to obtain the final temperature <img src="heat_eq47449.png" alt="$T_2$"> of each unit cell:</p><p><img src="heat_eq45697.png" alt="$$ \left| \int_{T_1}^{T_2} m \, c(T)\, \mbox{d}T -&#xA;    \frac{d\alpha}{dz} \, E_0 \, \Delta z \, \right|&#xA;    \stackrel{!}{=} 0 $$"></p><pre class="codeinput">        <span class="keyword">function</span> [finalTemp deltaT] = getTemperatureAfterDeltaExcitation(obj,fluence,initTemp)
+            <span class="comment">% initialize</span>
+            tic
+            N = obj.S.getNumberOfUnitCells; <span class="comment">% nb of unit cells</span>
+            dAlphadz = obj.getAbsorptionProfile(); <span class="comment">% absorption profile from Lambert-Beer's law</span>
+
+            intHeatCapacity = obj.S.getUnitCellPropertyVector(<span class="string">'intHeatCapacity'</span>);
+            cAxises         = obj.S.getUnitCellPropertyVector(<span class="string">'cAxis'</span>);
+            masses          = obj.S.getUnitCellPropertyVector(<span class="string">'mass'</span>);
+            areas           = obj.S.getUnitCellPropertyVector(<span class="string">'area'</span>);
+            E0              = fluence*areas(1);
+
+            initTemp = obj.checkInitialTemperature(initTemp); <span class="comment">% check the intial temperature</span>
+            finalTemp = initTemp;
+            <span class="comment">% traverse unitCells</span>
+            <span class="keyword">for</span> i = 1:N
+                <span class="keyword">if</span> dAlphadz(i) &gt; 0
+                    <span class="comment">% if there is absorption in the current unit cell</span>
+                    delE    = dAlphadz(i)*E0*cAxises(i);
+                    fun     = @(finalTemp)(abs(masses(i)*(intHeatCapacity{i,1}(finalTemp) <span class="keyword">...</span>
+                                - intHeatCapacity{i,1}(initTemp(i)))-delE));
+                    finalTemp(i,1) = fminbnd(fun,initTemp(i,1),1e5);
+                <span class="keyword">end</span>
+            <span class="keyword">end</span><span class="comment">%for</span>
+            deltaT = finalTemp - initTemp; <span class="comment">% this is the temperature change</span>
+            obj.dispMessage(<span class="string">'Elapsed time for _temperatureAfterDeltaExcitation_:'</span>,toc);
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>getTempMap<a name="13"></a></h2><p>Returns a tempperature profile for the sample structure after optical excitation.</p><pre class="codeinput">        <span class="keyword">function</span> [tempMap deltaTempMap checkedEx] = getTempMap(obj,time,excitation,initTemp)
+            <span class="comment">% create a unique hash</span>
+            hash = obj.getHash(time,excitation,initTemp);
+            <span class="comment">% create the file name to look for</span>
+            filename = fullfile(obj.cacheDir, [<span class="string">'tempMap_'</span> hash <span class="string">'.mat'</span>]);
+            <span class="keyword">if</span> exist(filename,<span class="string">'file'</span>) &amp;&amp; ~obj.forceRecalc
+                <span class="comment">% file exists so load it</span>
+                load(filename);
+                obj.dispMessage([<span class="string">'_tempMap_ loaded from file '</span> filename]);
+            <span class="keyword">else</span>
+                <span class="comment">% file does not exist so calculate and save</span>
+                [tempMap deltaTempMap checkedEx] = obj.calcTempMap(time, excitation, initTemp);
+                save(filename,<span class="string">'tempMap'</span>, <span class="string">'deltaTempMap'</span>, <span class="string">'checkedEx'</span>);
+                obj.dispMessage([<span class="string">'_tempMap_ saved to file '</span> filename]);
+            <span class="keyword">end</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>calcTempMap<a name="14"></a></h2><p>Calculates the tempMap and tempMap difference for a given time vector, exciation and initial temperature. Heat diffusion can be included if <i>heatDiffusion = true</i>.</p><pre class="codeinput">        <span class="keyword">function</span> [tempMap deltaTempMap checkedEx] = calcTempMap(obj,time,excitation,initTemp)
+            t1 = tic;
+            <span class="comment">% initialize</span>
+            N = obj.S.getNumberOfUnitCells; <span class="comment">% nb of unit cells</span>
+            K = obj.S.numSubSystems; <span class="comment">% nb of sub systems</span>
+
+            tempMap         = zeros(1,N,K); <span class="comment">% we have an initial time step for the initTemp - we will remove it later on</span>
+            initTemp        = obj.checkInitialTemperature(initTemp); <span class="comment">% check the intial temperature</span>
+            checkedEx       = obj.checkExcitation(excitation,time); <span class="comment">% check excitation</span>
+            tempMap(1,:,:)  = initTemp; <span class="comment">% this is initial temperature before the simulation starts</span>
+
+            numEx = 1; <span class="comment">% excitation counter</span>
+            <span class="comment">% traverse excitations</span>
+            <span class="keyword">for</span> i=1:size(checkedEx,2)
+                clear <span class="string">temp</span>;
+                <span class="comment">% reset inital temperature for delta excitation with heat diffusion enabled</span>
+                specialInitTemp = [];
+                <span class="comment">% extract excitation parameters for the current iteration</span>
+                subTime     = checkedEx{1,i};
+                timePump    = checkedEx{2,i};
+                pulseWidth  = checkedEx{3,i};
+                fluence     = checkedEx{4,i};
+
+                <span class="keyword">if</span> obj.heatDiffusion &amp;&amp; length(subTime) &gt; 2 &amp;&amp; (sum(fluence) == 0 || (sum(fluence) &gt; 0 &amp;&amp; sum(pulseWidth) &gt; 0))
+                    <span class="comment">% heat diffusion enabled and more than 2 time steps AND</span>
+                    <span class="comment">% either no excitation or excitation with finite pulse</span>
+                    <span class="comment">% duration</span>
+                    <span class="keyword">if</span> sum(fluence) == 0
+                        obj.dispMessage(<span class="string">'Calculating _heatDiffusion_ ...'</span>);
+                    <span class="keyword">else</span>
+                        obj.dispMessage([<span class="string">'Calculating _heatDiffusion_ for excitation '</span> num2str(numEx:(numEx+length(fluence)-1)) <span class="string">' ...'</span>]);
+                    <span class="keyword">end</span>
+                    start = 1;
+                    stop = 0;
+                    <span class="keyword">if</span> i-1 &gt; 0
+                        <span class="comment">% check if there was a intervall before and add</span>
+                        <span class="comment">% last time of this intervall to the current</span>
+                        subTime = [checkedEx{1,i-1}(end) subTime];
+                        start = 2;
+                    <span class="keyword">end</span>
+                    <span class="keyword">if</span> i &lt; size(checkedEx,2) &amp;&amp; sum(checkedEx{4,i+1}) &gt; 0 &amp;&amp; sum(checkedEx{3,i+1}) == 0
+                        <span class="comment">% there is a next intervall of delta excitation so</span>
+                        <span class="comment">% we add this time at the end of the current</span>
+                        <span class="comment">% intervall</span>
+                        subTime = [subTime checkedEx{1,i+1}(1)];
+                        stop  = 1;
+                    <span class="keyword">end</span>
+
+                    <span class="comment">% calc heat diffusion</span>
+                    temp = obj.calcHeatDiffusion(initTemp,subTime,timePump,pulseWidth,fluence);
+
+                    <span class="keyword">if</span> stop == 1
+                        <span class="comment">% there is an upcomming delta excitation so we have</span>
+                        <span class="comment">% to set the initial temperature for this next</span>
+                        <span class="comment">% intervall seperately</span>
+                        specialInitTemp = squeeze(temp(end,:,:));
+                    <span class="keyword">end</span>
+                    <span class="comment">% cut the before added time steps</span>
+                    temp = temp(start:end-stop,:,:);
+                <span class="keyword">elseif</span> sum(fluence) &gt; 0 &amp;&amp; (~obj.heatDiffusion || (obj.heatDiffusion &amp;&amp; sum(pulseWidth) == 0))
+                    <span class="comment">% excitation with no heat diffusion -&gt; only</span>
+                    <span class="comment">% delta excitation possible in this case</span>
+                    <span class="comment">% OR excitation with heat diffusion and pulseWidth</span>
+                    <span class="comment">% equal to 0</span>
+                    temp = obj.getTemperatureAfterDeltaExcitation(fluence,initTemp);
+                    temp = reshape(temp,1,size(temp,1),size(temp,2));
+                <span class="keyword">else</span>
+                    <span class="comment">% no excitation and no heat diffusion or not enough time</span>
+                    <span class="comment">% step to calculate heat difusion, so just repeat the</span>
+                    <span class="comment">% initial temperature + every unhandled case</span>
+                    temp = repmat(reshape(initTemp,1,N,K),[length(subTime) 1 1]);
+                <span class="keyword">end</span>
+
+                <span class="comment">% concat results</span>
+                tempMap = vertcat(tempMap,temp);
+
+                <span class="comment">% set the initial temperature for the next iteration</span>
+                <span class="keyword">if</span> ~isempty(specialInitTemp)
+                    initTemp = specialInitTemp;
+                <span class="keyword">else</span>
+                    initTemp = squeeze(tempMap(end,:,:));
+                <span class="keyword">end</span>
+
+                <span class="comment">% increase excitation counder</span>
+                <span class="keyword">if</span> sum(fluence) &gt; 0
+                    numEx = numEx+length(fluence);
+                <span class="keyword">end</span><span class="comment">%if</span>
+            <span class="keyword">end</span><span class="comment">%for</span>
+
+            <span class="keyword">if</span> ~isequal([checkedEx{1,:}],time)
+                <span class="comment">% if the time grid for the calculation is not the same as</span>
+                <span class="comment">% the grid to return the results on. Then extrapolate the</span>
+                <span class="comment">% results on the original time vector but keep the first</span>
+                <span class="comment">% element in time for the deltaTempMap calculation.</span>
+                [X,Y] = meshgrid([checkedEx{1,:}],1:N);
+                [XI,YI] = meshgrid(time,1:N);
+                temp = tempMap;
+                tempMap = zeros(length(time)+1,N,K);
+                <span class="keyword">for</span> i = 1:K
+                    tempMap(:,:,i) = vertcat(temp(1,:,i), interp2(X,Y,temp(2:end,:,i)',XI,YI)');
+                <span class="keyword">end</span>
+            <span class="keyword">end</span>
+
+            <span class="comment">% calculate the difference temperature map</span>
+            deltaTempMap = diff(tempMap);<span class="comment">% tempMap(2:M+1,:)-tempMap(1:M,:);</span>
+            <span class="comment">% delete the initial temperature that was added at the beginning</span>
+            tempMap(1,:,:) = [];
+            obj.dispMessage(<span class="string">'Elapsed time for _tempMap_:'</span>,toc(t1));
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>calcHeatDiffusion<a name="15"></a></h2><p>Returns a tempMap that is calculated by heat diffusion for a given time vector and initial temperature profile. Here we have to solve the 1D heat equation:</p><p><img src="heat_eq01207.png" alt="$$ c(T) \, \rho \, \frac{\partial T}{\partial t}&#xA;= \frac{\partial}{\partial z} \left( k(T) \, \frac{\partial T}{\partial z} \right)&#xA;+ S(z,t)$$"></p><p>where <img src="heat_eq57315.png" alt="$T$"> is the temperature [K], <img src="heat_eq88768.png" alt="$z$"> the distance [m], <img src="heat_eq07064.png" alt="$t$"> the time [s], <img src="heat_eq85974.png" alt="$c(T)$"> the temperature dependent heat capacity [J/kg K], <img src="heat_eq20099.png" alt="$\rho$"> the density [kg/m^3] and <img src="heat_eq57610.png" alt="$k(T)$"> is the temperature- dependent thermal conductivity [W/m K] and <img src="heat_eq38126.png" alt="$S(z,t)$"> is a source term [W/m^3].</p><pre class="codeinput">        <span class="keyword">function</span> tempMap = calcHeatDiffusion(obj,initTemp,time,timePump,pulseWidth,fluence)
+            tic
+            K                   = obj.S.numSubSystems; <span class="comment">% nb of sub systems</span>
+            initTemp            = obj.checkInitialTemperature(initTemp); <span class="comment">% check the initial temperature</span>
+            [dStart, ~, dMid]   = obj.S.getDistancesOfUnitCells(); <span class="comment">% get the distances of each unitCell</span>
+            [~,~,handles]       = obj.S.getUnitCellVectors(); <span class="comment">% get the handles to all unitCells</span>
+
+            <span class="keyword">if</span> isempty(obj.distances)
+                <span class="comment">% no user-defined distaces are given, so calculate heat</span>
+                <span class="comment">% diffusion by unit cell and also interpolate at the</span>
+                <span class="comment">% interfaces</span>
+                dists = obj.S.interpDistanceAtInterfaces(obj.intpAtInterface);
+            <span class="keyword">else</span>
+                <span class="comment">% a user-defined distances vector is given, so determine</span>
+                <span class="comment">% the indicies for final assignment per unitcell</span>
+                dists = obj.distances;
+            <span class="keyword">end</span>
+
+            <span class="comment">% This is the initial condition function that is necessary to</span>
+            <span class="comment">% solve the heat equation with the pde solver, it returns the</span>
+            <span class="comment">% initial temperature at each distance z.</span>
+            ic = @(z)(initTemp(finderb(z,dStart),:)');
+
+            <span class="comment">% Here we let the pde solver of matlab solve the differential</span>
+            <span class="comment">% equation with the inital condition _ic_, the boundary</span>
+            <span class="comment">% condition _obj.pdeBoundaryConditions()_ and the pde function</span>
+            <span class="comment">% _obj.pdeHeatEquation()_.</span>
+
+            <span class="keyword">if</span> ~isempty(fluence) &amp;&amp; sum(pulseWidth) &gt; 0
+                source = obj.generateSource(fluence,timePump,pulseWidth,dists);
+            <span class="keyword">else</span>
+                source = [];
+            <span class="keyword">end</span>
+
+            temp =  pdepe(0,@(z,t,T,dTdz)(obj.pdeHeatEquation(z,t,T,dTdz,source,dStart,handles)),<span class="keyword">...</span>
+                    ic,@obj.pdeBoundaryConditions,dists,time,odeset(obj.odeOptions));
+
+            <span class="comment">% interpolate the results from the given distance vector on the</span>
+            <span class="comment">% center of each unit cell (dMid) for each subsystem.</span>
+            [X,Y]   = meshgrid(time,dists);
+            [XI,YI] = meshgrid(time,dMid);
+
+            tempMap = zeros(length(time),length(dMid),K);
+            <span class="keyword">for</span> i = 1:K
+                tempMap(:,:,i) = interp2(X,Y,temp(:,:,i)',XI,YI)';
+            <span class="keyword">end</span>
+
+            <span class="keyword">if</span> isempty(fluence)
+                obj.dispMessage(<span class="string">'Elapsed time for _heatDiffusion_:'</span>,toc);
+            <span class="keyword">else</span>
+                obj.dispMessage([<span class="string">'Elapsed time for _heatDiffusion_ with '</span> num2str(length(fluence)) <span class="string">' excitation(s):'</span>],toc);
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+</pre><h2>generateSource<a name="16"></a></h2><p>Generate function handle of gaussians in time and absorption profile <img src="heat_eq68403.png" alt="$d\alpha/dz$"> (Lambert-Beer' law) in space for use as a source term in heat diffusion pdepe. The source term is engery per second and volume [W/m^3]:</p><p><img src="heat_eq37073.png" alt="$$ S(z,t) = \frac{\partial^2 E}{A\ \partial z \, \partial t} $$"></p><p>with <img src="heat_eq31461.png" alt="$A$"> as unit cell area. For a Gaussian temporal profile we can substitute:</p><p><img src="heat_eq80152.png" alt="$$ \frac{\partial^2 E}{\partial z \, \partial t} = \frac{d\alpha}{dz} \, E_0 \, \mbox{gauss}(t) $$"></p><p>where <img src="heat_eq09640.png" alt="$\mbox{gauss}(t)$"> is a normalized Gaussian function. Thus we get:</p><p><img src="heat_eq68571.png" alt="$$ S(z,t) = \frac{d\alpha}{dz} \, F \, \mbox{gauss}(t) $$"></p><p>with <img src="heat_eq86924.png" alt="$F$"> as fluence [J/m^2].</p><pre class="codeinput">        <span class="keyword">function</span> source = generateSource(obj,fluence,timePump,pulseWidth,dists)
+            dAlphadz = obj.getAbsorptionProfile(dists);
+            source   = @(t,z)(dAlphadz(finderb(z,dists))*mgauss(t,pulseWidth,timePump,fluence,<span class="string">'widthType'</span>,<span class="string">'FWHM'</span>,<span class="string">'normalize'</span>,true));
+        <span class="keyword">end</span>
+</pre><h2>pdeHeatEquation<a name="17"></a></h2><p>This is the definition of the differential heat equation that is solved by matlab's pde solver. In addition to <img src="heat_eq26951.png" alt="$z,t,T,dT/dz$">, we hand the vector of distances and handles to all unitCells to the function to save CPU time. matlab solves the following equation:</p><p><img src="heat_eq10827.png" alt="$$ C\left(z,t,T,\frac{\partial T}{\partial z}\right) \frac{\partial T}{\partial t}&#xA;  = \frac{\partial}{\partial z} \left( f\left(z,t,T,\frac{\partial T}{\partial z}\right)\right)&#xA;  + s\left(x,t,T,\frac{\partial T}{\partial z}\right) $$"></p><p>which translates as following for the 1D heat equation:</p><p><img src="heat_eq93129.png" alt="$$ C = c(T)\, \rho $$"></p><p><img src="heat_eq53369.png" alt="$$ f = k(T)\, \frac{\partial T}{\partial z} $$"></p><p><img src="heat_eq42141.png" alt="$$ s = G(T) + S(z,t) $$"></p><p>where <img src="heat_eq54377.png" alt="$G$"> is the subsystem-coupling-term and <img src="heat_eq68961.png" alt="$S$"> is the external source term. The units used in the simulation are SI [W/m^3].</p><pre class="codeinput">        <span class="keyword">function</span> [C,f,s] = pdeHeatEquation(obj,z,t,T,dTdz,source,dStart,handles,varargin)
+            <span class="comment">% find the first unitCell that is close to the current z</span>
+            <span class="comment">% position that is given by the solver</span>
+            <span class="keyword">persistent</span> K;
+            <span class="keyword">if</span> isempty(K)
+                K = obj.S.numSubSystems;
+            <span class="keyword">end</span>
+
+            index = finderb(z,dStart);
+            unitCell = handles{index}; <span class="comment">% this is the handle to the corresponding unitCell</span>
+
+            k = cellfun(@feval,(unitCell.thermCond)',num2cell(T));
+            <span class="comment">% these are the parameters of the differential equation as they</span>
+            <span class="comment">% are defined in matlab for the pdesolver</span>
+
+            vecSource = zeros(K,1);
+            <span class="keyword">if</span> isa(source,<span class="string">'function_handle'</span>)
+                vecSource(1) = source(t,z);
+            <span class="keyword">end</span>
+            C = cellfun(@feval,(unitCell.heatCapacity)',num2cell(T)).*unitCell.density;
+            f = k.*dTdz;
+            s = cellfun(@feval,(unitCell.subSystemCoupling)',repmat({T},K,1))+vecSource;
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>pdeBoundaryConditions<a name="18"></a></h2><p>This is the boundary condition function as it is required by the pde solver. For the left and right side the following equation has to be fulfilled:</p><p><img src="heat_eq17053.png" alt="$$ p(z,t,T) + q(z,T) \, f\left(z,t,T, \frac{\partial T}{\partial z}\right) = 0 $$"></p><pre class="codeinput">        <span class="keyword">function</span> [pl,ql,pr,qr] = pdeBoundaryConditions(obj,zl,Tl,zr,Tr,t,varargin)
+            <span class="keyword">persistent</span> dim;
+            <span class="keyword">if</span> isempty(dim)
+                dim = [obj.S.numSubSystems,1];
+            <span class="keyword">end</span>
+
+            <span class="comment">% check the type of the left boundary condition</span>
+            <span class="keyword">switch</span> obj.boundaryConditions.leftType
+                <span class="keyword">case</span> 2 <span class="comment">% temperature</span>
+                    pl = Tl - obj.boundaryConditions.leftValue;
+                    ql = zeros(dim);
+                <span class="keyword">case</span> 3 <span class="comment">% flux</span>
+                    pl = obj.boundaryConditions.leftValue;
+                    ql = ones(dim);
+                <span class="keyword">otherwise</span> <span class="comment">% isolator</span>
+                    pl = zeros(dim);
+                    ql = ones(size(dim));
+            <span class="keyword">end</span><span class="comment">%switch</span>
+
+            <span class="comment">% check the type of the right boundary condition</span>
+            <span class="keyword">switch</span> obj.boundaryConditions.rightType
+                <span class="keyword">case</span> 2 <span class="comment">% temperature</span>
+                    pr = Tr - obj.boundaryConditions.rightValue;
+                    qr = zeros(dim);
+                <span class="keyword">case</span> 3 <span class="comment">% flux</span>
+                    pr = -obj.boundaryConditions.rightValue;
+                    qr = ones(dim);
+                <span class="keyword">otherwise</span> <span class="comment">% isolator</span>
+                    pr = zeros(dim);
+                    qr = ones(size(dim));
+            <span class="keyword">end</span><span class="comment">%switch</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><pre class="codeinput">    <span class="keyword">end</span><span class="comment">%methods</span>
+</pre><pre class="codeinput"><span class="keyword">end</span><span class="comment">%classdef</span>
+</pre><p class="footer"><br>
+      Published with MATLAB&reg; 7.14<br></p></div><!--
+##### SOURCE BEGIN #####
+%% heat
+% The heat class simulates optical excitation by heating the sample
+% and heat diffusion on a 1D sample structure.
+%
+% Copyright (c) 2013, Daniel Schick, André Bojahr, Marc Herzog, Roman Shayduk, Clemens von Korff Schmising
+% All rights reserved.
+%
+% License: BSD (use/copy/change/redistribute on own risk, mention the authors)
+
+%% Classdef
+% Each heat instance and all inherited class objects follow handle
+% semantics. Hence a copy of such object will not copy the object itself,
+% but only a handle to that object.
+classdef heat < simulation
+    %% Properties
+    properties (SetAccess=public,GetAccess=public)
+        heatDiffusion   = false;    % BOOLEAN is true when including heat diffusion in the calculations
+        intpAtInterface = 11;       % INTEGER number of additional spacial points at the interface 
+                                    % of different materials in the heat diffusion simulation
+        distances       = [];       % FLOAT vector of distances where to calc heat diffusion. If not set
+                                    % heat diffusion is calculated at each unit cell location 
+        odeOptions      = struct(); % struct with options for the pdepe solver, see odeset, used for heat diffusion.
+        boundaryConditions = struct(...
+            'leftType'  , 1 ,...    % STRUCT of the left and right type of the boundary conditions for the
+            'leftValue' , [],...    % heat diffusion calculation - 1: isolator - 2: temperature - 3: flux
+            'rightType' , 1 ,...    % For the last two cases the corresponding value has to be set as Kx1
+            'rightValue', []);      % vector, where K is the number of sub-systems
+    end%properties
+    %% Methods
+    methods
+        %% Constructor
+        % Is executed each time an instance of this class is created. Only
+        % the _structure_ input is obligatory.
+        function obj = heat(structure,forceRecalc,varargin)
+            obj = obj@simulation(structure,forceRecalc,varargin{3:end});
+            % initialize input parser and define defaults and validators
+            p = inputParser;
+            p.KeepUnmatched = true;
+            p.addOptional('heatDiffusion'    , false, @islogical);
+            p.addParamValue('intpAtInterface', 11, @isinteger);
+            % parse the input
+            p.parse(varargin{:});
+            % assign parser results to object properties
+            obj.heatDiffusion   = p.Results.heatDiffusion;
+            obj.intpAtInterface = p.Results.intpAtInterface;
+            % set default ode options after initialization of parent class
+            obj.odeOptions.RelTol = 1e-3;
+        end%function
+        
+        %% Display
+        % This method is called to display informations of the instance.
+        function disp(obj)
+            disp('Heat simulation properties:');
+            disp(['heat diffusion                 : ' bool2str(obj.heatDiffusion)]);
+            disp(['interpolate at interfaces      : ' num2str(obj.intpAtInterface)]);
+            if isempty(obj.distances)
+                disp('no distance mesh is set for heat diffusion calculations.');
+            else
+                disp('a distance mesh is set for heat diffusion calculations.');
+            end
+            disp('ode options                         :');
+            disp(obj.odeOptions);
+            boundaryTypes = {'isolator', 'temperature', 'flux'};
+            disp(['left boundary type                 : ' boundaryTypes{obj.boundaryConditions.leftType}]);
+            if obj.boundaryConditions.leftType == 2
+                disp(['left boundary temperature [K]  : ' num2str(obj.boundaryConditions.leftValue)]);
+            elseif obj.boundaryConditions.leftType == 3
+                disp(['left boundary flux [W/m^2]     : ' num2str(obj.boundaryConditions.leftValue)]);
+            end%if
+            disp(['right boundary type            : ' boundaryTypes{obj.boundaryConditions.rightType}]);
+            if obj.boundaryConditions.rightType == 2
+                disp(['right boundary temperature [K] : ' num2str(obj.boundaryConditions.rightValue)]);
+            elseif obj.boundaryConditions.rightType == 3
+                disp(['right boundary flux [W/m^2]    : ' num2str(obj.boundaryConditions.rightValue) 'W/m^2']);
+            end%if
+            % call the parent display method
+            disp@simulation(obj);
+        end%function
+                
+        %% getHash
+        % Returns a unique hash for all heat simulation parameters.
+        function hash = getHash(obj,time,excitation,initTemp)
+            % S.getHash('heat') % hash of the structure only with heat
+            % spicific parameters
+            hash = [obj.S.getHash('heat') '_' dataHash({obj.heatDiffusion obj.intpAtInterface obj.distances time excitation initTemp})];
+        end%function
+        
+        %% setBoundaryCondition
+        % Set the boundary conditions
+        function setBoundaryCondition(obj,varargin)
+            p = inputParser;
+            p.KeepUnmatched = true;
+            p.addParamValue('side'    , 'left'    , @(x)(ischar(x) & find(strcmp(x,{'left', 'right'}))));
+            p.addParamValue('type'    , 'isolator', @(x)(ischar(x) & find(strcmp(x,{'isolator', 'temperature', 'flux'}))));
+            p.addOptional('value'     , 0         , @isnumeric);
+            % parse the input
+            p.parse(varargin{:});
+            side = p.Results.side;
+            value = p.Results.value;
+            
+            switch p.Results.type
+                case 'temperature'
+                    type = 2;
+                case 'flux'
+                    type = 3;
+                otherwise % isolator
+                    type = 1;
+            end%switch
+            
+            K = obj.S.numSubSystems; % nb of subsystems
+            if ~strcmp(type,'isolator') && length(value) ~= K
+                error('Non-isolating boundary conditions must have the same dimensionality as the numer of sub-systems K!');
+            end%if
+            
+            if strcmp(side,'left')
+                obj.boundaryConditions.leftType = type;
+                obj.boundaryConditions.leftValue = value;
+            else
+                obj.boundaryConditions.rightType = type;
+                obj.boundaryConditions.rightValue = value;
+            end%if
+        end%function            
+        
+        %% checkInitialTemperature
+        % An inital temperature for a heat simulation can be either a
+        % single temperature which is assumed to be valid for all unitCells
+        % in the structure or a temeprature profile vector is given with
+        % one temperature for each unitCell in the structure and for each
+        % subsystem.
+        function initTemp = checkInitialTemperature(obj,initTemp)
+            N = obj.S.getNumberOfUnitCells; % nb of unit cells
+            K = obj.S.numSubSystems; % nb of subsystems
+            % transpose the init temp if we have just one subsystem
+            if K == 1 && size(initTemp,1) ~= N
+                initTemp = initTemp';
+            end
+            % check size of initTemp
+            if numel(initTemp) == 1
+                % it is the same initial temperature for all unitCells
+                initTemp = initTemp*ones(N,K);
+            elseif ~isequal(size(initTemp),[N K])
+                % initTemp is a vector but has not as many elements as unitCells
+                error('The initial temperature vector must have 1 or NxK elements, where N is the number of unitCells in the sample and K the number of subsystems!');
+            end
+        end%function
+                
+        %% checkExcitation
+        % The optical excitation is a $3 \times N$ matrix with a fluence 
+        % $F$ [J/m^2], time $t$ [s] of the pump event, and pulse width 
+        % $\tau$ [s]. $N$ is the number of pump events.
+        function [res fluence timePump pulseWidth] = checkExcitation(obj,excitation,time)
+            % check the size of excitation, if we have a multipulse excitation
+            if isequal(size(excitation),[1 1])
+                % we have just a fluence and no timePump or pulseWidth
+                fluence     = excitation;
+                timePump    = 0; % so we define that the exciation is at t=0
+                pulseWidth  = 0; % pulse width is 0 by default
+            elseif size(excitation,1) == 2
+                fluence     = excitation(1,:); % set the fluences
+                timePump    = excitation(2,:); % set the times
+                pulseWidth  = zeros(1,size(excitation,2)); % set the pulse width to 0 by default
+            else
+                fluence     = excitation(1,:); % set the fluences
+                timePump    = excitation(2,:); % set the times
+                pulseWidth  = excitation(3,:); % set the pulse width
+            end
+            
+            % check the elements of the timePump vector
+            if length(timePump) < length(sort(unique(timePump)))
+                error('The excitations have to unique in time!');
+            else
+                timePump = sort(unique(timePump));
+            end
+            
+            % throw warnings if heat diffusion should be enabled
+            if obj.S.numSubSystems > 1 && ~obj.heatDiffusion
+                warning('If you are introducing more than 1 subsystem you should enable heat diffusion!');
+            end
+            if sum(pulseWidth) > 0 && ~obj.heatDiffusion
+                pulseWidth(:) = 0;
+                warning('The effect of finite pulse duration of the excitation is only considered if heat diffusion is enabled! All pulse durations set to 0!');
+            end
+            
+            %%%
+            % traverse excitation vector to update the timePump $t_p$ vector 
+            % for finite pulse durations $w(i)$ as follows 
+            %
+            % $$ t_p(i)-\mbox{window}\cdot w(i):w(i)/\mbox{intp}:t_p(i)+\mbox{window}\cdot w(i) $$
+            %
+            % and to combine excitations which have overlapping intervalls 
+            nExcitation = {}; % the result of the traversed excitation is a cell vector           
+            window      = 1.5; % window factor for finite pulse duration
+            intp        = 1000; % interpolation factor for finite pulse duration 
+            
+            i = 1; % start counter
+            while i <=length(timePump)
+                k = i;
+                temp = [];
+                % check all upcoming excitations if they overlap with the
+                % current
+                while k <= length(timePump)
+                    temp = vertcat(temp,[timePump(k), pulseWidth(k), fluence(k)]);
+                    if k < length(timePump) && (timePump(k)+window*pulseWidth(k)) >= (timePump(k+1)-window*pulseWidth(k+1))
+                        % there is an overlap in time so add the next
+                        % excitation to the current element
+                        k = k+1; 
+                        if pulseWidth(k) == 0
+                            % an overlapping pulse cannot have a pulseWidth
+                            % of 0! Throw an error!
+                            error('Overlapping pulse must have duration > 0!');
+                        end%if
+                    else
+                        % no overlap, so go to the next iteration of the
+                        % outer while loop
+                        break;
+                    end%if                    
+                end%while
+                
+                % caclulate the new time vector of the current excitation
+                intervall = (timePump(i)-window*pulseWidth(i)):(min(pulseWidth(i:k))/intp):(timePump(k)+window*pulseWidth(k));
+                if isempty(intervall)
+                    % its pulseWidth = 0 or no heat diffusion was enabled
+                    % so we calculate just at a single time step
+                    intervall = timePump(i);
+                end
+                % update the new excitation cell array
+                nExcitation(:,end+1) = {intervall, temp(:,1), temp(:,2), temp(:,3)};                    
+                i = k+1; % increase counter
+            end%while
+            
+            % traverse the nExcitation cell array and add additional time
+            % vectors between the pump events for the later temperature
+            % calculation
+            res = {}; % initialize the result cell array
+            
+            % check for time < timePump(1)
+            if ~isempty(time(time < nExcitation{1,1}(1)))
+                res = {time(time < nExcitation{1,1}(1)); []; []; []};
+            elseif isempty(time(time <= nExcitation{1,1}(1)))
+                warning('Please add more time steps before the first excitation!');
+            end%if
+            
+            % traverse nExcitation
+            for i = 1:size(nExcitation,2)
+                clear temp;
+                res = cat(2,res,nExcitation(:,i));
+                if i+1 <= size(nExcitation,2)
+                    % there is an upcoming pump event
+                    if ~isempty(time(time > nExcitation{1,i}(end) & time < nExcitation{1,i+1}(1)))
+                        % there are times between the current and next
+                        % excitation
+                        temp = {time(time > nExcitation{1,i}(end) & time < nExcitation{1,i+1}(1)); []; []; []};
+                        res = cat(2,res,temp);        
+                    end%if
+                else % this is the last pump event
+                    if ~isempty(time(time > nExcitation{1,i}(end)))
+                        % there are times after the current last excitation
+                        temp = {time(time > nExcitation{1,i}(end)); []; []; []};
+                        res = cat(2,res,temp); 
+                    end%if
+                end%if                
+            end%for  
+        end%function
+        
+        %% getAbsorptionProfile
+        % Returns a vector of the absorption profile derived from 
+        % Lambert-Beer's law. The transmission is given by:
+        %
+        % $$ \tau = \frac{I}{I_0} =  \exp(-z/\zeta) $$
+        %
+        % and the absorption by:
+        %
+        % $$ \alpha = 1 - \tau =  1 - \exp(-z/\zeta) $$
+        %
+        % The absorption profile can be derived from the spatial
+        % derivative:
+        %
+        % $$ \frac{d \alpha(z)}{dz} = \frac{1}{\zeta} \exp(-z/\zeta) $$
+        % 
+        function dAlphadz = getAbsorptionProfile(obj,dists)
+            if nargin < 2
+                % if no distances are set, we calculate the Extinction on
+                % the middle of each unit cell
+                [dStart, ~, dists] = obj.S.getDistancesOfUnitCells();
+            else
+                dStart = obj.S.getDistancesOfUnitCells();
+            end
+            
+            dInterfaces = obj.S.getDistancesOfInterfaces(); % the interfaces
+            N           = length(dists); % nb of distances         
+            
+            dAlphadz = zeros(N,1); % initialize relative absorbed energies
+            I0 = 1; % initial intensity
+            k  = 1; % counter for first unit cell in layer
+            for i = 2:length(dInterfaces)
+                % find the first unitCell of the layer and get properties
+                index = finderb(dInterfaces(i-1),dStart);
+                UC = obj.S.getUnitCellHandle(index);
+                optPenDepth = UC.optPenDepth;
+                
+                % get all distances in the current layer we have to
+                % calculate the absorption profile for
+                if i == length(dInterfaces) % last layer
+                   z = dists(dists >= dInterfaces(i-1) & dists <= dInterfaces(i));
+                else
+                   z = dists(dists >= dInterfaces(i-1) & dists < dInterfaces(i)); 
+                end
+                
+                m = length(z)-1;
+                if ~isinf(optPenDepth)
+                    % the layer is absorbing
+                    dAlphadz(k:k+m) = I0/optPenDepth*exp(-(z-dInterfaces(i-1))/optPenDepth);                
+                    % calculate the remaining intensity for the next layer
+                    I0 = I0*exp(-(dInterfaces(i)-dInterfaces(i-1))/optPenDepth);
+                end                    
+                k = k+m+1; % set the counter
+            end
+        end%function
+        
+        %% getTemperatureAfterDeltaExcitation
+        % Returns a vector of the end temperature and temperature change 
+        % for each unitCell of the sample structure after an optical 
+        % exciation with a fluence $F$ [J/m^2] and an inital temperature 
+        % $T_1$ [K]:
+        %
+        % $$ \Delta E = \int_{T_1}^{T_2} m \, c(T)\, \mbox{d}T $$
+        %
+        % where $\Delta E$ is the absorbed energy in each unit cell and 
+        % $c(T)$ is the temperature-dependent heat capacity [J/kg K] and 
+        % $m$ is the mass [kg].
+        % 
+        % The absorbed energy per unit cell can be linearized from the
+        % absorption profile $d\alpha/dz$ as
+        %
+        % $$ \Delta E = \frac{d\alpha}{dz} \, E_0 \, \Delta z $$
+        %
+        % where $E_0$ is the initial energy impinging on the first unit
+        % cell given by the fluence $F = E / A$.
+        % $\Delta z$ is equal to the $c$-axis of each unit cell.
+        %
+        % Finally, one has to minimize the following modulus to obtain the
+        % final temperature $T_2$ of each unit cell:
+        %
+        % $$ \left| \int_{T_1}^{T_2} m \, c(T)\, \mbox{d}T - 
+        %     \frac{d\alpha}{dz} \, E_0 \, \Delta z \, \right|  
+        %     \stackrel{!}{=} 0 $$
+        %
+        function [finalTemp deltaT] = getTemperatureAfterDeltaExcitation(obj,fluence,initTemp)
+            % initialize
+            tic
+            N = obj.S.getNumberOfUnitCells; % nb of unit cells
+            dAlphadz = obj.getAbsorptionProfile(); % absorption profile from Lambert-Beer's law
+            
+            intHeatCapacity = obj.S.getUnitCellPropertyVector('intHeatCapacity');
+            cAxises         = obj.S.getUnitCellPropertyVector('cAxis');
+            masses          = obj.S.getUnitCellPropertyVector('mass');
+            areas           = obj.S.getUnitCellPropertyVector('area');
+            E0              = fluence*areas(1);
+            
+            initTemp = obj.checkInitialTemperature(initTemp); % check the intial temperature
+            finalTemp = initTemp;
+            % traverse unitCells
+            for i = 1:N
+                if dAlphadz(i) > 0
+                    % if there is absorption in the current unit cell
+                    delE    = dAlphadz(i)*E0*cAxises(i);
+                    fun     = @(finalTemp)(abs(masses(i)*(intHeatCapacity{i,1}(finalTemp) ...
+                                - intHeatCapacity{i,1}(initTemp(i)))-delE));
+                    finalTemp(i,1) = fminbnd(fun,initTemp(i,1),1e5);
+                end
+            end%for
+            deltaT = finalTemp - initTemp; % this is the temperature change
+            obj.dispMessage('Elapsed time for _temperatureAfterDeltaExcitation_:',toc);
+        end%function
+                    
+        %% getTempMap
+        % Returns a tempperature profile for the sample structure after
+        % optical excitation.
+        function [tempMap deltaTempMap checkedEx] = getTempMap(obj,time,excitation,initTemp)
+            % create a unique hash
+            hash = obj.getHash(time,excitation,initTemp);
+            % create the file name to look for
+            filename = fullfile(obj.cacheDir, ['tempMap_' hash '.mat']);
+            if exist(filename,'file') && ~obj.forceRecalc
+                % file exists so load it 
+                load(filename);
+                obj.dispMessage(['_tempMap_ loaded from file ' filename]);
+            else
+                % file does not exist so calculate and save
+                [tempMap deltaTempMap checkedEx] = obj.calcTempMap(time, excitation, initTemp);
+                save(filename,'tempMap', 'deltaTempMap', 'checkedEx');
+                obj.dispMessage(['_tempMap_ saved to file ' filename]);
+            end                
+        end%function
+        
+        %% calcTempMap
+        % Calculates the tempMap and tempMap difference for a given time
+        % vector, exciation and initial temperature. Heat diffusion can be
+        % included if _heatDiffusion = true_. 
+        function [tempMap deltaTempMap checkedEx] = calcTempMap(obj,time,excitation,initTemp)
+            t1 = tic;
+            % initialize
+            N = obj.S.getNumberOfUnitCells; % nb of unit cells
+            K = obj.S.numSubSystems; % nb of sub systems
+            
+            tempMap         = zeros(1,N,K); % we have an initial time step for the initTemp - we will remove it later on
+            initTemp        = obj.checkInitialTemperature(initTemp); % check the intial temperature
+            checkedEx       = obj.checkExcitation(excitation,time); % check excitation
+            tempMap(1,:,:)  = initTemp; % this is initial temperature before the simulation starts
+                        
+            numEx = 1; % excitation counter
+            % traverse excitations
+            for i=1:size(checkedEx,2)
+                clear temp;
+                % reset inital temperature for delta excitation with heat diffusion enabled
+                specialInitTemp = []; 
+                % extract excitation parameters for the current iteration
+                subTime     = checkedEx{1,i};
+                timePump    = checkedEx{2,i};
+                pulseWidth  = checkedEx{3,i};
+                fluence     = checkedEx{4,i};
+                
+                if obj.heatDiffusion && length(subTime) > 2 && (sum(fluence) == 0 || (sum(fluence) > 0 && sum(pulseWidth) > 0))
+                    % heat diffusion enabled and more than 2 time steps AND
+                    % either no excitation or excitation with finite pulse
+                    % duration
+                    if sum(fluence) == 0 
+                        obj.dispMessage('Calculating _heatDiffusion_ ...');
+                    else
+                        obj.dispMessage(['Calculating _heatDiffusion_ for excitation ' num2str(numEx:(numEx+length(fluence)-1)) ' ...']);
+                    end
+                    start = 1;
+                    stop = 0;
+                    if i-1 > 0
+                        % check if there was a intervall before and add
+                        % last time of this intervall to the current
+                        subTime = [checkedEx{1,i-1}(end) subTime];
+                        start = 2;
+                    end
+                    if i < size(checkedEx,2) && sum(checkedEx{4,i+1}) > 0 && sum(checkedEx{3,i+1}) == 0
+                        % there is a next intervall of delta excitation so
+                        % we add this time at the end of the current
+                        % intervall
+                        subTime = [subTime checkedEx{1,i+1}(1)];
+                        stop  = 1;
+                    end
+                    
+                    % calc heat diffusion
+                    temp = obj.calcHeatDiffusion(initTemp,subTime,timePump,pulseWidth,fluence);
+
+                    if stop == 1
+                        % there is an upcomming delta excitation so we have
+                        % to set the initial temperature for this next
+                        % intervall seperately
+                        specialInitTemp = squeeze(temp(end,:,:));
+                    end
+                    % cut the before added time steps
+                    temp = temp(start:end-stop,:,:);
+                elseif sum(fluence) > 0 && (~obj.heatDiffusion || (obj.heatDiffusion && sum(pulseWidth) == 0))
+                    % excitation with no heat diffusion -> only
+                    % delta excitation possible in this case
+                    % OR excitation with heat diffusion and pulseWidth 
+                    % equal to 0
+                    temp = obj.getTemperatureAfterDeltaExcitation(fluence,initTemp);
+                    temp = reshape(temp,1,size(temp,1),size(temp,2));
+                else
+                    % no excitation and no heat diffusion or not enough time
+                    % step to calculate heat difusion, so just repeat the
+                    % initial temperature + every unhandled case
+                    temp = repmat(reshape(initTemp,1,N,K),[length(subTime) 1 1]);
+                end
+                
+                % concat results
+                tempMap = vertcat(tempMap,temp);                
+                
+                % set the initial temperature for the next iteration
+                if ~isempty(specialInitTemp)
+                    initTemp = specialInitTemp;
+                else
+                    initTemp = squeeze(tempMap(end,:,:));
+                end
+                
+                % increase excitation counder
+                if sum(fluence) > 0
+                    numEx = numEx+length(fluence);
+                end%if
+            end%for
+            
+            if ~isequal([checkedEx{1,:}],time)
+                % if the time grid for the calculation is not the same as 
+                % the grid to return the results on. Then extrapolate the 
+                % results on the original time vector but keep the first 
+                % element in time for the deltaTempMap calculation.
+                [X,Y] = meshgrid([checkedEx{1,:}],1:N);
+                [XI,YI] = meshgrid(time,1:N);
+                temp = tempMap;
+                tempMap = zeros(length(time)+1,N,K);
+                for i = 1:K
+                    tempMap(:,:,i) = vertcat(temp(1,:,i), interp2(X,Y,temp(2:end,:,i)',XI,YI)'); 
+                end
+            end
+            
+            % calculate the difference temperature map
+            deltaTempMap = diff(tempMap);% tempMap(2:M+1,:)-tempMap(1:M,:);
+            % delete the initial temperature that was added at the beginning
+            tempMap(1,:,:) = [];
+            obj.dispMessage('Elapsed time for _tempMap_:',toc(t1));
+        end%function
+        
+        %% calcHeatDiffusion
+        % Returns a tempMap that is calculated by heat diffusion for a
+        % given time vector and initial temperature profile.
+        % Here we have to solve the 1D heat equation:
+        %
+        % $$ c(T) \, \rho \, \frac{\partial T}{\partial t} 
+        % = \frac{\partial}{\partial z} \left( k(T) \, \frac{\partial T}{\partial z} \right) 
+        % + S(z,t)$$
+        %
+        % where $T$ is the temperature [K], $z$ the distance [m], $t$ the 
+        % time [s], $c(T)$ the temperature dependent heat capacity [J/kg K], 
+        % $\rho$ the density [kg/m^3] and $k(T)$ is the temperature-
+        % dependent thermal conductivity [W/m K] and $S(z,t)$ is a source 
+        % term [W/m^3].
+        function tempMap = calcHeatDiffusion(obj,initTemp,time,timePump,pulseWidth,fluence)
+            tic
+            K                   = obj.S.numSubSystems; % nb of sub systems
+            initTemp            = obj.checkInitialTemperature(initTemp); % check the initial temperature
+            [dStart, ~, dMid]   = obj.S.getDistancesOfUnitCells(); % get the distances of each unitCell
+            [~,~,handles]       = obj.S.getUnitCellVectors(); % get the handles to all unitCells       
+            
+            if isempty(obj.distances) 
+                % no user-defined distaces are given, so calculate heat
+                % diffusion by unit cell and also interpolate at the
+                % interfaces
+                dists = obj.S.interpDistanceAtInterfaces(obj.intpAtInterface);
+            else
+                % a user-defined distances vector is given, so determine
+                % the indicies for final assignment per unitcell
+                dists = obj.distances;
+            end
+            
+            % This is the initial condition function that is necessary to
+            % solve the heat equation with the pde solver, it returns the
+            % initial temperature at each distance z.
+            ic = @(z)(initTemp(finderb(z,dStart),:)');
+                      
+            % Here we let the pde solver of matlab solve the differential
+            % equation with the inital condition _ic_, the boundary
+            % condition _obj.pdeBoundaryConditions()_ and the pde function 
+            % _obj.pdeHeatEquation()_.
+            
+            if ~isempty(fluence) && sum(pulseWidth) > 0
+                source = obj.generateSource(fluence,timePump,pulseWidth,dists);
+            else
+                source = [];
+            end
+            
+            temp =  pdepe(0,@(z,t,T,dTdz)(obj.pdeHeatEquation(z,t,T,dTdz,source,dStart,handles)),...
+                    ic,@obj.pdeBoundaryConditions,dists,time,odeset(obj.odeOptions));
+            
+            % interpolate the results from the given distance vector on the
+            % center of each unit cell (dMid) for each subsystem.
+            [X,Y]   = meshgrid(time,dists);
+            [XI,YI] = meshgrid(time,dMid);   
+            
+            tempMap = zeros(length(time),length(dMid),K);
+            for i = 1:K
+                tempMap(:,:,i) = interp2(X,Y,temp(:,:,i)',XI,YI)';
+            end
+
+            if isempty(fluence) 
+                obj.dispMessage('Elapsed time for _heatDiffusion_:',toc);
+            else
+                obj.dispMessage(['Elapsed time for _heatDiffusion_ with ' num2str(length(fluence)) ' excitation(s):'],toc);
+            end
+        end
+        
+        %% generateSource
+        % Generate function handle of gaussians in time and absorption 
+        % profile $d\alpha/dz$ (Lambert-Beer' law) in space for use as a 
+        % source term in heat diffusion pdepe. The source term is engery 
+        % per second and volume [W/m^3]:
+        %
+        % $$ S(z,t) = \frac{\partial^2 E}{A\ \partial z \, \partial t} $$
+        % 
+        % with $A$ as unit cell area.
+        % For a Gaussian temporal profile we can substitute:
+        %
+        % $$ \frac{\partial^2 E}{\partial z \, \partial t} = \frac{d\alpha}{dz} \, E_0 \, \mbox{gauss}(t) $$
+        %
+        % where $\mbox{gauss}(t)$ is a normalized Gaussian function.
+        % Thus we get:
+        %
+        % $$ S(z,t) = \frac{d\alpha}{dz} \, F \, \mbox{gauss}(t) $$
+        %
+        % with $F$ as fluence [J/m^2].
+        function source = generateSource(obj,fluence,timePump,pulseWidth,dists)
+            dAlphadz = obj.getAbsorptionProfile(dists);
+            source   = @(t,z)(dAlphadz(finderb(z,dists))*mgauss(t,pulseWidth,timePump,fluence,'widthType','FWHM','normalize',true));
+        end       
+        
+        %% pdeHeatEquation
+        % This is the definition of the differential heat equation that is
+        % solved by matlab's pde solver. In addition to $z,t,T,dT/dz$, we hand
+        % the vector of distances and handles to all unitCells to the
+        % function to save CPU time.
+        % matlab solves the following equation:
+        %
+        % $$ C\left(z,t,T,\frac{\partial T}{\partial z}\right) \frac{\partial T}{\partial t}  
+        %   = \frac{\partial}{\partial z} \left( f\left(z,t,T,\frac{\partial T}{\partial z}\right)\right) 
+        %   + s\left(x,t,T,\frac{\partial T}{\partial z}\right) $$
+        %
+        % which translates as following for the 1D heat equation:
+        %
+        % $$ C = c(T)\, \rho $$
+        %
+        % $$ f = k(T)\, \frac{\partial T}{\partial z} $$
+        %
+        % $$ s = G(T) + S(z,t) $$
+        %
+        % where $G$ is the subsystem-coupling-term and $S$ is the external 
+        % source term. The units used in the simulation are SI [W/m^3].
+        function [C,f,s] = pdeHeatEquation(obj,z,t,T,dTdz,source,dStart,handles,varargin)
+            % find the first unitCell that is close to the current z
+            % position that is given by the solver
+            persistent K;
+            if isempty(K)
+                K = obj.S.numSubSystems;
+            end
+            
+            index = finderb(z,dStart);
+            unitCell = handles{index}; % this is the handle to the corresponding unitCell
+            
+            k = cellfun(@feval,(unitCell.thermCond)',num2cell(T));            
+            % these are the parameters of the differential equation as they
+            % are defined in matlab for the pdesolver
+            
+            vecSource = zeros(K,1);
+            if isa(source,'function_handle')
+                vecSource(1) = source(t,z);
+            end            
+            C = cellfun(@feval,(unitCell.heatCapacity)',num2cell(T)).*unitCell.density;
+            f = k.*dTdz;
+            s = cellfun(@feval,(unitCell.subSystemCoupling)',repmat({T},K,1))+vecSource;
+        end%function
+        
+        %% pdeBoundaryConditions
+        % This is the boundary condition function as it is required by the
+        % pde solver. For the left and right side the following equation
+        % has to be fulfilled:
+        %
+        % $$ p(z,t,T) + q(z,T) \, f\left(z,t,T, \frac{\partial T}{\partial z}\right) = 0 $$
+        %
+        function [pl,ql,pr,qr] = pdeBoundaryConditions(obj,zl,Tl,zr,Tr,t,varargin)
+            persistent dim;
+            if isempty(dim)
+                dim = [obj.S.numSubSystems,1];
+            end
+            
+            % check the type of the left boundary condition
+            switch obj.boundaryConditions.leftType
+                case 2 % temperature
+                    pl = Tl - obj.boundaryConditions.leftValue;
+                    ql = zeros(dim);
+                case 3 % flux
+                    pl = obj.boundaryConditions.leftValue;
+                    ql = ones(dim);                    
+                otherwise % isolator
+                    pl = zeros(dim);
+                    ql = ones(size(dim));
+            end%switch
+            
+            % check the type of the right boundary condition
+            switch obj.boundaryConditions.rightType
+                case 2 % temperature
+                    pr = Tr - obj.boundaryConditions.rightValue;
+                    qr = zeros(dim);
+                case 3 % flux
+                    pr = -obj.boundaryConditions.rightValue;
+                    qr = ones(dim);                    
+                otherwise % isolator
+                    pr = zeros(dim);
+                    qr = ones(size(dim));
+            end%switch        
+        end%function      
+    end%methods
+end%classdef
+##### SOURCE END #####
+--></body></html>

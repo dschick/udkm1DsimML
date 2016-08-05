@@ -1,0 +1,408 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Heat Excitation Example</title><meta name="generator" content="MATLAB 7.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-05-02"><meta name="DC.source" content="heatExcitationExample.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+
+  </style></head><body><div class="content"><h1>Heat Excitation Example</h1><!--introduction--><p>In this example we show how to change the excitation for the heat simulation. The default excitation is instantaneous at time zero. Further we can also introduce multipulse excitation, as well as finite pulse duration for the pump pulse.</p><p>Before we can start a heat simulation we need to build a sample structure. Be aware of that heat diffusion simulations can take a tremendous amount of time, especially for structures with a large number of unit cells.</p><p>Be sure to include all folders of the udkm1dsim toolbox to your MATLAB search path. Especially the <i>/parameters</i> and <i>/helpers</i> folders with all their subfolders.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Build a Sample Structure</a></li><li><a href="#3">Initialize Heat Simulation</a></li><li><a href="#4">Instantaneous Excitation</a></li><li><a href="#6">Multipulse Excitation</a></li><li><a href="#8">Finite Pulse Width Excitation</a></li><li><a href="#10">Multipulse Excitation with Finite Pulse Width</a></li></ul></div><p>here we clear the workspace and close all figures</p><pre class="codeinput">clear <span class="string">all</span>;
+close <span class="string">all</span>;
+<span class="comment">% these are some units and constants we can use later on</span>
+u            = units;
+const        = constants;
+</pre><h2>Build a Sample Structure<a name="2"></a></h2><pre class="codeinput">O   = atomBase(<span class="string">'O'</span>);
+Ti  = atomBase(<span class="string">'Ti'</span>);
+Sr  = atomBase(<span class="string">'Sr'</span>);
+Ru  = atomBase(<span class="string">'Ru'</span>);
+Pb  = atomBase(<span class="string">'Pb'</span>);
+Zr  = atomBase(<span class="string">'Zr'</span>);
+
+cSTOsub     = 3.905     *u.ang;
+cSRO        = 3.94897   *u.ang;
+svSRO       = 6.312     *u.nm/u.ps;
+svSTO       = 7.800     *u.nm/u.ps;
+
+propSRO.aAxis           = cSTOsub;              <span class="comment">% aAxis</span>
+propSRO.bAxis           = cSTOsub;              <span class="comment">% bAxis</span>
+propSRO.debWalFac       = 0;                    <span class="comment">% Debye-Waller factor</span>
+propSRO.soundVel        = svSRO;                <span class="comment">% sound velocity</span>
+propSRO.optPenDepth     = 43.8*u.nm;            <span class="comment">% optical penetration depth</span>
+propSRO.thermCond       = 5.72*u.W/(u.m *u.K);  <span class="comment">% heat conductivity</span>
+propSRO.linThermExp     = 1.03e-5;              <span class="comment">% linear thermal expansion</span>
+propSRO.heatCapacity    = @(T)(455.2 + 0.112.*T - 2.1935e6./T.^2);
+                                                <span class="comment">% heat capacity [J/kg K]</span>
+SRO = unitCell(<span class="string">'SRO'</span>,<span class="string">'SRO'</span>,cSRO,propSRO);
+SRO.addAtom(O,0);
+SRO.addAtom(Sr,0);
+SRO.addAtom(O,0.5);
+SRO.addAtom(O,0.5);
+SRO.addAtom(Ru,0.5);
+
+propSTOsub.aAxis           = cSTOsub;           <span class="comment">% aAxis</span>
+propSTOsub.bAxis           = cSTOsub;           <span class="comment">% bAxis</span>
+propSTOsub.debWalFac       = 0;                 <span class="comment">% Debye-Waller factor</span>
+propSTOsub.soundVel        = svSTO;             <span class="comment">% sound velocity</span>
+propSTOsub.optPenDepth     = Inf;               <span class="comment">% optical penetration depth</span>
+propSTOsub.thermCond       = 12*u.W/(u.m *u.K); <span class="comment">% heat conductivity</span>
+propSTOsub.linThermExp     = 1e-5;              <span class="comment">% linear thermal expansion</span>
+propSTOsub.heatCapacity    = @(T)(733.73 + 0.0248.*T - 6.531e6./T.^2);
+                                                <span class="comment">% heat capacity [J/kg K]</span>
+STOsub = unitCell(<span class="string">'STOsub'</span>, <span class="string">'STOsub'</span>, cSTOsub, propSTOsub);
+STOsub.addAtom(O,0);
+STOsub.addAtom(Sr,0);
+STOsub.addAtom(O,0.5);
+STOsub.addAtom(O,0.5);
+STOsub.addAtom(Ti,0.5);
+
+S = structure(<span class="string">'Single Layer'</span>);
+S.addSubStructure(SRO,100);     <span class="comment">% add 100 layers of SRO to sample</span>
+S.addSubStructure(STOsub,200);  <span class="comment">% add 250 layers of STO substrate</span>
+
+distances = S.getDistancesOfUnitCells();
+</pre><h2>Initialize Heat Simulation<a name="3"></a></h2><pre class="codeinput">cacheDir = <span class="string">'./cache'</span>;
+forceRecalc = false;
+
+H = heat(S,forceRecalc);
+H.setCacheDir(cacheDir); <span class="comment">% set the cache directory</span>
+time        = (-20:0.1:200)*u.ps;
+fluence     = 5*u.mJ/u.cm^2;
+initTemp    = 300*u.K;
+</pre><h2>Instantaneous Excitation<a name="4"></a></h2><p>The excitation for the <i>getTempMap</i> method can be either a scalar or matrix of <img src="heatExcitationExample_eq68494.png" alt="$3\times N$"> entries, where <img src="heatExcitationExample_eq05153.png" alt="$N$"> is the number of pulses. The first example is an instantenous excitation at <img src="heatExcitationExample_eq21444.png" alt="$t=0$">:</p><pre class="codeinput">pulseWidth = 0*u.ps;
+
+excitation(1,:) = fluence;      <span class="comment">% fluence</span>
+excitation(2,:) = 0;            <span class="comment">% time when the excitation happens</span>
+excitation(3,:) = pulseWidth;   <span class="comment">% pulse width of the excitation</span>
+
+<span class="comment">% The resulting temperature profile is calculated in one line:</span>
+tempMap = H.getTempMap(time,excitation,initTemp);
+</pre><pre class="codeoutput">Elapsed time for _temperatureAfterDeltaExcitation_: 0.35679 seconds.
+Elapsed time for _tempMap_: 0.40903 seconds.
+_tempMap_ saved to file .\cache\tempMap_3a6e1dd66ca5f2a993b7927c81ef487a_ebd8a3524969b9c2491e1e311c7d606a.mat
+</pre><p>plot the results:</p><pre class="codeinput">figure(1)
+kk = surf(distances/u.nm,time/u.ps,tempMap);
+set(kk, <span class="string">'LineStyle'</span>, <span class="string">'none'</span>);
+title(<span class="string">'Temperature [K]'</span>); xlabel(<span class="string">'z [nm]'</span>); ylabel(<span class="string">'Delay [ps]'</span>);
+axis([distances(1)/u.nm distances(end)/u.nm time(1)/u.ps time(end)/u.ps])
+box; colorbar; colormap(jet(255));
+set(gca, <span class="string">'XMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'YMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'TickDir'</span>, <span class="string">'out'</span>);
+</pre><img vspace="5" hspace="5" src="heatExcitationExample_01.png" alt=""> <h2>Multipulse Excitation<a name="6"></a></h2><p>For multiple excitations we only have to add <img src="heatExcitationExample_eq05153.png" alt="$N$"> <i>fluences</i>, <i>timePump</i>, and optionally <i>pulseWidth</i> (default = 0) to the excitation.</p><pre class="codeinput">clear <span class="string">excitation</span>;
+N = 5; <span class="comment">% number of pulses</span>
+pulseSep = 20*u.ps;
+
+excitation(1,:) = fluence*ones(N,1);    <span class="comment">% fluence</span>
+excitation(2,:) = pulseSep*(0:N-1);     <span class="comment">% time when the excitation happens</span>
+excitation(3,:) = pulseWidth*ones(N,1); <span class="comment">% pulse width of the excitation</span>
+
+<span class="comment">% The resulting temperature profile is calculated in one line:</span>
+tempMap = H.getTempMap(time,excitation,initTemp);
+</pre><pre class="codeoutput">Elapsed time for _temperatureAfterDeltaExcitation_: 0.24563 seconds.
+Elapsed time for _temperatureAfterDeltaExcitation_: 0.24124 seconds.
+Elapsed time for _temperatureAfterDeltaExcitation_: 0.24697 seconds.
+Elapsed time for _temperatureAfterDeltaExcitation_: 0.24167 seconds.
+Elapsed time for _temperatureAfterDeltaExcitation_: 0.23913 seconds.
+Elapsed time for _tempMap_: 1.2432 seconds.
+_tempMap_ saved to file .\cache\tempMap_3a6e1dd66ca5f2a993b7927c81ef487a_236959c76e57f52a8ce21917f3b1a9f6.mat
+</pre><p>plot the results:</p><pre class="codeinput">figure(2)
+kk = surf(distances/u.nm,time/u.ps,tempMap);
+set(kk, <span class="string">'LineStyle'</span>, <span class="string">'none'</span>);
+title(<span class="string">'Temperature [K]'</span>); xlabel(<span class="string">'z [nm]'</span>); ylabel(<span class="string">'Delay [ps]'</span>);
+axis([distances(1)/u.nm distances(end)/u.nm time(1)/u.ps time(end)/u.ps])
+box; colorbar; colormap(jet(255));
+set(gca, <span class="string">'XMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'YMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'TickDir'</span>, <span class="string">'out'</span>);
+</pre><img vspace="5" hspace="5" src="heatExcitationExample_02.png" alt=""> <h2>Finite Pulse Width Excitation<a name="8"></a></h2><p>In order to introduce a finite pulse length for the excitation we need to enable heat diffusion.</p><pre class="codeinput">clear <span class="string">excitation</span>;
+H.heatDiffusion = true;
+pulseWidth = 5*u.ps;
+N = 1; <span class="comment">% number of pulses</span>
+
+excitation(1,:) = fluence*ones(N,1);    <span class="comment">% fluence</span>
+excitation(2,:) = pulseSep*(0:N-1);     <span class="comment">% time when the excitation happens</span>
+excitation(3,:) = pulseWidth*ones(N,1); <span class="comment">% pulse width of the excitation</span>
+
+<span class="comment">% The resulting temperature profile is calculated in one line:</span>
+tempMap = H.getTempMap(time,excitation,initTemp);
+</pre><pre class="codeoutput">Calculating _heatDiffusion_ ...
+Elapsed time for _heatDiffusion_: 1.7696 seconds.
+Calculating _heatDiffusion_ for excitation 1 ...
+Elapsed time for _heatDiffusion_ with 1 excitation(s): 10.8156 seconds.
+Calculating _heatDiffusion_ ...
+Elapsed time for _heatDiffusion_: 4.6529 seconds.
+Elapsed time for _tempMap_: 17.3597 seconds.
+_tempMap_ saved to file .\cache\tempMap_3a6e1dd66ca5f2a993b7927c81ef487a_3682c235c941aa07126a8ec85ec726a1.mat
+</pre><p>plot the results:</p><pre class="codeinput">figure(3)
+kk = surf(distances/u.nm,time/u.ps,tempMap);
+set(kk, <span class="string">'LineStyle'</span>, <span class="string">'none'</span>);
+title(<span class="string">'Temperature [K]'</span>); xlabel(<span class="string">'z [nm]'</span>); ylabel(<span class="string">'Delay [ps]'</span>);
+axis([distances(1)/u.nm distances(end)/u.nm time(1)/u.ps time(end)/u.ps])
+box; colorbar; colormap(jet(255));
+set(gca, <span class="string">'XMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'YMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'TickDir'</span>, <span class="string">'out'</span>);
+</pre><img vspace="5" hspace="5" src="heatExcitationExample_03.png" alt=""> <h2>Multipulse Excitation with Finite Pulse Width<a name="10"></a></h2><p>Now we can easily combine the last two example:</p><pre class="codeinput">clear <span class="string">excitation</span>;
+N = 5; <span class="comment">% number of pulses</span>
+
+excitation(1,:) = fluence*ones(N,1);    <span class="comment">% fluence</span>
+excitation(2,:) = pulseSep*(0:N-1);     <span class="comment">% time when the excitation happens</span>
+excitation(3,:) = pulseWidth*ones(N,1); <span class="comment">% pulse width of the excitation</span>
+
+<span class="comment">% The resulting temperature profile is calculated in one line:</span>
+tempMap = H.getTempMap(time,excitation,initTemp);
+</pre><pre class="codeoutput">Calculating _heatDiffusion_ ...
+Elapsed time for _heatDiffusion_: 1.4664 seconds.
+Calculating _heatDiffusion_ for excitation 1 ...
+Elapsed time for _heatDiffusion_ with 1 excitation(s): 10.5376 seconds.
+Calculating _heatDiffusion_ ...
+Elapsed time for _heatDiffusion_: 3.3568 seconds.
+Calculating _heatDiffusion_ for excitation 2 ...
+Elapsed time for _heatDiffusion_ with 1 excitation(s): 14.788 seconds.
+Calculating _heatDiffusion_ ...
+Elapsed time for _heatDiffusion_: 3.5487 seconds.
+Calculating _heatDiffusion_ for excitation 3 ...
+Elapsed time for _heatDiffusion_ with 1 excitation(s): 13.744 seconds.
+Calculating _heatDiffusion_ ...
+Elapsed time for _heatDiffusion_: 3.5718 seconds.
+Calculating _heatDiffusion_ for excitation 4 ...
+Elapsed time for _heatDiffusion_ with 1 excitation(s): 16.7683 seconds.
+Calculating _heatDiffusion_ ...
+Elapsed time for _heatDiffusion_: 3.6871 seconds.
+Calculating _heatDiffusion_ for excitation 5 ...
+Elapsed time for _heatDiffusion_ with 1 excitation(s): 15.6547 seconds.
+Calculating _heatDiffusion_ ...
+Elapsed time for _heatDiffusion_: 4.4152 seconds.
+Elapsed time for _tempMap_: 91.8475 seconds.
+_tempMap_ saved to file .\cache\tempMap_3a6e1dd66ca5f2a993b7927c81ef487a_91e5ecaaf3ae77bc8864276d24d9446b.mat
+</pre><p>plot the results:</p><pre class="codeinput">figure(4)
+kk = surf(distances/u.nm,time/u.ps,tempMap);
+set(kk, <span class="string">'LineStyle'</span>, <span class="string">'none'</span>);
+title(<span class="string">'Temperature [K]'</span>); xlabel(<span class="string">'z [nm]'</span>); ylabel(<span class="string">'Delay [ps]'</span>);
+axis([distances(1)/u.nm distances(end)/u.nm time(1)/u.ps time(end)/u.ps])
+box; colorbar; colormap(jet(255));
+set(gca, <span class="string">'XMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'YMinorTick'</span>, <span class="string">'on'</span>, <span class="string">'TickDir'</span>, <span class="string">'out'</span>);
+</pre><img vspace="5" hspace="5" src="heatExcitationExample_04.png" alt=""> <p class="footer"><br>
+      Published with MATLAB&reg; 7.14<br></p></div><!--
+##### SOURCE BEGIN #####
+%% Heat Excitation Example
+% In this example we show how to change the excitation for the heat
+% simulation. The default excitation is instantaneous at time zero.
+% Further we can also introduce multipulse excitation, as well as finite
+% pulse duration for the pump pulse.
+%
+% Before we can start a heat simulation we need to build a sample
+% structure. Be aware of that heat diffusion simulations can take a
+% tremendous amount of time, especially for structures with a large number
+% of unit cells.
+%
+% Be sure to include all folders of the udkm1dsim toolbox to your MATLAB 
+% search path. Especially the _/parameters_ and _/helpers_ folders with all 
+% their subfolders.
+
+%%
+% here we clear the workspace and close all figures
+clear all;
+close all;
+% these are some units and constants we can use later on
+u            = units;
+const        = constants;
+%% Build a Sample Structure
+O   = atomBase('O');
+Ti  = atomBase('Ti');
+Sr  = atomBase('Sr');
+Ru  = atomBase('Ru');
+Pb  = atomBase('Pb');
+Zr  = atomBase('Zr');
+
+cSTOsub     = 3.905     *u.ang;
+cSRO        = 3.94897   *u.ang;
+svSRO       = 6.312     *u.nm/u.ps;
+svSTO       = 7.800     *u.nm/u.ps;
+
+propSRO.aAxis           = cSTOsub;              % aAxis
+propSRO.bAxis           = cSTOsub;              % bAxis
+propSRO.debWalFac       = 0;                    % Debye-Waller factor
+propSRO.soundVel        = svSRO;                % sound velocity
+propSRO.optPenDepth     = 43.8*u.nm;            % optical penetration depth
+propSRO.thermCond       = 5.72*u.W/(u.m *u.K);  % heat conductivity
+propSRO.linThermExp     = 1.03e-5;              % linear thermal expansion
+propSRO.heatCapacity    = @(T)(455.2 + 0.112.*T - 2.1935e6./T.^2);
+                                                % heat capacity [J/kg K]
+SRO = unitCell('SRO','SRO',cSRO,propSRO);
+SRO.addAtom(O,0);
+SRO.addAtom(Sr,0);
+SRO.addAtom(O,0.5);
+SRO.addAtom(O,0.5);
+SRO.addAtom(Ru,0.5);
+
+propSTOsub.aAxis           = cSTOsub;           % aAxis
+propSTOsub.bAxis           = cSTOsub;           % bAxis
+propSTOsub.debWalFac       = 0;                 % Debye-Waller factor
+propSTOsub.soundVel        = svSTO;             % sound velocity
+propSTOsub.optPenDepth     = Inf;               % optical penetration depth
+propSTOsub.thermCond       = 12*u.W/(u.m *u.K); % heat conductivity
+propSTOsub.linThermExp     = 1e-5;              % linear thermal expansion
+propSTOsub.heatCapacity    = @(T)(733.73 + 0.0248.*T - 6.531e6./T.^2);
+                                                % heat capacity [J/kg K]
+STOsub = unitCell('STOsub', 'STOsub', cSTOsub, propSTOsub);
+STOsub.addAtom(O,0);
+STOsub.addAtom(Sr,0);
+STOsub.addAtom(O,0.5);
+STOsub.addAtom(O,0.5);
+STOsub.addAtom(Ti,0.5);
+
+S = structure('Single Layer');
+S.addSubStructure(SRO,100);     % add 100 layers of SRO to sample
+S.addSubStructure(STOsub,200);  % add 250 layers of STO substrate
+
+distances = S.getDistancesOfUnitCells();
+%% Initialize Heat Simulation
+cacheDir = './cache';
+forceRecalc = false; 
+
+H = heat(S,forceRecalc);
+H.setCacheDir(cacheDir); % set the cache directory
+time        = (-20:0.1:200)*u.ps;
+fluence     = 5*u.mJ/u.cm^2;
+initTemp    = 300*u.K;
+
+%% Instantaneous Excitation
+% The excitation for the _getTempMap_ method can be either a scalar or
+% matrix of $3\times N$ entries, where $N$ is the number of pulses.
+% The first example is an instantenous excitation at $t=0$:
+
+pulseWidth = 0*u.ps;
+
+excitation(1,:) = fluence;      % fluence
+excitation(2,:) = 0;            % time when the excitation happens
+excitation(3,:) = pulseWidth;   % pulse width of the excitation
+
+% The resulting temperature profile is calculated in one line:
+tempMap = H.getTempMap(time,excitation,initTemp);
+
+%%
+% plot the results:
+figure(1)
+kk = surf(distances/u.nm,time/u.ps,tempMap);
+set(kk, 'LineStyle', 'none');
+title('Temperature [K]'); xlabel('z [nm]'); ylabel('Delay [ps]');
+axis([distances(1)/u.nm distances(end)/u.nm time(1)/u.ps time(end)/u.ps])
+box; colorbar; colormap(jet(255));
+set(gca, 'XMinorTick', 'on', 'YMinorTick', 'on', 'TickDir', 'out');
+
+%% Multipulse Excitation
+% For multiple excitations we only have to add $N$ _fluences_, _timePump_, 
+% and optionally _pulseWidth_ (default = 0) to the excitation.
+clear excitation;
+N = 5; % number of pulses
+pulseSep = 20*u.ps;
+
+excitation(1,:) = fluence*ones(N,1);    % fluence
+excitation(2,:) = pulseSep*(0:N-1);     % time when the excitation happens
+excitation(3,:) = pulseWidth*ones(N,1); % pulse width of the excitation
+
+% The resulting temperature profile is calculated in one line:
+tempMap = H.getTempMap(time,excitation,initTemp);
+
+%%
+% plot the results:
+figure(2)
+kk = surf(distances/u.nm,time/u.ps,tempMap);
+set(kk, 'LineStyle', 'none');
+title('Temperature [K]'); xlabel('z [nm]'); ylabel('Delay [ps]');
+axis([distances(1)/u.nm distances(end)/u.nm time(1)/u.ps time(end)/u.ps])
+box; colorbar; colormap(jet(255));
+set(gca, 'XMinorTick', 'on', 'YMinorTick', 'on', 'TickDir', 'out');
+
+%% Finite Pulse Width Excitation
+% In order to introduce a finite pulse length for the excitation we need to
+% enable heat diffusion.
+clear excitation;
+H.heatDiffusion = true;
+pulseWidth = 5*u.ps;
+N = 1; % number of pulses
+
+excitation(1,:) = fluence*ones(N,1);    % fluence
+excitation(2,:) = pulseSep*(0:N-1);     % time when the excitation happens
+excitation(3,:) = pulseWidth*ones(N,1); % pulse width of the excitation
+
+% The resulting temperature profile is calculated in one line:
+tempMap = H.getTempMap(time,excitation,initTemp);
+
+%%
+% plot the results:
+figure(3)
+kk = surf(distances/u.nm,time/u.ps,tempMap);
+set(kk, 'LineStyle', 'none');
+title('Temperature [K]'); xlabel('z [nm]'); ylabel('Delay [ps]');
+axis([distances(1)/u.nm distances(end)/u.nm time(1)/u.ps time(end)/u.ps])
+box; colorbar; colormap(jet(255));
+set(gca, 'XMinorTick', 'on', 'YMinorTick', 'on', 'TickDir', 'out');
+
+%% Multipulse Excitation with Finite Pulse Width
+% Now we can easily combine the last two example:
+clear excitation;
+N = 5; % number of pulses
+
+excitation(1,:) = fluence*ones(N,1);    % fluence
+excitation(2,:) = pulseSep*(0:N-1);     % time when the excitation happens
+excitation(3,:) = pulseWidth*ones(N,1); % pulse width of the excitation
+
+% The resulting temperature profile is calculated in one line:
+tempMap = H.getTempMap(time,excitation,initTemp);
+
+%%
+% plot the results:
+figure(4)
+kk = surf(distances/u.nm,time/u.ps,tempMap);
+set(kk, 'LineStyle', 'none');
+title('Temperature [K]'); xlabel('z [nm]'); ylabel('Delay [ps]');
+axis([distances(1)/u.nm distances(end)/u.nm time(1)/u.ps time(end)/u.ps])
+box; colorbar; colormap(jet(255));
+set(gca, 'XMinorTick', 'on', 'YMinorTick', 'on', 'TickDir', 'out');
+##### SOURCE END #####
+--></body></html>

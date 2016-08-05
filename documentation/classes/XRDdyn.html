@@ -1,0 +1,1109 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>XRDdyn</title><meta name="generator" content="MATLAB 7.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-07-31"><meta name="DC.source" content="XRDdyn.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+
+  </style></head><body><div class="content"><h1>XRDdyn</h1><!--introduction--><p>The XRDdyn class simulates dynamical X-ray diffraction on a 1D structure.</p><p>Copyright (c) 2013, Daniel Schick, Andr&eacute; Bojahr, Marc Herzog, Roman Shayduk, Clemens von Korff Schmising All rights reserved.</p><p>License: BSD (use/copy/change/redistribute on own risk, mention the authors)</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Classdef</a></li><li><a href="#2">Properties</a></li><li><a href="#3">Methods</a></li><li><a href="#4">Constructor</a></li><li><a href="#5">Display</a></li><li><a href="#6">getHash</a></li><li><a href="#7">Homogenous sample structures</a></li><li><a href="#8">homogeneousReflectivity</a></li><li><a href="#9">homogeneousRefTransMatrix</a></li><li><a href="#10">Inhomogenous Sample Structure</a></li><li><a href="#11">getInhomogeneousReflectivity</a></li><li><a href="#12">parallelInhomogeneousReflectivity</a></li><li><a href="#13">sequentialInhomogeneousReflectivity</a></li><li><a href="#14">distributedInhomogeneousReflectivity</a></li><li><a href="#15">calcInhomogeneousReflectivity</a></li><li><a href="#16">getAllRefTransMatrices</a></li><li><a href="#17">calcAllRefTransMatrices</a></li><li><a href="#18">unit cell methods</a></li><li><a href="#19">getUCRefTransMatrix</a></li><li><a href="#20">atomic methods</a></li><li><a href="#21">getAtomRefTransMatrix</a></li><li><a href="#22">getReflectionFactor</a></li><li><a href="#23">getTransmissionFactor</a></li><li><a href="#24">getAtomPhaseMatrix</a></li><li><a href="#25">getAtomPhaseFactor</a></li><li><a href="#27">getReflectivityFromMatrix</a></li><li><a href="#30">References</a></li></ul></div><h2>Classdef<a name="1"></a></h2><p>Each XRDdyn instance and all inherited class objects are inherted from the XRD class which follows handle semantics. Hence a copy of such object will not copy the object itself, but only a handle to that object.</p><pre class="codeinput"><span class="keyword">classdef</span> XRDdyn &lt; XRD
+</pre><h2>Properties<a name="2"></a></h2><pre class="codeinput">    properties (SetAccess=public,GetAccess=public)
+        lastAtomRefTransMatrices = {}; <span class="comment">% CELL ARRAY containing atom ID, hash of [E qz area pol dbf]</span>
+                                <span class="comment">% and RefTransMatrix for this atom and set of parameters</span>
+    <span class="keyword">end</span><span class="comment">%properties</span>
+</pre><h2>Methods<a name="3"></a></h2><pre class="codeinput">    methods
+</pre><h2>Constructor<a name="4"></a></h2><p>Is executed each time an instance of this class is created. Only the <i>structure</i> input is obligatory.</p><pre class="codeinput">        <span class="keyword">function</span> obj = XRDdyn(structure,varargin)
+            obj = obj@XRD(structure,varargin{:});
+        <span class="keyword">end</span><span class="comment">%functions</span>
+</pre><h2>Display<a name="5"></a></h2><p>This method is called to display informations of the instance.</p><pre class="codeinput">        <span class="keyword">function</span> disp(obj)
+            disp(<span class="string">'Dynamical X-Ray Diffraction simulation properties:'</span>);
+            <span class="comment">% call the parent display method</span>
+            disp@XRD(obj);
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>getHash<a name="6"></a></h2><p>Returns a unique hash given by the energy <img src="XRDdyn_eq85525.png" alt="$E$">, <img src="XRDdyn_eq04092.png" alt="$q_z$"> range, polarization factor and the strain vectors as well as the sample structure hash.</p><pre class="codeinput">        <span class="keyword">function</span> hash = getHash(obj,strainVectors,strainMap)
+            <span class="comment">% dataHash is an external function</span>
+            <span class="keyword">if</span> nargin == 2
+                hash = [obj.S.getHash(<span class="string">'XRD'</span>) <span class="string">'_'</span> dataHash({obj.E obj.qz obj.pol strainVectors})];
+            <span class="keyword">else</span>
+                <span class="comment">% reduce size of strainMap when it has more than 1e6 elements</span>
+                <span class="keyword">if</span> numel(strainMap) &gt; 1e6
+                    strainMap = reshape(strainMap,1,numel(strainMap));
+                    strainMap = strainMap(1:1e6);
+                <span class="keyword">end</span>
+                hash = [obj.S.getHash(<span class="string">'XRD'</span>) <span class="string">'_'</span> dataHash({obj.E obj.qz obj.pol strainVectors strainMap})];
+            <span class="keyword">end</span>
+        <span class="keyword">end</span><span class="comment">%functions</span>
+</pre><h2>Homogenous sample structures<a name="7"></a></h2><p>Each of the sample sublayers are homogeneously strained. Thus one can speed up the calculations of the rocking curves.</p><h2>homogeneousReflectivity<a name="8"></a></h2><p>Returns the reflectivity <img src="XRDdyn_eq85930.png" alt="$R$"> of the whole sample structure and the reflectivity-transmission matrices <img src="XRDdyn_eq38011.png" alt="$M_{RT}$"> for each substructure. The reflectivity of the <img src="XRDdyn_eq51737.png" alt="$2\times 2$"> matrices for each <img src="XRDdyn_eq04092.png" alt="$q_z$"> is calculates as follow:</p><p><img src="XRDdyn_eq74015.png" alt="$$ R = \left|M_{RT}^t(1,2)/M_{RT}^t(2,2)\right|^2 $$"></p><pre class="codeinput">        <span class="keyword">function</span> [R A] = homogeneousReflectivity(obj,strains)
+            <span class="comment">% if no strains are given we assume no strain</span>
+            <span class="keyword">if</span> nargin &lt; 2
+                strains = zeros(obj.S.getNumberOfSubStructures(),1);
+            <span class="keyword">end</span>
+            tic
+            obj.dispMessage(<span class="string">'Calculating _homogenousReflectivity_ ...'</span>);
+            <span class="comment">% get the reflectivity-transmisson matrix of the structure</span>
+            [RT A]= obj.homogeneousRefTransMatrix(obj.S,strains);
+            <span class="comment">% calculate the real reflectivity from the RT matrix</span>
+            R = obj.getReflectivityFromMatrix(RT)';
+            obj.dispMessage(<span class="string">'Elapsed time for _homogenousReflectivity_:'</span>,toc);
+        <span class="keyword">end</span><span class="comment">%functions</span>
+</pre><h2>homogeneousRefTransMatrix<a name="9"></a></h2><p>Returns the reflectivity-transmission matrices <img src="XRDdyn_eq38011.png" alt="$M_{RT}$"> of the whole sample structure as well as for each sub structure. The reflectivity-transmission matrix of a single unit cell is calculated from the reflection-transmission matrices <img src="XRDdyn_eq40571.png" alt="$H_i$"> of each atom and the phase matrices between the atoms <img src="XRDdyn_eq68559.png" alt="$L_i$">:</p><p><img src="XRDdyn_eq27924.png" alt="$$ M_{RT} = \prod_i H_i \, L_i $$"></p><p>For <img src="XRDdyn_eq05153.png" alt="$N$"> similar layers of unit cells one can calculate the N-th power of the unit cell <img src="XRDdyn_eq04968.png" alt="$\left(M_{RT}\right)^N$">. The reflection-transmission matrix for the whole sample <img src="XRDdyn_eq66919.png" alt="$M_{RT}^t$"> consisting of <img src="XRDdyn_eq65513.png" alt="$j = 1\ldots M$"> substructures is then again:</p><p><img src="XRDdyn_eq88236.png" alt="$$ M_{RT}^t = \prod_{j=1}^M \left(M_{RT^,j}\right)^{N_j} $$"></p><pre class="codeinput">        <span class="keyword">function</span> [RT A] = homogeneousRefTransMatrix(obj,S,strains)
+            <span class="comment">% if no strains are given we assume no strain (1)</span>
+            <span class="keyword">if</span> nargin &lt; 3
+                strains = zeros(S.getNumberOfSubStructures(),1);
+            <span class="keyword">end</span>
+            <span class="comment">% initialize</span>
+            N   = length(obj.qz);
+            RT  = repmat(eye(2,2),[1 1 N]); <span class="comment">% RefTransMatrix</span>
+            A   = cell(0,2); <span class="comment">% cell Matrix of refTransMatrices of substructures</span>
+            strainCounter = 1;
+
+            <span class="comment">% traverse substructures</span>
+            <span class="keyword">for</span> i = 1:size(S.substructures,1)
+                <span class="keyword">if</span> isa(S.substructures{i,1},<span class="string">'unitCell'</span>)
+                    <span class="comment">% the substructure is an unitCell</span>
+                    <span class="comment">% calculate the ref-trans matrices for N unitCells</span>
+                    temp = exponentTo3DMatrix(obj.getUCRefTransMatrix(S.substructures{i,1},strains(strainCounter)),S.substructures{i,2});
+                    strainCounter = strainCounter+1;
+                    <span class="comment">% remember the result</span>
+                    A(end+1,1:2) = {temp, sprintf(<span class="string">'%dx %s'</span>, S.substructures{i,2}, S.substructures{i,1}.name)};
+                <span class="keyword">else</span>
+                    <span class="comment">% its a structure</span>
+                    <span class="comment">% make a recursive call</span>
+                    [temp  temp2] = obj.homogeneousRefTransMatrix(S.substructures{i,1},strains(strainCounter:strainCounter+S.substructures{i,1}.getNumberOfSubStructures()-1));
+                    A(end+1,1:2) = {temp2, [S.substructures{i,1}.name <span class="string">' substructures'</span>]};
+                    strainCounter = strainCounter+S.substructures{i,1}.getNumberOfSubStructures();
+                    A(end+1,1:2) = {temp, sprintf(<span class="string">'%dx %s'</span>, 1, S.substructures{i,1}.name)};
+                    <span class="comment">% calculate the ref-trans matrices for N sub structures</span>
+                    temp = exponentTo3DMatrix(temp, S.substructures{i,2});
+                    A(end+1,1:2) = {temp, sprintf(<span class="string">'%dx %s'</span>, S.substructures{i,2}, S.substructures{i,1}.name)};
+                <span class="keyword">end</span><span class="comment">%if</span>
+                <span class="comment">% multiply it to the output</span>
+                RT = mtimesx(RT,temp);
+            <span class="keyword">end</span><span class="comment">%for</span>
+            <span class="comment">% if a substrate is included add it at the end</span>
+            <span class="keyword">if</span> ~isempty(S.substrate)
+                [temp  temp2] = obj.homogeneousRefTransMatrix(S.substrate);
+                A(end+1,1:2) = {temp2, <span class="string">'static substrate'</span>};
+                RT = mtimesx(RT,temp);
+            <span class="keyword">end</span><span class="comment">%if</span>
+        <span class="keyword">end</span><span class="comment">%functions</span>
+</pre><h2>Inhomogenous Sample Structure<a name="10"></a></h2><p>All unit cells in the sample are inhomogeneously strained. This is generally the case when calculating the transient rocking curves for coherent phonon dynamics in the sample structure.</p><h2>getInhomogeneousReflectivity<a name="11"></a></h2><p>Returns the reflectivity of an inhomogenously strained sample structure for a given <i>strainMap</i> in position and time, as well as for a given set of possible strains for each unit cell in the sample structure (<i>strainVectors</i>). If no reflectivity is saved in the cache it is caluclated. Providing the <i>type</i> (parallel [default], sequential, distributed) for the calculation the corresponding subroutines for the reflectivity computation are called:</p><div><ul><li><b>parallel</b> parallelization over the time steps utilizing MATLAB's Parallel Computing Toolbox</li><li><b>distributed</b> parallelization over the time steps utilizing MATLAB's Distribted Computing Toolbox</li><li><b>sequential</b> no parallelization at all</li></ul></div><pre class="codeinput">        <span class="keyword">function</span> R = getInhomogeneousReflectivity(obj,strainMap,strainVectors,varargin)
+            <span class="comment">% create a hash of all simulation parameters</span>
+            filename = [<span class="string">'inhomogeneousReflectivityDyn_'</span> obj.getHash(strainVectors,strainMap) <span class="string">'.mat'</span>];
+            fullfilename = fullfile(obj.cacheDir, filename);
+            <span class="comment">% check if we find some corresponding data in the cache dir</span>
+            <span class="keyword">if</span> exist(fullfilename,<span class="string">'file'</span>) &amp;&amp; ~obj.forceRecalc
+                <span class="comment">% found something so load it</span>
+                load(fullfilename);
+                obj.dispMessage([<span class="string">'_inhomogeneousReflectivity_ loaded from file '</span> fullfilename]);
+            <span class="keyword">else</span>
+                tic
+                obj.dispMessage(<span class="string">'Calculating _inhomogenousReflectivity_ ...'</span>);
+                <span class="comment">% parse the input arguments</span>
+                p = inputParser;
+                p.KeepUnmatched = true;
+                p.addRequired(<span class="string">'strainMap'</span>         , @isnumeric);
+                p.addRequired(<span class="string">'strainVectors'</span>     , @iscell);
+                p.addOptional(<span class="string">'type'</span>,   <span class="string">'parallel'</span>, @(x)(ischar(x) &amp; find(strcmp(x,{<span class="string">'parallel'</span>, <span class="string">'sequential'</span>, <span class="string">'distributed'</span>}))));
+                p.addOptional(<span class="string">'job'</span> ,   <span class="string">''</span>);
+                p.addOptional(<span class="string">'numWorker'</span>,   1    , @isnumeric);
+                p.parse(strainMap,strainVectors,varargin{:});
+                <span class="comment">% assign parser results to object properties</span>
+                type          = p.Results.type;
+                strainMap     = p.Results.strainMap;
+                strainVectors = p.Results.strainVectors;
+                job           = p.Results.job;
+                numWorker     = p.Results.numWorker;
+
+                <span class="comment">% All ref-trans matrices for all unique unitCells and for all</span>
+                <span class="comment">% possible strains, given by strainVectors, are calculated in</span>
+                <span class="comment">% advance.</span>
+                RTM = obj.getAllRefTransMatrices(strainVectors);
+
+                <span class="comment">% select the type of computation</span>
+                <span class="keyword">switch</span> type
+                    <span class="keyword">case</span> <span class="string">'parallel'</span>
+                        R = parallelInhomogeneousReflectivity(obj,strainMap,strainVectors,RTM);
+                    <span class="keyword">case</span> <span class="string">'distributed'</span>
+                        R = distributedInhomogeneousReflectivity(obj,strainMap,strainVectors,RTM,job,numWorker);
+                    <span class="keyword">otherwise</span> <span class="comment">% sequential</span>
+                        R = sequentialInhomogeneousReflectivity(obj,strainMap,strainVectors,RTM);
+                <span class="keyword">end</span><span class="comment">%switch</span>
+
+                obj.dispMessage(<span class="string">'Elapsed time for _inhomogeneousReflectivity_:'</span>,toc);
+                save(fullfilename, <span class="string">'R'</span>);
+                obj.dispMessage([<span class="string">'_inhomogeneousReflectivity_ saved to file '</span> fullfilename]);
+            <span class="keyword">end</span><span class="comment">%if</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>parallelInhomogeneousReflectivity<a name="12"></a></h2><p>Returns the reflectivity of an inhomogenously strained sample structure for a given <i>strainMap</i> in position and time, as well as for a given set of possible strains for each unit cell in the sample structure (<i>strainVectors</i>). The function tries to parallize the calculation over the time steps (<i>parallel = true</i>, since the results do not depent on each other. The routine checks whether the MATLAB pool is open - if not it opens the matlab pool with the default configuration.</p><pre class="codeinput">        <span class="keyword">function</span> R = parallelInhomogeneousReflectivity(obj,strainMap,strainVectors,RTM)
+            <span class="comment">%initialize</span>
+            N = size(strainMap,1); <span class="comment">% time steps</span>
+            R = zeros(N,length(obj.qz));
+
+            s = matlabpool(<span class="string">'size'</span>); <span class="comment">% get the size of the matlabpool</span>
+            <span class="keyword">if</span> s == 0 <span class="comment">% no matlabpool open</span>
+                obj.dispMessage([<span class="string">'No matlab pool was opened in advance, so lets do it now with the default configuration!'</span>]);
+                matlabpool <span class="string">open</span>;
+            <span class="keyword">end</span><span class="comment">%if</span>
+
+            <span class="comment">% check for path of ParforProgMon class to add it to</span>
+            <span class="comment">% javapath</span>
+            p = fileparts(which(<span class="string">'ParforProgMon.m'</span>));
+            str = [<span class="string">'javaaddpath '</span> p];
+            feval(@pctRunOnAll,str);
+
+            <span class="comment">% make progresspar with the external parforProgressMonitor</span>
+            <span class="comment">% package</span>
+            ppm = ParforProgMon(<span class="string">'Please wait... '</span>,N);
+            <span class="keyword">parfor</span> i = 1:N
+                ppm.increment();
+                <span class="comment">% get the inhomogenous reflectivity of the sample</span>
+                <span class="comment">% structure for each time step of the strain map</span>
+                R(i,:) = obj.calcInhomogeneousReflectivity(strainMap(i,:),strainVectors,RTM);
+            <span class="keyword">end</span><span class="comment">%parfor</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>sequentialInhomogeneousReflectivity<a name="13"></a></h2><p>Returns the reflectivity of an inhomogenously strained sample structure for a given <i>strainMap</i> in position and time, as well as for a given set of possible strains for each unit cell in the sample structure (<i>strainVectors</i>). The function calculates the results sequentially without parallelization.</p><pre class="codeinput">        <span class="keyword">function</span> R = sequentialInhomogeneousReflectivity(obj,strainMap,strainVectors,RTM)
+            <span class="comment">%initialize</span>
+            N = size(strainMap,1); <span class="comment">% time steps</span>
+            R = zeros(N,length(obj.qz));
+
+            obj.progressBar(<span class="string">'Please wait... '</span>); <span class="comment">% open a progress bar</span>
+            <span class="keyword">for</span> i = 1:N
+                <span class="comment">% get the inhomogenous reflectivity of the sample</span>
+                <span class="comment">% structure for each time step of the strain map</span>
+                R(i,:) = obj.calcInhomogeneousReflectivity(strainMap(i,:),strainVectors,RTM);
+                <span class="comment">% print the progress to console</span>
+                obj.progressBar(i/N*100);
+            <span class="keyword">end</span><span class="comment">%for</span>
+            obj.progressBar(<span class="string">''</span>);
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>distributedInhomogeneousReflectivity<a name="14"></a></h2><p>Return the reflectivity of an inhomogenous sample structure for a given <i>strainMap</i> in position and time, as well as for a given set of possible strains for each unit cell in the sample structure (<i>strainVectors</i>). This method is distributed over several workers using the MATLAB dist. computing toolbox. It requires a Job handle and the number of workers that should contribute.</p><pre class="codeinput">        <span class="keyword">function</span> R = distributedInhomogeneousReflectivity(obj,Job,numWorker,strainMap,strainVectors)
+            <span class="comment">% initialize</span>
+            N           = size(strainMap,1);
+            taskSize    = floor(N/numWorker);
+            rest        = mod(N,numWorker);
+            numTasks    = 0;
+
+            <span class="comment">% traverse all tasks</span>
+            <span class="keyword">for</span> i = 1:taskSize:(taskSize*numWorker)
+                <span class="comment">% create a task for each part of the strain pattern</span>
+                createTask(Job, @obj.getInhomogeneousReflectivity, 1, {strainMap(i:(i+taskSize-1),:) strainVectors <span class="string">'sequential'</span>});
+                numTasks = numTasks+1;
+            <span class="keyword">end</span><span class="comment">%for</span>
+            <span class="comment">% if there are parts left in the strain pattern, we have to</span>
+            <span class="comment">% distribute them no at the end</span>
+            <span class="keyword">if</span> rest &gt; 0
+                <span class="keyword">for</span> i = taskSize*numWorker:taskSize:(taskSize*numWorker+rest)
+                    <span class="keyword">if</span> i+taskSize &gt; N
+                        i_end = N;
+                    <span class="keyword">else</span>
+                        i_end = i+taskSize;
+                    <span class="keyword">end</span><span class="comment">%if</span>
+                    <span class="comment">% create a task for each part of the left strain pattern</span>
+                    createTask(Job, @obj.parallelInhomogeneousReflectivity, 1, {strainMap(i+1:i_end,:) strainVectors 0});
+                    numTasks = numTasks+1;
+                <span class="keyword">end</span><span class="comment">%for</span>
+            <span class="keyword">end</span><span class="comment">%if</span>
+
+            <span class="comment">%Run the job.</span>
+            submit(Job);
+            obj.dispMessage(<span class="string">'Job submitted. Waiting for tasks ...'</span>);
+            <span class="comment">% plot the list of tasks</span>
+            get(Job, <span class="string">'Tasks'</span>)
+
+            <span class="comment">% Wait for the job to finish running tasks, and retrieve the job results.</span>
+            obj.progressBar(<span class="string">'Please wait... '</span>);
+            <span class="keyword">while</span> ~waitForState(Job,<span class="string">'finished'</span>,1)
+                [~, ~, finished] = findTask(Job);
+                obj.progressBar(length(finished)/numTasks*100);
+            <span class="keyword">end</span><span class="comment">%while</span>
+            obj.progressBar(<span class="string">''</span>);
+
+            <span class="comment">% get the results</span>
+            out = getAllOutputArguments(Job);
+            <span class="comment">% build the output reflectifity from the distributed results</span>
+            R = zeros(N,length(obj.qz));
+            m = 1;
+            <span class="keyword">for</span> i = 1:taskSize:(taskSize*numWorker)
+                R(i:(i+taskSize-1),:) = out{m};
+                m = m+1;
+            <span class="keyword">end</span><span class="comment">%for</span>
+            <span class="comment">% if we have a rest, we add it now</span>
+            <span class="keyword">if</span> rest &gt; 0
+                <span class="keyword">for</span> i = taskSize*numWorker:taskSize:(taskSize*numWorker+rest)
+                    <span class="keyword">if</span> i+taskSize &gt; N
+                        i_end = N;
+                    <span class="keyword">else</span>
+                        i_end = i+taskSize;
+                    <span class="keyword">end</span>
+                    R(i+1:i_end,:) = out{m};
+                    m = m+1;
+                <span class="keyword">end</span><span class="comment">%for</span>
+            <span class="keyword">end</span><span class="comment">%if</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>calcInhomogeneousReflectivity<a name="15"></a></h2><p>Calculates the reflectivity of a inhomogenous sample structure for a given strain vector for a single time step. Similar to the homogeneous sample structure, the reflectivity of an unit cell is calculated from the reflection-transmission matrices <img src="XRDdyn_eq40571.png" alt="$H_i$"> of each atom and the phase matrices between the atoms <img src="XRDdyn_eq68559.png" alt="$L_i$">:</p><p><img src="XRDdyn_eq27924.png" alt="$$ M_{RT} = \prod_i H_i \, L_i $$"></p><p>Since all layers are generally inhomogeneously strained we have to traverse all individual unit cells (<img src="XRDdyn_eq65513.png" alt="$j = 1\ldots M$">) in the sample to calculate the total reflection-transmission matrix <img src="XRDdyn_eq66919.png" alt="$M_{RT}^t$">:</p><p><img src="XRDdyn_eq96664.png" alt="$$ M_{RT}^t = \prod_{j=1}^M M_{RT,j} $$"></p><p>The reflectivity of the <img src="XRDdyn_eq51737.png" alt="$2\times 2$"> matrices for each <img src="XRDdyn_eq04092.png" alt="$q_z$"> is calculates as follow:</p><p><img src="XRDdyn_eq74015.png" alt="$$ R = \left|M_{RT}^t(1,2)/M_{RT}^t(2,2)\right|^2 $$"></p><pre class="codeinput">        <span class="keyword">function</span> R = calcInhomogeneousReflectivity(obj,strains,strainVectors,RTM)
+            <span class="comment">% if no all-ref-trans matrices are given, we have to calculate</span>
+            <span class="comment">% them first.</span>
+            <span class="keyword">if</span> nargin &lt; 4
+                RTM = obj.getAllRefTransMatrices(strainVectors);
+            <span class="keyword">end</span>
+            <span class="comment">% initialize</span>
+            N = obj.S.getNumberOfUnitCells();
+            UCIndices = obj.S.getUnitCellVectors();
+            RT = repmat(eye(2,2),[1 1 length(obj.qz)]);
+            <span class="comment">% traverse all unitCells in the sample structure</span>
+            <span class="keyword">for</span> i = 1:N
+                <span class="comment">% Find the ref-trans matrix in the RTM cell array for the</span>
+                <span class="comment">% current unitCell ID and applied strain. Use the</span>
+                <span class="comment">% _knnsearch_ funtion to find the nearest strain value.</span>
+                UCIndex = UCIndices(i);
+                strainIndex =  finderb(strains(i),strainVectors{UCIndex});
+                temp = RTM{UCIndex}{strainIndex};
+                <span class="keyword">if</span> ~isempty(temp)
+                    RT = mtimesx(RT,temp);
+                <span class="keyword">else</span>
+                    error(<span class="string">'not found'</span>);
+                <span class="keyword">end</span>
+            <span class="keyword">end</span><span class="comment">%for</span>
+            <span class="comment">% add the reflectivity of a substrate of available</span>
+            <span class="keyword">if</span> ~isempty(obj.S.substrate)
+                RT = mtimesx(RT,obj.homogeneousRefTransMatrix(obj.S.substrate));
+            <span class="keyword">end</span>
+            <span class="comment">% calculate reflectivity from ref-trans matrix</span>
+            R = obj.getReflectivityFromMatrix(RT);
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>getAllRefTransMatrices<a name="16"></a></h2><p>Returns a cell array of all reflection-transmission matrices for each unique unit cell in the sample structure for a given set of applied strains to each unique unit cell given by the <i>strainVectors</i> input. If this data was saved on disk before, it is loaded, otherwise it is calculated.</p><pre class="codeinput">        <span class="keyword">function</span> RTM = getAllRefTransMatrices(obj,strainVectors)
+            <span class="comment">% create a hash of all simulation parameters</span>
+            filename = [<span class="string">'allRefTransMatrices_'</span> obj.getHash(strainVectors) <span class="string">'.mat'</span>];
+            fullfilename = fullfile(obj.cacheDir, filename);
+            <span class="comment">% check if we find some corresponding data in the cache dir</span>
+            <span class="keyword">if</span> exist(obj.cacheDir,<span class="string">'dir'</span>) <span class="comment">% we are on local disc</span>
+                <span class="keyword">if</span> exist(fullfilename,<span class="string">'file'</span>) &amp;&amp; ~obj.forceRecalc
+                    <span class="comment">% found something so load it</span>
+                    load(fullfilename);
+                    obj.dispMessage([<span class="string">'_refTransMatrices_ loaded from file '</span> fullfilename]);
+                <span class="keyword">else</span>
+                    <span class="comment">% nothing found so calculate it and save it</span>
+                    RTM = obj.calcAllRefTransMatrices(strainVectors);
+                    save(fullfilename, <span class="string">'RTM'</span>,<span class="string">'-v7.3'</span>);
+                    obj.dispMessage([<span class="string">'_refTransMatrices_ saved to file '</span> fullfilename]);
+                <span class="keyword">end</span>
+            <span class="keyword">else</span> <span class="comment">% we have a distributed job</span>
+                <span class="keyword">if</span> exist(filename,<span class="string">'file'</span>) &amp;&amp; ~obj.forceRecalc
+                    <span class="comment">% found something so load it</span>
+                    load(filename);
+                <span class="keyword">else</span>
+                    <span class="comment">% nothing found so calculate but we don't save on a</span>
+                    <span class="comment">% worker</span>
+                    RTM = obj.calcAllRefTransMatrices(strainVectors);
+                <span class="keyword">end</span>
+            <span class="keyword">end</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>calcAllRefTransMatrices<a name="17"></a></h2><p>Calculates a cell array of all reflection-transmission matrices for each unique unit cell in the sample structure for a given set of applied strains to each unique unit cell given by the <i>strainVectors</i> input.</p><pre class="codeinput">        <span class="keyword">function</span> RTM = calcAllRefTransMatrices(obj,strainVectors)
+            tic
+            obj.dispMessage(<span class="string">'Caclulate all _refTransMatricies_ ...'</span>);
+            <span class="comment">%initalize</span>
+            UCs = obj.S.getUniqueUnitCells();
+            <span class="comment">% if no strainVecorts are given we just do it for no strain (1)</span>
+            <span class="keyword">if</span> nargin &lt; 2
+               strainVectors        = cell(length(UCs(:,1)),1);
+               strainVectors(:,1)   = {1};
+            <span class="keyword">end</span>
+            <span class="comment">% check if there are strains for each unique unitCell</span>
+            <span class="keyword">if</span> length(strainVectors) ~= length(UCs(:,1))
+                error(<span class="string">'The Strain Cell Array has not the same size as Number of Unique Unit Cells'</span>);
+            <span class="keyword">end</span>
+
+            <span class="comment">% initialize refTransMatrices</span>
+            RTM = {};
+            <span class="comment">% traverse all unique unitCells</span>
+            <span class="keyword">for</span> i = 1:length(UCs(:,1))
+                RTM{i} = {};
+            <span class="keyword">end</span><span class="comment">%for</span>
+
+            <span class="comment">% traverse all unique unitCells</span>
+            <span class="keyword">for</span> i = 1:length(UCs(:,1))
+                temp = cell(length(strainVectors{i}),1);
+                UC = UCs{i,2};
+                <span class="comment">% traverse all strains in the strainVector for this unique</span>
+                <span class="comment">% unitCell</span>
+                <span class="keyword">parfor</span> j = 1:length(strainVectors{i})
+                    temp{j} = obj.getUCRefTransMatrix(UC,strainVectors{i}(j));
+                <span class="keyword">end</span><span class="comment">%parfor</span>
+                RTM{i} = temp;
+            <span class="keyword">end</span><span class="comment">%for</span>
+            obj.dispMessage(<span class="string">'Elapsed time for _refTransMatricies_:'</span>,toc);
+        <span class="keyword">end</span><span class="comment">%funtion</span>
+</pre><h2>unit cell methods<a name="18"></a></h2><p>These methods are unit cell specific.</p><h2>getUCRefTransMatrix<a name="19"></a></h2><p>Returns the reflection-transmission matrix of a unit cell:</p><p><img src="XRDdyn_eq27924.png" alt="$$ M_{RT} = \prod_i H_i \, L_i $$"></p><p>where <img src="XRDdyn_eq40571.png" alt="$H_i$"> and <img src="XRDdyn_eq68559.png" alt="$L_i$"> are the atomic reflection-transmission matrix and the phase matrix for the atomic distances, respectively.</p><pre class="codeinput">        <span class="keyword">function</span> RTM = getUCRefTransMatrix(obj,UC,strain)
+            <span class="keyword">if</span> nargin &lt; 3
+                strain = 0; <span class="comment">% set the defalut strain to 0</span>
+            <span class="keyword">end</span>
+            N = length(obj.qz); <span class="comment">% number of q_z</span>
+            M = UC.numAtoms; <span class="comment">% number of atoms</span>
+            <span class="comment">% initialize matrices</span>
+            RTM = repmat(eye(2,2),[1 1 N]);
+            <span class="comment">% traverse all atoms of the unit cell</span>
+            <span class="keyword">for</span> j = 1:M
+                <span class="comment">% Calculate the relative distance between the atoms.</span>
+                <span class="comment">% the raltive position is calculated by the function handle</span>
+                <span class="comment">% stored in the atoms cell array as 3rd element. This</span>
+                <span class="comment">% function returns a relative postion dependent on the</span>
+                <span class="comment">% applied strain.</span>
+                <span class="keyword">if</span> j == M <span class="comment">% its the last atom</span>
+                    delDist = (strain+1)-UC.atoms{j,2}(strain);
+                <span class="keyword">else</span>
+                    delDist = UC.atoms{j+1,2}(strain)<span class="keyword">...</span>
+                              - UC.atoms{j,2}(strain);
+                <span class="keyword">end</span>
+                <span class="comment">% get the reflection-transmission matrix and phase matrix</span>
+                <span class="comment">% from all atoms in the unit cell and multiply them</span>
+                <span class="comment">% together</span>
+                RTM = mtimesx(RTM,<span class="keyword">...</span>
+                     obj.getAtomRefTransMatrix(UC.atoms{j,1},UC.area,UC.debWalFac));
+                RTM = mtimesx(RTM,<span class="keyword">...</span>
+                     obj.getAtomPhaseMatrix(delDist*UC.cAxis));
+            <span class="keyword">end</span><span class="comment">%for</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>atomic methods<a name="20"></a></h2><p>These methods are atom specific.</p><h2>getAtomRefTransMatrix<a name="21"></a></h2><p>Returns the reflection-transmission matrix of an atom from dynamic XRD theory:</p><p><img src="XRDdyn_eq57155.png" alt="$$ H = \frac{1}{\tau} \left( \begin{array}{cc}&#xA;\left(\tau^2 - \rho^2\right) &amp; \rho \\&#xA;-\rho &amp; 1 \end{array} \right) $$"></p><pre class="codeinput">        <span class="keyword">function</span> H = getAtomRefTransMatrix(obj,atom,area,dbf)
+            <span class="comment">% check for already calculated data</span>
+            hash =  dataHash({obj.E obj.qz obj.pol area dbf});
+            index = find(strcmp(obj.lastAtomRefTransMatrices,atom.ID));
+            <span class="keyword">if</span> ~isempty(index) &amp;&amp; strcmp(hash,obj.lastAtomRefTransMatrices{index,2})
+                <span class="comment">% These are the same X-ray parameters as last time so we</span>
+                <span class="comment">% can use the same matrix again for this atom</span>
+                H = obj.lastAtomRefTransMatrices{index,3};
+            <span class="keyword">else</span>
+                <span class="comment">% These are new parameters so we have to calculate.</span>
+                <span class="comment">% Get the reflection-transmission-factors</span>
+                rho = obj.getAtomReflectionFactor(atom,area,dbf);
+                tau = obj.getAtomTransmissionFactor(atom,area,dbf);
+                <span class="comment">% calculate the reflection-transmission matrix</span>
+                H = ones(2,2,length(obj.qz));
+                H(1,1,:) = (1 ./ tau) .* (tau.^2 - rho.^2);
+                H(1,2,:) = (1 ./ tau) .* (rho);
+                H(2,1,:) = (1 ./ tau) .* (-rho);
+                H(2,2,:) = (1 ./ tau);
+                <span class="comment">% remember this matrix for next use with the same</span>
+                <span class="comment">% parameters for this atom</span>
+                <span class="keyword">if</span> ~isempty(index)
+                    obj.lastAtomRefTransMatrices(index,:) = {atom.ID, hash, H};
+                <span class="keyword">else</span>
+                    obj.lastAtomRefTransMatrices(end+1,:) = {atom.ID, hash, H};
+                <span class="keyword">end</span>
+            <span class="keyword">end</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>getReflectionFactor<a name="22"></a></h2><p>Returns the reflection factor from dynamic XRD theory:</p><p><img src="XRDdyn_eq27958.png" alt="$$ \rho = \frac{-\i 4 \pi\, r_e\, f(E,q_z)\, P(\theta)\,&#xA;          \exp(-M)}{q_z\, A} $$"></p><div><ul><li><img src="XRDdyn_eq78994.png" alt="$r_e$"> is the electron radius</li><li><img src="XRDdyn_eq71189.png" alt="$f(E,q_z)$"> is the energy and angle dispersive atomic form factor</li><li><img src="XRDdyn_eq13591.png" alt="$P(q_z)$"> is the polarization factor</li><li><img src="XRDdyn_eq31461.png" alt="$A$"> is the area in <img src="XRDdyn_eq60101.png" alt="$x-y$"> plane on which the atom is placed</li><li><img src="XRDdyn_eq95443.png" alt="$M = 0.5(\mbox{dbf}\, q_z)^2)$"> where <img src="XRDdyn_eq64615.png" alt="$\mbox{dbf}^2 = \langle u^2\rangle$"> is the average thermal vibration of the atoms - Debye-Waller factor</li></ul></div><pre class="codeinput">        <span class="keyword">function</span> rho = getAtomReflectionFactor(obj,atom,area,dbf)
+            rho = (-4i *pi * constants.r_e<span class="keyword">...</span>
+             * atom.getCMAtomicFormFactor(obj.E,obj.qz) <span class="keyword">...</span>
+            .* obj.getPolarizationFactor() .* exp(-0.5*(dbf*obj.qz).^2))<span class="keyword">...</span>
+            ./ (obj.qz*area);
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>getTransmissionFactor<a name="23"></a></h2><p>Returns the transmission factor from dynamic XRD theory:</p><p><img src="XRDdyn_eq91170.png" alt="$$ \tau = 1 - \frac{\i 4 \pi\, r_e\, f(E,0)\, \exp(-M)}{q_z\, A} $$"></p><div><ul><li><img src="XRDdyn_eq78994.png" alt="$r_e$"> is the electron radius</li><li><img src="XRDdyn_eq72504.png" alt="$f(E,0)$"> is the energy dispersive atomic form factor (no angle correction)</li><li><img src="XRDdyn_eq31461.png" alt="$A$"> is the area in <img src="XRDdyn_eq60101.png" alt="$x-y$"> plane on which the atom is placed</li><li><img src="XRDdyn_eq95443.png" alt="$M = 0.5(\mbox{dbf}\, q_z)^2)$"> where <img src="XRDdyn_eq64615.png" alt="$\mbox{dbf}^2 = \langle u^2\rangle$"> is the average thermal vibration of the atoms - Debye-Waller factor</li></ul></div><pre class="codeinput">        <span class="keyword">function</span> tau = getAtomTransmissionFactor(obj,atom,area,dbf)
+            tau = 1 - (4i *pi * constants.r_e<span class="keyword">...</span>
+                * atom.getAtomicFormFactor(obj.E)<span class="keyword">...</span>
+                .* exp(-0.5*(dbf*obj.qz).^2)) ./(obj.qz*area);
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>getAtomPhaseMatrix<a name="24"></a></h2><p>Returns the phase matrix from dynamic XRD theory:</p><p><img src="XRDdyn_eq26333.png" alt="$$ L = \left( \begin{array}{cc}&#xA;\exp(\i\, \phi) &amp; 0 \\&#xA;0 &amp; \exp(-\i\, \phi) \end{array} \right) $$"></p><pre class="codeinput">        <span class="keyword">function</span> L = getAtomPhaseMatrix(obj,distance)
+            phi = obj.getAtomPhaseFactor(distance);
+            L = zeros(2,2,length(obj.qz));
+            L(1,1,:) = exp(1i*phi);
+            L(2,2,:) = exp(-1i*phi);
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>getAtomPhaseFactor<a name="25"></a></h2><p>Returns the phase factor <img src="XRDdyn_eq26509.png" alt="$\phi$"> for a distance <img src="XRDdyn_eq51528.png" alt="$d$"> from dynamic XRD theory:</p><p><img src="XRDdyn_eq73457.png" alt="$$ \phi = \frac{d\, q_z}{2} $$"></p><pre class="codeinput">        <span class="keyword">function</span> phi = getAtomPhaseFactor(obj,distance)
+            phi = distance * obj.qz/2;
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><pre class="codeinput">    <span class="keyword">end</span><span class="comment">%methods</span>
+
+    methods (Static = true)
+</pre><h2>getReflectivityFromMatrix<a name="27"></a></h2><p>Returns the physical reflectivity from an 2x2 matrix of transmission and reflectifity factors:</p><p><img src="XRDdyn_eq16913.png" alt="$$ R = \left|M(1,2)/M(2,2)\right|^2 $$"></p><pre class="codeinput">        <span class="keyword">function</span> R = getReflectivityFromMatrix(M)
+            R = zeros(size(M,3),1);
+            R(:) = abs(M(1,2,:)./M(2,2,:)).^2;
+        <span class="keyword">end</span><span class="comment">%functions</span>
+</pre><pre class="codeinput">    <span class="keyword">end</span><span class="comment">%methods</span>
+</pre><pre class="codeinput"><span class="keyword">end</span><span class="comment">%classdef</span>
+</pre><h2>References<a name="30"></a></h2><div><ol><li>J. Als-Nielson, &amp; D. McMorrow (2001). <i>Elements of Modern X-Ray Physics</i>. New York: John Wiley &amp; Sons, Ltd. doi:10.1002/9781119998365</li></ol></div><p class="footer"><br>
+      Published with MATLAB&reg; 7.14<br></p></div><!--
+##### SOURCE BEGIN #####
+%% XRDdyn
+% The XRDdyn class simulates dynamical X-ray diffraction on a 1D structure.
+%
+% Copyright (c) 2013, Daniel Schick, André Bojahr, Marc Herzog, Roman Shayduk, Clemens von Korff Schmising
+% All rights reserved.
+%
+% License: BSD (use/copy/change/redistribute on own risk, mention the authors)
+
+%% Classdef
+% Each XRDdyn instance and all inherited class objects are inherted from 
+% the XRD class which follows handle semantics. 
+% Hence a copy of such object will not copy the object itself,
+% but only a handle to that object.
+classdef XRDdyn < XRD
+    %% Properties
+    properties (SetAccess=public,GetAccess=public)
+        lastAtomRefTransMatrices = {}; % CELL ARRAY containing atom ID, hash of [E qz area pol dbf] 
+                                % and RefTransMatrix for this atom and set of parameters
+    end%properties
+    %% Methods
+    methods
+        %% Constructor
+        % Is executed each time an instance of this class is created. Only
+        % the _structure_ input is obligatory.
+        function obj = XRDdyn(structure,varargin)
+            obj = obj@XRD(structure,varargin{:});
+        end%functions
+        
+        %% Display
+        % This method is called to display informations of the instance.
+        function disp(obj)
+            disp('Dynamical X-Ray Diffraction simulation properties:');
+            % call the parent display method
+            disp@XRD(obj);
+        end%function  
+        
+        %% getHash
+        % Returns a unique hash given by the energy $E$, $q_z$ range,
+        % polarization factor and the strain vectors as well as the sample
+        % structure hash.
+        function hash = getHash(obj,strainVectors,strainMap)
+            % dataHash is an external function
+            if nargin == 2
+                hash = [obj.S.getHash('XRD') '_' dataHash({obj.E obj.qz obj.pol strainVectors})];
+            else
+                % reduce size of strainMap when it has more than 1e6 elements
+                if numel(strainMap) > 1e6
+                    strainMap = reshape(strainMap,1,numel(strainMap));
+                    strainMap = strainMap(1:1e6);
+                end
+                hash = [obj.S.getHash('XRD') '_' dataHash({obj.E obj.qz obj.pol strainVectors strainMap})];
+            end
+        end%functions    
+                
+        %% Homogenous sample structures
+        % Each of the sample sublayers are homogeneously strained. Thus one
+        % can speed up the calculations of the rocking curves.
+        
+        %% homogeneousReflectivity
+        % Returns the reflectivity $R$ of the whole sample structure and 
+        % the reflectivity-transmission matrices $M_{RT}$ for each 
+        % substructure. The reflectivity of the $2\times 2$ matrices for 
+        % each $q_z$ is calculates as follow:
+        %
+        % $$ R = \left|M_{RT}^t(1,2)/M_{RT}^t(2,2)\right|^2 $$
+        %
+        function [R A] = homogeneousReflectivity(obj,strains)
+            % if no strains are given we assume no strain
+            if nargin < 2
+                strains = zeros(obj.S.getNumberOfSubStructures(),1);
+            end
+            tic
+            obj.dispMessage('Calculating _homogenousReflectivity_ ...');
+            % get the reflectivity-transmisson matrix of the structure
+            [RT A]= obj.homogeneousRefTransMatrix(obj.S,strains);
+            % calculate the real reflectivity from the RT matrix
+            R = obj.getReflectivityFromMatrix(RT)';
+            obj.dispMessage('Elapsed time for _homogenousReflectivity_:',toc);
+        end%functions
+        
+        %% homogeneousRefTransMatrix
+        % Returns the reflectivity-transmission matrices $M_{RT}$ of the 
+        % whole sample structure as well as for each sub structure. The 
+        % reflectivity-transmission matrix of a single unit cell is 
+        % calculated from the reflection-transmission matrices $H_i$ of 
+        % each atom and the phase matrices between the atoms $L_i$:
+        %
+        % $$ M_{RT} = \prod_i H_i \, L_i $$
+        %
+        % For $N$ similar layers of unit cells one can calculate the N-th
+        % power of the unit cell $\left(M_{RT}\right)^N$. The 
+        % reflection-transmission matrix for the whole sample $M_{RT}^t$ 
+        % consisting of $j = 1\ldots M$ substructures is then again: 
+        %
+        % $$ M_{RT}^t = \prod_{j=1}^M \left(M_{RT^,j}\right)^{N_j} $$
+        %
+        function [RT A] = homogeneousRefTransMatrix(obj,S,strains)
+            % if no strains are given we assume no strain (1)
+            if nargin < 3
+                strains = zeros(S.getNumberOfSubStructures(),1);
+            end
+            % initialize
+            N   = length(obj.qz);
+            RT  = repmat(eye(2,2),[1 1 N]); % RefTransMatrix
+            A   = cell(0,2); % cell Matrix of refTransMatrices of substructures
+            strainCounter = 1;
+            
+            % traverse substructures
+            for i = 1:size(S.substructures,1)
+                if isa(S.substructures{i,1},'unitCell')
+                    % the substructure is an unitCell
+                    % calculate the ref-trans matrices for N unitCells
+                    temp = exponentTo3DMatrix(obj.getUCRefTransMatrix(S.substructures{i,1},strains(strainCounter)),S.substructures{i,2});
+                    strainCounter = strainCounter+1;
+                    % remember the result
+                    A(end+1,1:2) = {temp, sprintf('%dx %s', S.substructures{i,2}, S.substructures{i,1}.name)};
+                else
+                    % its a structure
+                    % make a recursive call
+                    [temp  temp2] = obj.homogeneousRefTransMatrix(S.substructures{i,1},strains(strainCounter:strainCounter+S.substructures{i,1}.getNumberOfSubStructures()-1));
+                    A(end+1,1:2) = {temp2, [S.substructures{i,1}.name ' substructures']};
+                    strainCounter = strainCounter+S.substructures{i,1}.getNumberOfSubStructures();
+                    A(end+1,1:2) = {temp, sprintf('%dx %s', 1, S.substructures{i,1}.name)};
+                    % calculate the ref-trans matrices for N sub structures
+                    temp = exponentTo3DMatrix(temp, S.substructures{i,2});
+                    A(end+1,1:2) = {temp, sprintf('%dx %s', S.substructures{i,2}, S.substructures{i,1}.name)};
+                end%if
+                % multiply it to the output
+                RT = mtimesx(RT,temp);
+            end%for
+            % if a substrate is included add it at the end
+            if ~isempty(S.substrate)
+                [temp  temp2] = obj.homogeneousRefTransMatrix(S.substrate);
+                A(end+1,1:2) = {temp2, 'static substrate'};
+                RT = mtimesx(RT,temp);
+            end%if            
+        end%functions
+        
+        %% Inhomogenous Sample Structure
+        % All unit cells in the sample are inhomogeneously
+        % strained. This is generally the case when calculating the
+        % transient rocking curves for coherent phonon dynamics in the
+        % sample structure.
+        
+        %% getInhomogeneousReflectivity
+        % Returns the reflectivity of an inhomogenously strained sample
+        % structure for a given _strainMap_ in position and time, as well 
+        % as for a given set of possible strains for each unit cell in the
+        % sample structure (_strainVectors_).
+        % If no reflectivity is saved in the cache it is caluclated.
+        % Providing the _type_ (parallel [default], sequential,
+        % distributed) for the calculation the corresponding subroutines
+        % for the reflectivity computation are called:
+        %
+        % * *parallel* parallelization over the time steps utilizing 
+        % MATLAB's Parallel Computing Toolbox
+        % * *distributed* parallelization over the time steps utilizing 
+        % MATLAB's Distribted Computing Toolbox
+        % * *sequential* no parallelization at all
+        function R = getInhomogeneousReflectivity(obj,strainMap,strainVectors,varargin)
+            % create a hash of all simulation parameters
+            filename = ['inhomogeneousReflectivityDyn_' obj.getHash(strainVectors,strainMap) '.mat'];
+            fullfilename = fullfile(obj.cacheDir, filename);
+            % check if we find some corresponding data in the cache dir
+            if exist(fullfilename,'file') && ~obj.forceRecalc
+                % found something so load it
+                load(fullfilename);
+                obj.dispMessage(['_inhomogeneousReflectivity_ loaded from file ' fullfilename]);
+            else
+                tic
+                obj.dispMessage('Calculating _inhomogenousReflectivity_ ...');
+                % parse the input arguments
+                p = inputParser;
+                p.KeepUnmatched = true;
+                p.addRequired('strainMap'         , @isnumeric);
+                p.addRequired('strainVectors'     , @iscell);
+                p.addOptional('type',   'parallel', @(x)(ischar(x) & find(strcmp(x,{'parallel', 'sequential', 'distributed'}))));
+                p.addOptional('job' ,   '');
+                p.addOptional('numWorker',   1    , @isnumeric);
+                p.parse(strainMap,strainVectors,varargin{:});
+                % assign parser results to object properties
+                type          = p.Results.type;
+                strainMap     = p.Results.strainMap;
+                strainVectors = p.Results.strainVectors;
+                job           = p.Results.job;
+                numWorker     = p.Results.numWorker;
+                
+                % All ref-trans matrices for all unique unitCells and for all
+                % possible strains, given by strainVectors, are calculated in
+                % advance.
+                RTM = obj.getAllRefTransMatrices(strainVectors);
+                
+                % select the type of computation
+                switch type
+                    case 'parallel'
+                        R = parallelInhomogeneousReflectivity(obj,strainMap,strainVectors,RTM);
+                    case 'distributed'
+                        R = distributedInhomogeneousReflectivity(obj,strainMap,strainVectors,RTM,job,numWorker);
+                    otherwise % sequential
+                        R = sequentialInhomogeneousReflectivity(obj,strainMap,strainVectors,RTM);
+                end%switch
+                
+                obj.dispMessage('Elapsed time for _inhomogeneousReflectivity_:',toc);
+                save(fullfilename, 'R');
+                obj.dispMessage(['_inhomogeneousReflectivity_ saved to file ' fullfilename]);
+            end%if
+        end%function
+            
+        %% parallelInhomogeneousReflectivity
+        % Returns the reflectivity of an inhomogenously strained sample
+        % structure for a given _strainMap_ in position and time, as well 
+        % as for a given set of possible strains for each unit cell in the
+        % sample structure (_strainVectors_).
+        % The function tries to parallize the calculation over the time
+        % steps (_parallel = true_, since the results do not depent on each 
+        % other. The routine checks whether the MATLAB pool is open - if 
+        % not it opens the matlab pool with the default configuration.
+        function R = parallelInhomogeneousReflectivity(obj,strainMap,strainVectors,RTM)
+            %initialize
+            N = size(strainMap,1); % time steps
+            R = zeros(N,length(obj.qz));            
+            
+            s = matlabpool('size'); % get the size of the matlabpool
+            if s == 0 % no matlabpool open
+                obj.dispMessage(['No matlab pool was opened in advance, so lets do it now with the default configuration!']);
+                matlabpool open;
+            end%if
+
+            % check for path of ParforProgMon class to add it to
+            % javapath
+            p = fileparts(which('ParforProgMon.m'));
+            str = ['javaaddpath ' p];
+            feval(@pctRunOnAll,str);
+
+            % make progresspar with the external parforProgressMonitor
+            % package
+            ppm = ParforProgMon('Please wait... ',N);
+            parfor i = 1:N
+                ppm.increment();
+                % get the inhomogenous reflectivity of the sample
+                % structure for each time step of the strain map
+                R(i,:) = obj.calcInhomogeneousReflectivity(strainMap(i,:),strainVectors,RTM);
+            end%parfor
+        end%function
+        
+        %% sequentialInhomogeneousReflectivity
+        % Returns the reflectivity of an inhomogenously strained sample
+        % structure for a given _strainMap_ in position and time, as well 
+        % as for a given set of possible strains for each unit cell in the
+        % sample structure (_strainVectors_).
+        % The function calculates the results sequentially without
+        % parallelization.
+        function R = sequentialInhomogeneousReflectivity(obj,strainMap,strainVectors,RTM)
+            %initialize
+            N = size(strainMap,1); % time steps
+            R = zeros(N,length(obj.qz));
+            
+            obj.progressBar('Please wait... '); % open a progress bar
+            for i = 1:N
+                % get the inhomogenous reflectivity of the sample
+                % structure for each time step of the strain map
+                R(i,:) = obj.calcInhomogeneousReflectivity(strainMap(i,:),strainVectors,RTM);
+                % print the progress to console
+                obj.progressBar(i/N*100);
+            end%for
+            obj.progressBar('');                
+        end%function
+        
+        %% distributedInhomogeneousReflectivity
+        % Return the reflectivity of an inhomogenous sample structure for 
+        % a given _strainMap_ in position and time, as well as for a given 
+        % set of possible strains for each unit cell in the sample 
+        % structure (_strainVectors_). This method is distributed over 
+        % several workers using the MATLAB dist. computing toolbox. It 
+        % requires a Job handle and the number of workers that should 
+        % contribute.                
+        function R = distributedInhomogeneousReflectivity(obj,Job,numWorker,strainMap,strainVectors)
+            % initialize
+            N           = size(strainMap,1);
+            taskSize    = floor(N/numWorker);
+            rest        = mod(N,numWorker);
+            numTasks    = 0;                
+
+            % traverse all tasks
+            for i = 1:taskSize:(taskSize*numWorker)
+                % create a task for each part of the strain pattern
+                createTask(Job, @obj.getInhomogeneousReflectivity, 1, {strainMap(i:(i+taskSize-1),:) strainVectors 'sequential'});
+                numTasks = numTasks+1;
+            end%for
+            % if there are parts left in the strain pattern, we have to
+            % distribute them no at the end
+            if rest > 0
+                for i = taskSize*numWorker:taskSize:(taskSize*numWorker+rest)
+                    if i+taskSize > N
+                        i_end = N;
+                    else
+                        i_end = i+taskSize;
+                    end%if
+                    % create a task for each part of the left strain pattern
+                    createTask(Job, @obj.parallelInhomogeneousReflectivity, 1, {strainMap(i+1:i_end,:) strainVectors 0});
+                    numTasks = numTasks+1;
+                end%for
+            end%if
+
+            %Run the job.
+            submit(Job);
+            obj.dispMessage('Job submitted. Waiting for tasks ...');
+            % plot the list of tasks
+            get(Job, 'Tasks')
+
+            % Wait for the job to finish running tasks, and retrieve the job results.
+            obj.progressBar('Please wait... ');
+            while ~waitForState(Job,'finished',1)
+                [~, ~, finished] = findTask(Job);
+                obj.progressBar(length(finished)/numTasks*100);
+            end%while
+            obj.progressBar('');
+
+            % get the results
+            out = getAllOutputArguments(Job);
+            % build the output reflectifity from the distributed results
+            R = zeros(N,length(obj.qz));
+            m = 1;
+            for i = 1:taskSize:(taskSize*numWorker)
+                R(i:(i+taskSize-1),:) = out{m};
+                m = m+1;
+            end%for
+            % if we have a rest, we add it now
+            if rest > 0
+                for i = taskSize*numWorker:taskSize:(taskSize*numWorker+rest)
+                    if i+taskSize > N
+                        i_end = N;
+                    else
+                        i_end = i+taskSize;
+                    end
+                    R(i+1:i_end,:) = out{m};
+                    m = m+1;
+                end%for
+            end%if
+        end%function
+         
+        %% calcInhomogeneousReflectivity
+        % Calculates the reflectivity of a inhomogenous sample structure 
+        % for a given strain vector for a single time step. Similar to the
+        % homogeneous sample structure, the reflectivity of an unit cell is
+        % calculated from the reflection-transmission matrices $H_i$ of 
+        % each atom and the phase matrices between the atoms $L_i$:
+        %
+        % $$ M_{RT} = \prod_i H_i \, L_i $$
+        %
+        % Since all layers are generally inhomogeneously strained we have 
+        % to traverse all individual unit cells ($j = 1\ldots M$) in the 
+        % sample to calculate the total reflection-transmission matrix 
+        % $M_{RT}^t$:
+        %
+        % $$ M_{RT}^t = \prod_{j=1}^M M_{RT,j} $$
+        % 
+        % The reflectivity of the $2\times 2$ matrices for 
+        % each $q_z$ is calculates as follow:
+        %
+        % $$ R = \left|M_{RT}^t(1,2)/M_{RT}^t(2,2)\right|^2 $$
+        %
+        function R = calcInhomogeneousReflectivity(obj,strains,strainVectors,RTM)            
+            % if no all-ref-trans matrices are given, we have to calculate
+            % them first.
+            if nargin < 4
+                RTM = obj.getAllRefTransMatrices(strainVectors);
+            end
+            % initialize
+            N = obj.S.getNumberOfUnitCells();
+            UCIndices = obj.S.getUnitCellVectors();
+            RT = repmat(eye(2,2),[1 1 length(obj.qz)]);
+            % traverse all unitCells in the sample structure
+            for i = 1:N
+                % Find the ref-trans matrix in the RTM cell array for the
+                % current unitCell ID and applied strain. Use the
+                % _knnsearch_ funtion to find the nearest strain value.
+                UCIndex = UCIndices(i);
+                strainIndex =  finderb(strains(i),strainVectors{UCIndex});
+                temp = RTM{UCIndex}{strainIndex};
+                if ~isempty(temp)
+                    RT = mtimesx(RT,temp);
+                else
+                    error('not found');
+                end  
+            end%for
+            % add the reflectivity of a substrate of available
+            if ~isempty(obj.S.substrate)
+                RT = mtimesx(RT,obj.homogeneousRefTransMatrix(obj.S.substrate));
+            end
+            % calculate reflectivity from ref-trans matrix
+            R = obj.getReflectivityFromMatrix(RT);
+        end%function        
+                        
+        %% getAllRefTransMatrices
+        % Returns a cell array of all reflection-transmission matrices for
+        % each unique unit cell in the sample structure for a given set of
+        % applied strains to each unique unit cell given by the
+        % _strainVectors_ input. If this data was saved on disk before, it
+        % is loaded, otherwise it is calculated.
+        function RTM = getAllRefTransMatrices(obj,strainVectors)
+            % create a hash of all simulation parameters
+            filename = ['allRefTransMatrices_' obj.getHash(strainVectors) '.mat'];
+            fullfilename = fullfile(obj.cacheDir, filename);
+            % check if we find some corresponding data in the cache dir
+            if exist(obj.cacheDir,'dir') % we are on local disc
+                if exist(fullfilename,'file') && ~obj.forceRecalc
+                    % found something so load it
+                    load(fullfilename);
+                    obj.dispMessage(['_refTransMatrices_ loaded from file ' fullfilename]);
+                else
+                    % nothing found so calculate it and save it
+                    RTM = obj.calcAllRefTransMatrices(strainVectors);
+                    save(fullfilename, 'RTM','-v7.3');
+                    obj.dispMessage(['_refTransMatrices_ saved to file ' fullfilename]);
+                end
+            else % we have a distributed job
+                if exist(filename,'file') && ~obj.forceRecalc
+                    % found something so load it
+                    load(filename);
+                else
+                    % nothing found so calculate but we don't save on a
+                    % worker
+                    RTM = obj.calcAllRefTransMatrices(strainVectors);
+                end
+            end
+        end%function
+        
+        %% calcAllRefTransMatrices
+        % Calculates a cell array of all reflection-transmission matrices 
+        % for each unique unit cell in the sample structure for a given set 
+        % of applied strains to each unique unit cell given by the
+        % _strainVectors_ input.
+        function RTM = calcAllRefTransMatrices(obj,strainVectors)
+            tic
+            obj.dispMessage('Caclulate all _refTransMatricies_ ...');
+            %initalize
+            UCs = obj.S.getUniqueUnitCells();
+            % if no strainVecorts are given we just do it for no strain (1)
+            if nargin < 2
+               strainVectors        = cell(length(UCs(:,1)),1);
+               strainVectors(:,1)   = {1};
+            end
+            % check if there are strains for each unique unitCell
+            if length(strainVectors) ~= length(UCs(:,1))
+                error('The Strain Cell Array has not the same size as Number of Unique Unit Cells');
+            end
+            
+            % initialize refTransMatrices
+            RTM = {};
+            % traverse all unique unitCells
+            for i = 1:length(UCs(:,1)) 
+                RTM{i} = {}; 
+            end%for
+            
+            % traverse all unique unitCells
+            for i = 1:length(UCs(:,1))
+                temp = cell(length(strainVectors{i}),1);
+                UC = UCs{i,2};
+                % traverse all strains in the strainVector for this unique
+                % unitCell
+                parfor j = 1:length(strainVectors{i})
+                    temp{j} = obj.getUCRefTransMatrix(UC,strainVectors{i}(j));
+                end%parfor
+                RTM{i} = temp;
+            end%for
+            obj.dispMessage('Elapsed time for _refTransMatricies_:',toc);
+        end%funtion
+        
+        %% unit cell methods
+        % These methods are unit cell specific.
+        
+        %% getUCRefTransMatrix
+        % Returns the reflection-transmission matrix of a unit cell:
+        %
+        % $$ M_{RT} = \prod_i H_i \, L_i $$
+        %
+        % where $H_i$ and $L_i$ are the atomic reflection-transmission 
+        % matrix and the phase matrix for the atomic distances, 
+        % respectively.
+        function RTM = getUCRefTransMatrix(obj,UC,strain)
+            if nargin < 3
+                strain = 0; % set the defalut strain to 0
+            end
+            N = length(obj.qz); % number of q_z
+            M = UC.numAtoms; % number of atoms
+            % initialize matrices
+            RTM = repmat(eye(2,2),[1 1 N]);
+            % traverse all atoms of the unit cell
+            for j = 1:M
+                % Calculate the relative distance between the atoms.
+                % the raltive position is calculated by the function handle
+                % stored in the atoms cell array as 3rd element. This
+                % function returns a relative postion dependent on the 
+                % applied strain.
+                if j == M % its the last atom
+                    delDist = (strain+1)-UC.atoms{j,2}(strain);
+                else
+                    delDist = UC.atoms{j+1,2}(strain)...
+                              - UC.atoms{j,2}(strain);
+                end
+                % get the reflection-transmission matrix and phase matrix
+                % from all atoms in the unit cell and multiply them
+                % together
+                RTM = mtimesx(RTM,...
+                     obj.getAtomRefTransMatrix(UC.atoms{j,1},UC.area,UC.debWalFac));
+                RTM = mtimesx(RTM,...
+                     obj.getAtomPhaseMatrix(delDist*UC.cAxis));
+            end%for
+        end%function
+        
+        %% atomic methods
+        % These methods are atom specific.
+        
+        %% getAtomRefTransMatrix
+        % Returns the reflection-transmission matrix of an atom from 
+        % dynamic XRD theory:
+        % 
+        % $$ H = \frac{1}{\tau} \left( \begin{array}{cc}
+        % \left(\tau^2 - \rho^2\right) & \rho \\
+        % -\rho & 1 \end{array} \right) $$
+        %
+        function H = getAtomRefTransMatrix(obj,atom,area,dbf)
+            % check for already calculated data     
+            hash =  dataHash({obj.E obj.qz obj.pol area dbf});
+            index = find(strcmp(obj.lastAtomRefTransMatrices,atom.ID));
+            if ~isempty(index) && strcmp(hash,obj.lastAtomRefTransMatrices{index,2})
+                % These are the same X-ray parameters as last time so we
+                % can use the same matrix again for this atom
+                H = obj.lastAtomRefTransMatrices{index,3};
+            else
+                % These are new parameters so we have to calculate.                          
+                % Get the reflection-transmission-factors
+                rho = obj.getAtomReflectionFactor(atom,area,dbf);
+                tau = obj.getAtomTransmissionFactor(atom,area,dbf);
+                % calculate the reflection-transmission matrix
+                H = ones(2,2,length(obj.qz));
+                H(1,1,:) = (1 ./ tau) .* (tau.^2 - rho.^2);
+                H(1,2,:) = (1 ./ tau) .* (rho);
+                H(2,1,:) = (1 ./ tau) .* (-rho);
+                H(2,2,:) = (1 ./ tau);
+                % remember this matrix for next use with the same
+                % parameters for this atom
+                if ~isempty(index)
+                    obj.lastAtomRefTransMatrices(index,:) = {atom.ID, hash, H};
+                else
+                    obj.lastAtomRefTransMatrices(end+1,:) = {atom.ID, hash, H};
+                end
+            end
+        end%function
+        
+        %% getReflectionFactor
+        % Returns the reflection factor from dynamic XRD theory:
+        % 
+        % $$ \rho = \frac{-\i 4 \pi\, r_e\, f(E,q_z)\, P(\theta)\,
+        %           \exp(-M)}{q_z\, A} $$
+        % 
+        % * $r_e$ is the electron radius
+        % * $f(E,q_z)$ is the energy and angle dispersive atomic form 
+        % factor
+        % * $P(q_z)$ is the polarization factor
+        % * $A$ is the area in $x-y$ plane on which the atom is placed 
+        % * $M = 0.5(\mbox{dbf}\, q_z)^2)$ where 
+        % $\mbox{dbf}^2 = \langle u^2\rangle$ is the average thermal 
+        % vibration of the atoms - Debye-Waller factor 
+        function rho = getAtomReflectionFactor(obj,atom,area,dbf)
+            rho = (-4i *pi * constants.r_e...
+             * atom.getCMAtomicFormFactor(obj.E,obj.qz) ...
+            .* obj.getPolarizationFactor() .* exp(-0.5*(dbf*obj.qz).^2))...
+            ./ (obj.qz*area);
+        end%function
+        
+        %% getTransmissionFactor
+        % Returns the transmission factor from dynamic XRD theory:
+        %
+        % $$ \tau = 1 - \frac{\i 4 \pi\, r_e\, f(E,0)\, \exp(-M)}{q_z\, A} $$
+        % 
+        % * $r_e$ is the electron radius
+        % * $f(E,0)$ is the energy dispersive atomic form factor (no angle 
+        % correction)
+        % * $A$ is the area in $x-y$ plane on which the atom is placed
+        % * $M = 0.5(\mbox{dbf}\, q_z)^2)$ where 
+        % $\mbox{dbf}^2 = \langle u^2\rangle$ is the average thermal 
+        % vibration of the atoms - Debye-Waller factor 
+        function tau = getAtomTransmissionFactor(obj,atom,area,dbf)
+            tau = 1 - (4i *pi * constants.r_e...
+                * atom.getAtomicFormFactor(obj.E)...
+                .* exp(-0.5*(dbf*obj.qz).^2)) ./(obj.qz*area);
+        end%function
+        
+        %% getAtomPhaseMatrix
+        % Returns the phase matrix from dynamic XRD theory:
+        %
+        % $$ L = \left( \begin{array}{cc}
+        % \exp(\i\, \phi) & 0 \\
+        % 0 & \exp(-\i\, \phi) \end{array} \right) $$
+        function L = getAtomPhaseMatrix(obj,distance)
+            phi = obj.getAtomPhaseFactor(distance);
+            L = zeros(2,2,length(obj.qz));
+            L(1,1,:) = exp(1i*phi);
+            L(2,2,:) = exp(-1i*phi);
+        end%function
+        
+        %% getAtomPhaseFactor
+        % Returns the phase factor $\phi$ for a distance $d$ from dynamic 
+        % XRD theory:
+        %
+        % $$ \phi = \frac{d\, q_z}{2} $$
+        %
+        function phi = getAtomPhaseFactor(obj,distance)
+            phi = distance * obj.qz/2;
+        end%function
+    end%methods
+    
+    methods (Static = true)
+        %% getReflectivityFromMatrix
+        % Returns the physical reflectivity from an 2x2 matrix of
+        % transmission and reflectifity factors:
+        %
+        % $$ R = \left|M(1,2)/M(2,2)\right|^2 $$
+        %
+        function R = getReflectivityFromMatrix(M)
+            R = zeros(size(M,3),1);
+            R(:) = abs(M(1,2,:)./M(2,2,:)).^2; 
+        end%functions
+    end%methods
+end%classdef
+
+%% References
+%
+% # J. Als-Nielson, & D. McMorrow (2001). _Elements of Modern X-Ray 
+% Physics_. New York: John Wiley & Sons, Ltd. doi:10.1002/9781119998365
+##### SOURCE END #####
+--></body></html>

@@ -1,0 +1,914 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>unitCell</title><meta name="generator" content="MATLAB 7.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-07-31"><meta name="DC.source" content="unitCell.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+
+  </style></head><body><div class="content"><h1>unitCell</h1><!--introduction--><p>The unitCell class hold different structural properties of real physical unit cells and also an array of atoms at different postions in the unit cell.</p><p>Copyright (c) 2013, Daniel Schick, Andr&eacute; Bojahr, Marc Herzog, Roman Shayduk, Clemens von Korff Schmising All rights reserved.</p><p>License: BSD (use/copy/change/redistribute on own risk, mention the authors)</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Classdef</a></li><li><a href="#2">Properties</a></li><li><a href="#3">Methods</a></li><li><a href="#4">Constructor</a></li><li><a href="#5">clone2multiple</a></li><li><a href="#6">Display</a></li><li><a href="#7">visualize</a></li><li><a href="#8">getParameterStruct</a></li><li><a href="#9">checkCellArrayInput</a></li><li><a href="#10">getIntHeatCapacity</a></li><li><a href="#11">setIntHeatCapacity</a></li><li><a href="#12">getIntLinThermExp</a></li><li><a href="#13">setIntLinThermExp</a></li><li><a href="#14">addAtom</a></li><li><a href="#16">addMultipleAtoms</a></li><li><a href="#17">calcSpringConst</a></li><li><a href="#18">set.soundVel</a></li><li><a href="#19">setHOspringConstants</a></li><li><a href="#20">getAtomIDs</a></li><li><a href="#21">getAtomPositions</a></li></ul></div><h2>Classdef<a name="1"></a></h2><p>Each unitCell instance and all inherited class objects follow handle semantics. Hence a copy of such object will not copy the object itself, but only a handle to that object.</p><pre class="codeinput"><span class="keyword">classdef</span> unitCell &lt; handle
+</pre><h2>Properties<a name="2"></a></h2><pre class="codeinput">    properties (SetAccess=public,GetAccess=public)
+        ID                              <span class="comment">% STRING ID of the unit cell</span>
+        name                            <span class="comment">% STRING name of the unit cell</span>
+        atoms                   = {};   <span class="comment">% CELL ARRAY of atoms and funtion handle for</span>
+                                        <span class="comment">% strain dependent displacement</span>
+        numAtoms                = 0;    <span class="comment">% INTEGER number of atoms in unit cell</span>
+        aAxis                   = 0;    <span class="comment">% FLOAT in-plane a-axis [m]</span>
+        bAxis                   = 0;    <span class="comment">% FLOAT in-plane b-axis [m]</span>
+        cAxis                   = 0;    <span class="comment">% FLOAT out-of-plane c-axis [m]</span>
+        area                    = 0;    <span class="comment">% FLOAT area of epitaxial unit cells</span>
+                                        <span class="comment">% (need for normation for correct intensities) [m^2]</span>
+        volume                  = 0;    <span class="comment">% FLOAT volume of unit cell [m^3]</span>
+        mass                    = 0;    <span class="comment">% FLOAT mass of unit cell [kg]</span>
+        density                 = 0;    <span class="comment">% FLOAT density of the unitCell [kg/m^3]</span>
+        debWalFac               = 0;    <span class="comment">% FLOAT Debye Waller factor &lt;u&gt;^2 [m^2]</span>
+        soundVel                = 0;    <span class="comment">% FLOAT sound velocity in the unit cell [m/s]</span>
+        springConst             = [];   <span class="comment">% FLOAT VECTOR spring constant of the unit cell [kg/s^2] and higher orders</span>
+        phononDamping           = 0;    <span class="comment">% FLOAT damping constant of phonon propagation [kg/s]</span>
+        optPenDepth             = 0;    <span class="comment">% FLOAT penetration depth for pump always for 1st subsystem</span>
+                                        <span class="comment">% light in the unit cell [m]</span>
+        optRefIndex             = [0,0];<span class="comment">% FLOAT VECTOR optical refractive index - real and imagenary part $n + i\kappa$</span>
+        optRefIndexPerStrain    = [0,0];<span class="comment">% FLOAT VECTOR optical refractive index change per strain -</span>
+                                        <span class="comment">% real and imagenary part %\frac{d n}{d \eta} + i\frac{d \kappa}{d \eta}$</span>
+        thermCond                       <span class="comment">% CELL ARRAY of HANDLES T-dependent thermal conductivity [W/(m K)]</span>
+        linThermExp;                    <span class="comment">% CELL ARRAY of HANDLES T-dependent linear thermal expansion</span>
+                                        <span class="comment">% coefficient (relative)</span>
+        intLinThermExp;                 <span class="comment">% CELL ARRAY of HANDLES T-dependent integrated linear thermal expansion</span>
+                                        <span class="comment">% coefficient</span>
+        heatCapacity;                   <span class="comment">% CELL ARRAY of HANDLES T-dependent heat capacity function [J/(kg K)]</span>
+        intHeatCapacity;                <span class="comment">% CELL ARRAY of HANDLES T-dependent integrated heat capacity function</span>
+        subSystemCoupling               <span class="comment">% CELL ARRAY of HANDLES of coupling functions of different subsystems [W/m^3]</span>
+        numSubSystems           = 1;    <span class="comment">% INTEGER number of subsystems for heat and phonons (electrons, lattice, spins, ...)</span>
+    <span class="keyword">end</span><span class="comment">%properties</span>
+</pre><h2>Methods<a name="3"></a></h2><pre class="codeinput">    methods
+</pre><h2>Constructor<a name="4"></a></h2><p>Is executed each time an instance of this class is created. Only the <i>ID</i>, <i>name</i> and <i>cAxis</i> input is obligatory.</p><pre class="codeinput">        <span class="keyword">function</span> obj = unitCell(ID,name,cAxis,varargin)
+            <span class="comment">% initialize input parser and define defaults and validators</span>
+            p = inputParser;
+            p.addRequired(<span class="string">'ID'</span>                      , @ischar);
+            p.addRequired(<span class="string">'name'</span>                    , @ischar);
+            p.addRequired(<span class="string">'cAxis'</span>                   , @isnumeric);
+            p.addParamValue(<span class="string">'aAxis'</span>                 , cAxis , @isnumeric);
+            p.addParamValue(<span class="string">'bAxis'</span>                 , cAxis , @isnumeric);
+            p.addParamValue(<span class="string">'debWalFac'</span>             , 0     , @isnumeric);
+            p.addParamValue(<span class="string">'soundVel'</span>              , 0     , @isnumeric);
+            p.addParamValue(<span class="string">'phononDamping'</span>         , 0     , @isnumeric);
+            p.addParamValue(<span class="string">'optPenDepth'</span>           , 0     , @isnumeric);
+            p.addParamValue(<span class="string">'optRefIndex'</span>           , [0,0] , @(x) (isnumeric(x) &amp;&amp; numel(x) == 2));
+            p.addParamValue(<span class="string">'optRefIndexPerStrain'</span>  , [0,0] , @(x) (isnumeric(x) &amp;&amp; numel(x) == 2));
+            p.addParamValue(<span class="string">'thermCond'</span>             , 0     , @(x)(isnumeric(x) || isa(x,<span class="string">'function_handle'</span>) || ischar(x) || iscell(x)));
+            p.addParamValue(<span class="string">'linThermExp'</span>           , 0     , @(x)(isnumeric(x) || isa(x,<span class="string">'function_handle'</span>) || ischar(x) || iscell(x)));
+            p.addParamValue(<span class="string">'heatCapacity'</span>          , 0     , @(x)(isnumeric(x) || isa(x,<span class="string">'function_handle'</span>) || ischar(x) || iscell(x)));
+            p.addParamValue(<span class="string">'subSystemCoupling'</span>     , 0     , @(x)(isnumeric(x) || isa(x,<span class="string">'function_handle'</span>) || ischar(x) || iscell(x)));
+            <span class="comment">% parse the input</span>
+            p.parse(ID,name,cAxis,varargin{:});
+            <span class="comment">% assign parser results to object properties</span>
+            obj.ID      = genvarname(p.Results.ID);
+            obj.name    = p.Results.name;
+            obj.cAxis   = p.Results.cAxis;
+            <span class="comment">% if no aAxis and/or bAxis are given, they automatically set</span>
+            <span class="keyword">if</span> p.Results.aAxis == 0
+                obj.aAxis = obj.cAxis;
+            <span class="keyword">else</span>
+                obj.aAxis = p.Results.aAxis;
+            <span class="keyword">end</span>
+            <span class="keyword">if</span> p.Results.bAxis == 0
+                obj.bAxis = obj.aAxis;
+            <span class="keyword">else</span>
+                obj.bAxis = p.Results.bAxis;
+            <span class="keyword">end</span>
+            obj.debWalFac               = p.Results.debWalFac;
+            obj.soundVel                = p.Results.soundVel;
+            obj.phononDamping           = p.Results.phononDamping;
+            obj.optPenDepth             = p.Results.optPenDepth;
+            obj.optRefIndex             = p.Results.optRefIndex;
+            obj.optRefIndexPerStrain    = p.Results.optRefIndexPerStrain;
+            obj.heatCapacity            = obj.checkCellArrayInput(p.Results.heatCapacity);
+            obj.thermCond               = obj.checkCellArrayInput(p.Results.thermCond);
+            obj.linThermExp             = obj.checkCellArrayInput(p.Results.linThermExp);
+            obj.subSystemCoupling       = obj.checkCellArrayInput(p.Results.subSystemCoupling);
+
+            <span class="keyword">if</span> isequal(length(obj.heatCapacity),length(obj.thermCond),length(obj.linThermExp),length(obj.subSystemCoupling))
+                obj.numSubSystems = length(obj.heatCapacity);
+            <span class="keyword">else</span>
+                error(<span class="string">'Heat capacity, thermal conductivity, linear thermal expansion and subsystem coupling have not the same number of elements!'</span>);
+            <span class="keyword">end</span><span class="comment">%if</span>
+
+            <span class="comment">% calculate the area of the unit cell</span>
+            obj.area   = obj.aAxis * obj.bAxis;
+            obj.volume = obj.area * obj.cAxis;
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>clone2multiple<a name="5"></a></h2><p>Returns a cloned unit cell N time repeated. Accordingly, all physical properties are adapted, <b>despite of any specific function handle of the atomic position in the unit cell and higher orders of spring constants!</b> If no <i>ID</i> or <i>name</i> is given for the cloned unit cell, the name of the current unit cell is taken plus <img src="unitCell_eq05153.png" alt="$N$">.</p><pre class="codeinput">        <span class="keyword">function</span> clone = clone2multiple(obj,N,varargin)
+            <span class="comment">% initialize input parser and define defaults and validators</span>
+            p = inputParser;
+            p.addRequired(<span class="string">'N'</span>                                       , @isnumeric);
+            p.addParamValue(<span class="string">'ID'</span>            , [obj.ID num2str(N)]   , @ischar);
+            p.addParamValue(<span class="string">'name'</span>          , [obj.name num2str(N)] , @ischar);
+            <span class="comment">% parse the input</span>
+            p.parse(N,varargin{:});
+            <span class="comment">% assign parser results</span>
+            N       = p.Results.N;
+            newID   = p.Results.ID;
+            newName = p.Results.name;
+            <span class="comment">% initialize the cloned object with required inputs</span>
+            clone = unitCell(obj.ID,obj.name,obj.cAxis);
+            <span class="comment">% copy all properties from the current to the cloned object</span>
+            props = properties(obj);
+            <span class="keyword">for</span> i = 1:length(props)
+                clone.(props{i}) = obj.(props{i});
+            <span class="keyword">end</span><span class="comment">%for</span>
+            <span class="comment">% reset some _N_-dependent properties</span>
+            clone.ID = newID;
+            clone.name = newName;
+            clone.cAxis = N*obj.cAxis;
+            clone.volume = N*obj.volume;
+            <span class="comment">% reset all atom-dependent properties</span>
+            clone.atoms = {};
+            clone.mass = 0;
+            clone.density = 0;
+            clone.springConst = 0;
+            clone.numAtoms = 0;
+            <span class="comment">% add all atoms to cloned unit cell, but the position handle is</span>
+            <span class="comment">% transfered!</span>
+            <span class="keyword">for</span> i = 0:N-1
+               <span class="keyword">for</span> j = 1:obj.numAtoms
+                  clone.addAtom(obj.atoms{j,1},obj.atoms{j,2}(0)/N+i/N);
+               <span class="keyword">end</span><span class="comment">%for</span>
+            <span class="keyword">end</span><span class="comment">%for</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>Display<a name="6"></a></h2><p>This method is called to display informations of the instance.</p><pre class="codeinput">        <span class="keyword">function</span> disp(obj)
+            u = units;
+            disp(<span class="string">'Unit Cell with the following properties'</span>)
+            disp([<span class="string">'ID                            : '</span> obj.ID]);
+            disp([<span class="string">'name                          : '</span> obj.name]);
+            disp([<span class="string">'a-axis [Ang]                  : '</span> num2str(obj.aAxis/u.ang)]);
+            disp([<span class="string">'b-axis [Ang]                  : '</span> num2str(obj.bAxis/u.ang)]);
+            disp([<span class="string">'c-axis [Ang]                  : '</span> num2str(obj.cAxis/u.ang)]);
+            disp([<span class="string">'area [Ang^2]                  : '</span> num2str(obj.area/u.ang^2)]);
+            disp([<span class="string">'volume [Ang^3]                : '</span> num2str(obj.volume/u.ang^3)]);
+            disp([<span class="string">'mass [kg]                     : '</span> num2str(obj.mass/u.kg)]);
+            disp([<span class="string">'density [kg/m^3]              : '</span> num2str(obj.density/(u.kg/u.m^3))]);
+            disp([<span class="string">'Debye Waller Factor [m^2]     : '</span> num2str(obj.debWalFac/u.m^2)]);
+            disp([<span class="string">'sound velocity [nm/ps]        : '</span> num2str(obj.soundVel/(u.nm/u.ps))]);
+            disp([<span class="string">'spring constant [kg/s^2]      : '</span> num2str(obj.springConst)]);
+            disp([<span class="string">'phonon damping [kg/s]         : '</span> num2str(obj.phononDamping)]);
+            disp([<span class="string">'opt. pen. depth [nm]          : '</span> num2str(obj.optPenDepth/u.nm)]);
+            disp([<span class="string">'opt. refractive index         : '</span> num2str(obj.optRefIndex)]);
+            disp([<span class="string">'opt. ref. index/strain        : '</span> num2str(obj.optRefIndexPerStrain)]);
+            disp( <span class="string">'thermal conduct. [W/m K]      :'</span>);
+            <span class="keyword">for</span> i = 1:length(obj.thermCond)
+                fprintf(<span class="string">'\t\t\t\t\t\t\t%s\n'</span>, func2str(obj.thermCond{i}));
+            <span class="keyword">end</span><span class="comment">%for</span>
+            disp( <span class="string">'linear thermal expansion [1/K]: '</span>)
+            <span class="keyword">for</span> i = 1:length(obj.linThermExp)
+                fprintf(<span class="string">'\t\t\t\t\t\t\t%s\n'</span>, func2str(obj.linThermExp{i}));
+            <span class="keyword">end</span><span class="comment">%for</span>
+            disp( <span class="string">'heat capacity [J/kg K]        : '</span>)
+            <span class="keyword">for</span> i = 1:length(obj.heatCapacity)
+                fprintf(<span class="string">'\t\t\t\t\t\t\t%s\n'</span>, func2str(obj.heatCapacity{i}));
+            <span class="keyword">end</span><span class="comment">%for</span>
+            disp( <span class="string">'subsystem coupling [W/m^3]    : '</span>)
+            <span class="keyword">for</span> i = 1:length(obj.heatCapacity)
+                fprintf(<span class="string">'\t\t\t\t\t\t\t%s\n'</span>, func2str(obj.subSystemCoupling{i}));
+            <span class="keyword">end</span><span class="comment">%for</span>
+            <span class="comment">% display the constituents</span>
+            disp([num2str(obj.numAtoms) <span class="string">' Constituents:'</span>]);
+            <span class="keyword">for</span> i = 1:obj.numAtoms
+                fprintf(<span class="string">'%s \t %0.2f \t %s\n'</span>, obj.atoms{i,1}.name, obj.atoms{i,2}(0), func2str(obj.atoms{i,2}));
+            <span class="keyword">end</span><span class="comment">%for</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>visualize<a name="7"></a></h2><p>plots the atoms in the unitCell for a given strain. You can input a figure handle.</p><pre class="codeinput">        <span class="keyword">function</span> visualize(obj,varargin)
+            <span class="comment">% initialize input parser and define defaults and validators</span>
+            p = inputParser;
+            p.addRequired(<span class="string">'obj'</span>     , @(x)isa(x,<span class="string">'unitCell'</span>));
+            p.addParamValue(<span class="string">'strain'</span>, 0     , @isnumeric);
+            p.addParamValue(<span class="string">'pause'</span> , 0.05  , @isnumeric);
+            p.addParamValue(<span class="string">'handle'</span>, <span class="string">''</span>    , @ishandle);
+            <span class="comment">% parse the input</span>
+            p.parse(obj,varargin{:});
+            <span class="comment">% assign parser results to object properties</span>
+            <span class="keyword">if</span> isempty(p.Results.handle)
+                h = figure;
+            <span class="keyword">else</span>
+                h = p.Results.handle;
+            <span class="keyword">end</span>
+            strain = p.Results.strain;
+            figure(h);
+            colors = colormap(lines(obj.numAtoms));
+            atomIDs = obj.getAtomIDs();
+            atomsPlotted = zeros(size(atomIDs));
+            <span class="keyword">for</span> i = 1:length(strain)
+                <span class="keyword">for</span> j = 1:obj.numAtoms
+                    l = plot(j,obj.atoms{j,2}(strain(i)),<span class="string">'Marker'</span>, <span class="string">'o'</span>, <span class="string">'MarkerSize'</span>, 15, <span class="string">'MarkerEdgeColor'</span>, [0 0 0], <span class="string">'MarkerFaceColor'</span>, colors(strcmp(obj.atoms{j,1}.ID, atomIDs),:), <span class="string">'LineStyle'</span>, <span class="string">'none'</span>);
+                    <span class="comment">% check if atom has already been plotted</span>
+                    <span class="keyword">if</span> atomsPlotted(strcmp(obj.atoms{j,1}.ID, atomIDs))
+                        <span class="comment">% do not show the atom in the legend</span>
+                        hasbehavior(l,<span class="string">'legend'</span>,false);
+                    <span class="keyword">else</span>
+                        <span class="comment">% set that the atom had been plotted</span>
+                        atomsPlotted(strcmp(obj.atoms{j,1}.ID, atomIDs)) = true;
+                    <span class="keyword">end</span><span class="comment">%if</span>
+                    hold <span class="string">on</span>;
+                <span class="keyword">end</span><span class="comment">%for</span>
+                axis([0.1 obj.numAtoms+0.9 -0.1 (1.1+max(strain))]); grid <span class="string">on</span>; box <span class="string">on</span>;
+                title(sprintf(<span class="string">'Strain: %.2f%%'</span>,strain(i)), <span class="string">'FontSize'</span>, 18);
+                ylabel(<span class="string">'relative Position'</span>);
+                xlabel(<span class="string">'# Atoms'</span>);
+                hold <span class="string">off</span>
+                pause(p.Results.pause)
+            <span class="keyword">end</span><span class="comment">%for</span>
+            legend(atomIDs,<span class="string">'Location'</span>,<span class="string">'NorthWest'</span>);
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>getParameterStruct<a name="8"></a></h2><p>Returns a struct with all parameters. objects or cell arrays and objects are converted to strings. if a type is gven only these properties are returned.</p><pre class="codeinput">        <span class="keyword">function</span> S = getPropertyStruct(obj,varargin)
+            <span class="comment">% initialize input parser and define defaults and validators</span>
+            types = {<span class="string">'all'</span>, <span class="string">'heat'</span>, <span class="string">'phonon'</span>, <span class="string">'XRD'</span>, <span class="string">'optical'</span>};
+            propertiesByTypes = {
+                    <span class="string">'heat'</span>      , {<span class="string">'cAxis'</span> <span class="string">'area'</span> <span class="string">'volume'</span> <span class="string">'optPenDepth'</span> <span class="string">'thermCond'</span> <span class="string">'heatCapacity'</span> <span class="string">'intHeatCapacity'</span> <span class="string">'subSystemCoupling'</span> <span class="string">'numSubSystems'</span>};
+                    <span class="string">'phonon'</span>    , {<span class="string">'numSubSystems'</span> <span class="string">'intLinThermExp'</span> <span class="string">'cAxis'</span> <span class="string">'mass'</span> <span class="string">'springConst'</span> <span class="string">'phononDamping'</span>};
+                    <span class="string">'XRD'</span>       , {<span class="string">'numAtoms'</span> <span class="string">'atoms'</span> <span class="string">'area'</span> <span class="string">'debWalFac'</span> <span class="string">'cAxis'</span>};
+                    <span class="string">'optical'</span>   , {<span class="string">'cAxis'</span> <span class="string">'optPenDepth'</span> <span class="string">'optRefIndex'</span> <span class="string">'optRefIndexPerStrain'</span>};
+                    };
+
+            p = inputParser;
+            p.addOptional(<span class="string">'type'</span>, <span class="string">'all'</span> , @(x)(ischar(x) &amp;&amp; find(strcmp(types,x))));
+            <span class="comment">% parse the input</span>
+            p.parse(varargin{:});
+            <span class="comment">% assign parser results to object properties</span>
+            type      = p.Results.type;
+
+            <span class="comment">% define the property names by the given type</span>
+            <span class="keyword">if</span> strcmp(type, <span class="string">'all'</span>)
+                mc = metaclass(obj);
+                probs = cellfun(@(x)(x.Name), mc.Properties, <span class="string">'UniformOutput'</span>, false);
+            <span class="keyword">else</span>
+                probs = propertiesByTypes{strcmp(propertiesByTypes(:,1),type),2}';
+            <span class="keyword">end</span><span class="comment">%if</span>
+
+            <span class="comment">% assign the values of the properties to the output struct</span>
+            <span class="keyword">for</span> i=1:length(probs)
+                n = probs{i};
+                S.(n) = obj.(n);
+            <span class="keyword">end</span><span class="comment">%for</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>checkCellArrayInput<a name="9"></a></h2><p>Checks the input for inputs which are cell arrays of function handles, such as the heat capacity which is a cell array of N function handles.</p><pre class="codeinput">        <span class="keyword">function</span> output = checkCellArrayInput(obj,input)
+            output = {}; <span class="comment">% the output is a cell array</span>
+            <span class="comment">% if the input is no cell array, we convert it to one</span>
+            <span class="keyword">if</span> ~iscell(input)
+                input = {input};
+            <span class="keyword">end</span><span class="comment">%if</span>
+            <span class="comment">% traverse each cell element and convert it to a function handle</span>
+            <span class="keyword">for</span> i=1:length(input)
+                <span class="keyword">if</span> isa(input{i},<span class="string">'function_handle'</span>)
+                    output{i} = str2func(vectorize(input{i}));
+                <span class="keyword">elseif</span> ischar(input{i})
+                    <span class="keyword">try</span>
+                        output{i} = str2func(input{i});
+                    <span class="keyword">catch</span> err
+                        error([<span class="string">'String input for unit cell property '</span> input{i} <span class="string">' cannot be converted to function handle!'</span>]);
+                    <span class="keyword">end</span><span class="comment">%try</span>
+                <span class="keyword">elseif</span> isnumeric(input{i})
+                    output{i} = str2func([<span class="string">'@(T)('</span> num2str(input{i}) <span class="string">'.*T./T)'</span>]);
+                <span class="keyword">else</span>
+                    error(<span class="string">'Unit cell property input has to be a single or cell array of numerics, function handles or strings which can be converted into a function handle!'</span>);
+                <span class="keyword">end</span><span class="comment">%if</span>
+            <span class="keyword">end</span><span class="comment">%for</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>getIntHeatCapacity<a name="10"></a></h2><p>Returns the anti-derrivative of the temperature-dependent heat <img src="unitCell_eq85974.png" alt="$c(T)$"> capacity function. If the <i>intHeatCapacity</i> property is not set, the symbolic integration is performed.</p><pre class="codeinput">        <span class="keyword">function</span> h = get.intHeatCapacity(obj)
+            <span class="keyword">if</span> iscell(obj.intHeatCapacity)
+                h = obj.intHeatCapacity;
+            <span class="keyword">elseif</span> exist(<span class="string">'syms'</span>)
+                <span class="comment">% symbolic math toolbox is installed</span>
+                syms <span class="string">T</span>;
+                h = cell(length(obj.heatCapacity),1);
+                <span class="keyword">for</span> i=1:length(obj.heatCapacity)
+                    fstr = strrep(func2str(obj.heatCapacity{i}),<span class="string">'@(T)'</span>,<span class="string">''</span>);
+                    fstr = strrep(fstr,<span class="string">'.*'</span>,<span class="string">'*'</span>);
+                    fstr = strrep(fstr,<span class="string">'./'</span>,<span class="string">'/'</span>);
+                    fstr = strrep(fstr,<span class="string">'.^'</span>,<span class="string">'^'</span>);
+                    h{i} = str2func([<span class="string">'@(T)('</span> vectorize(int(sym(fstr),<span class="string">'T'</span>)) <span class="string">')'</span>]);
+                <span class="keyword">end</span><span class="comment">%for</span>
+                obj.intHeatCapacity = h;
+                clear <span class="string">T</span>;
+            <span class="keyword">else</span>
+                error(<span class="string">'The MATLAB Symbolic Math Toolbox is not installed. Please set the analytical anti-derivative of the heat capacity of your unit cells as anonymous function of the temperature T by typing UC.intHeatCapacity = @(T)(c(T)); where UC is the name of the unit cell object.'</span>);
+            <span class="keyword">end</span><span class="comment">%if</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>setIntHeatCapacity<a name="11"></a></h2><p>Set the integrated heat capacity manually when no Smybolic Math Toolbox is installed.</p><pre class="codeinput">        <span class="keyword">function</span> set.intHeatCapacity(obj,value)
+            obj.intHeatCapacity = obj.checkCellArrayInput(value);
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>getIntLinThermExp<a name="12"></a></h2><p>Returns the anti-derrivative of theintegrated temperature-dependent linear thermal expansion function. If the <i>intHeatCapacity</i> property is not set, the symbolic integration is performed.</p><pre class="codeinput">        <span class="keyword">function</span> h = get.intLinThermExp(obj)
+            <span class="keyword">if</span> iscell(obj.intLinThermExp)
+                h = obj.intLinThermExp;
+            <span class="keyword">elseif</span> exist(<span class="string">'syms'</span>)
+                <span class="comment">% symbolic math toolbox is installed</span>
+                syms <span class="string">T</span>;
+                h = cell(length(obj.linThermExp),1);
+                <span class="keyword">for</span> i=1:length(obj.linThermExp)
+                    fstr = strrep(func2str(obj.linThermExp{i}),<span class="string">'@(T)'</span>,<span class="string">''</span>);
+                    fstr = strrep(fstr,<span class="string">'.*'</span>,<span class="string">'*'</span>);
+                    fstr = strrep(fstr,<span class="string">'./'</span>,<span class="string">'/'</span>);
+                    fstr = strrep(fstr,<span class="string">'.^'</span>,<span class="string">'^'</span>);
+                    h{i} = str2func([<span class="string">'@(T)('</span> vectorize(int(sym(fstr),<span class="string">'T'</span>)) <span class="string">')'</span>]);
+                <span class="keyword">end</span><span class="comment">%for</span>
+                obj.intLinThermExp = h;
+                clear <span class="string">T</span>;
+            <span class="keyword">else</span>
+                error(<span class="string">'The MATLAB Symbolic Math Toolbox is not installed. Please set the analytical anti-derivative of the linear thermal expansion coefficient of your unit cells as anonymous function of the temperature T by typing UC.intLinThermExp = @(T)(a(T)); where UC is the name of the unit cell object.'</span>);
+            <span class="keyword">end</span><span class="comment">%if</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>setIntLinThermExp<a name="13"></a></h2><p>Set the integrated linear thermal expansion coefficient manually when no Smybolic Math Toolbox is installed.</p><pre class="codeinput">        <span class="keyword">function</span> set.intLinThermExp(obj,value)
+            obj.intLinThermExp = obj.checkCellArrayInput(value);
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>addAtom<a name="14"></a></h2><p>Adds an atomBase/atomMixed at a relative position of the unit cell.</p><pre class="codeinput">        <span class="keyword">function</span> addAtom(obj,atom,position)
+            <span class="comment">% test the input type of the position</span>
+            <span class="keyword">if</span> isa(position,<span class="string">'function_handle'</span>)
+                <span class="comment">% alrighty</span>
+            <span class="keyword">elseif</span> ischar(position)
+                <span class="keyword">try</span>
+                    position = str2func(position);
+                <span class="keyword">catch</span> err
+                    error([<span class="string">'String input for unit cell property '</span> position <span class="string">' cannot be converted to function handle!'</span>]);
+                <span class="keyword">end</span><span class="comment">%try</span>
+            <span class="keyword">elseif</span> isnumeric(position)
+                position = str2func([<span class="string">'@(strain)('</span> num2str(position) <span class="string">'*(strain+1))'</span>]);
+            <span class="keyword">else</span>
+                error(<span class="string">'Atom position input has to be a scalar, function handle or string which can be converted into a function handle!'</span>);
+            <span class="keyword">end</span><span class="comment">%if</span>
+            <span class="comment">%add the atom at the end of the array</span>
+            obj.atoms(end+1,:) =  {atom position};
+            <span class="comment">% increase the number of atoms</span>
+            obj.numAtoms = obj.numAtoms + 1;
+</pre><p>Update the mass, density and spring constant of the unit cell automatically:</p><p><img src="unitCell_eq12520.png" alt="$$ \kappa = m \cdot (v_s / c)^2 $$"></p><pre class="codeinput">            obj.mass        = obj.mass + atom.mass;
+            obj.density     = obj.mass / obj.volume;
+            obj.calcSpringConst();
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>addMultipleAtoms<a name="16"></a></h2><p>Adds multiple atomBase/atomMixed at a relative position of the unit cell.</p><pre class="codeinput">        <span class="keyword">function</span> addMultipleAtoms(obj,atom,position,Nb)
+            <span class="keyword">for</span> i = 1:Nb
+               obj.addAtom(atom,position);
+            <span class="keyword">end</span><span class="comment">%for</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>calcSpringConst<a name="17"></a></h2><p>Calculates the spring constant of the unit cell from the mass, sound velocity and c-axis</p><p><img src="unitCell_eq10394.png" alt="$$ k = m \, \left(\frac{v}{c}\right)^2 $$"></p><pre class="codeinput">        <span class="keyword">function</span> calcSpringConst(obj)
+            obj.springConst(1)  = obj.mass *(obj.soundVel/obj.cAxis)^2;
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>set.soundVel<a name="18"></a></h2><p>If the sound velocity is set, the spring constant is (re)calculated.</p><pre class="codeinput">        <span class="keyword">function</span> set.soundVel(obj,soundVel)
+            obj.soundVel = soundVel;
+            obj.calcSpringConst();
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>setHOspringConstants<a name="19"></a></h2><p>Set the higher orders of the spring constant for anharmonic phonon simulations.</p><pre class="codeinput">        <span class="keyword">function</span> setHOspringConstants(obj,HO)
+            p = inputParser;
+            p.addRequired(<span class="string">'HO'</span>, @(x)(isnumeric(x) &amp;&amp; isvector(x)));
+            <span class="comment">% parse the input</span>
+            p.parse(HO);
+            <span class="comment">% assign parser results to object properties</span>
+            HO      = p.Results.HO;
+            <span class="comment">% check if HO is column vector and transpose it in this case</span>
+            <span class="keyword">if</span> size(HO,1) &gt; 1
+                HO = HO';
+            <span class="keyword">end</span><span class="comment">%if</span>
+            obj.springConst(2:end) = []; <span class="comment">% reset old higher order spring constants</span>
+            obj.springConst(2:1+numel(HO)) = HO;
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>getAtomIDs<a name="20"></a></h2><p>Returns a cell array of all atom IDs in the unit cell.</p><pre class="codeinput">        <span class="keyword">function</span> IDs = getAtomIDs(obj)
+            IDs = {}; <span class="comment">%cell(obj.numAtoms,1);</span>
+            <span class="keyword">for</span> i = 1:obj.numAtoms
+                <span class="keyword">if</span> ~ismember(obj.atoms{i,1}.ID, IDs)
+                    IDs{end+1} = obj.atoms{i,1}.ID;
+                <span class="keyword">end</span><span class="comment">%if</span>
+            <span class="keyword">end</span><span class="comment">%for</span>
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><h2>getAtomPositions<a name="21"></a></h2><p>Returns a vector of all relative postion of the atoms in the unit cell.</p><pre class="codeinput">        <span class="keyword">function</span> p = getAtomPositions(obj,strain)
+            <span class="keyword">if</span> nargin &lt; 2
+                strain = 0;
+            <span class="keyword">end</span><span class="comment">%if</span>
+            strains = num2cell(strain*ones(obj.numAtoms,1));
+            p = real(cellfun(@feval,obj.atoms(:,2),strains));
+        <span class="keyword">end</span><span class="comment">%function</span>
+</pre><pre class="codeinput">    <span class="keyword">end</span><span class="comment">%methods</span>
+</pre><pre class="codeinput"><span class="keyword">end</span><span class="comment">%classdef</span>
+</pre><p class="footer"><br>
+      Published with MATLAB&reg; 7.14<br></p></div><!--
+##### SOURCE BEGIN #####
+%% unitCell
+% The unitCell class hold different structural properties of real physical 
+% unit cells and also an array of atoms at different postions in the unit
+% cell.
+%
+% Copyright (c) 2013, Daniel Schick, André Bojahr, Marc Herzog, Roman Shayduk, Clemens von Korff Schmising
+% All rights reserved.
+%
+% License: BSD (use/copy/change/redistribute on own risk, mention the authors)
+
+%% Classdef
+% Each unitCell instance and all inherited class objects follow handle
+% semantics. Hence a copy of such object will not copy the object itself,
+% but only a handle to that object.
+classdef unitCell < handle
+    %% Properties
+    properties (SetAccess=public,GetAccess=public)
+        ID                              % STRING ID of the unit cell
+        name                            % STRING name of the unit cell
+        atoms                   = {};   % CELL ARRAY of atoms and funtion handle for 
+                                        % strain dependent displacement
+        numAtoms                = 0;    % INTEGER number of atoms in unit cell
+        aAxis                   = 0;    % FLOAT in-plane a-axis [m]
+        bAxis                   = 0;    % FLOAT in-plane b-axis [m]
+        cAxis                   = 0;    % FLOAT out-of-plane c-axis [m]
+        area                    = 0;    % FLOAT area of epitaxial unit cells 
+                                        % (need for normation for correct intensities) [m^2]
+        volume                  = 0;    % FLOAT volume of unit cell [m^3]                                 
+        mass                    = 0;    % FLOAT mass of unit cell [kg]
+        density                 = 0;    % FLOAT density of the unitCell [kg/m^3]
+        debWalFac               = 0;    % FLOAT Debye Waller factor <u>^2 [m^2]
+        soundVel                = 0;    % FLOAT sound velocity in the unit cell [m/s]
+        springConst             = [];   % FLOAT VECTOR spring constant of the unit cell [kg/s^2] and higher orders
+        phononDamping           = 0;    % FLOAT damping constant of phonon propagation [kg/s]
+        optPenDepth             = 0;    % FLOAT penetration depth for pump always for 1st subsystem 
+                                        % light in the unit cell [m]
+        optRefIndex             = [0,0];% FLOAT VECTOR optical refractive index - real and imagenary part $n + i\kappa$
+        optRefIndexPerStrain    = [0,0];% FLOAT VECTOR optical refractive index change per strain - 
+                                        % real and imagenary part %\frac{d n}{d \eta} + i\frac{d \kappa}{d \eta}$
+        thermCond                       % CELL ARRAY of HANDLES T-dependent thermal conductivity [W/(m K)]
+        linThermExp;                    % CELL ARRAY of HANDLES T-dependent linear thermal expansion 
+                                        % coefficient (relative)
+        intLinThermExp;                 % CELL ARRAY of HANDLES T-dependent integrated linear thermal expansion 
+                                        % coefficient
+        heatCapacity;                   % CELL ARRAY of HANDLES T-dependent heat capacity function [J/(kg K)]
+        intHeatCapacity;                % CELL ARRAY of HANDLES T-dependent integrated heat capacity function
+        subSystemCoupling               % CELL ARRAY of HANDLES of coupling functions of different subsystems [W/m^3]
+        numSubSystems           = 1;    % INTEGER number of subsystems for heat and phonons (electrons, lattice, spins, ...)
+    end%properties
+    %% Methods
+    methods
+        %% Constructor
+        % Is executed each time an instance of this class is created. Only
+        % the _ID_, _name_ and _cAxis_ input is obligatory.
+        function obj = unitCell(ID,name,cAxis,varargin)
+            % initialize input parser and define defaults and validators
+            p = inputParser;
+            p.addRequired('ID'                      , @ischar);
+            p.addRequired('name'                    , @ischar);
+            p.addRequired('cAxis'                   , @isnumeric);
+            p.addParamValue('aAxis'                 , cAxis , @isnumeric);
+            p.addParamValue('bAxis'                 , cAxis , @isnumeric);
+            p.addParamValue('debWalFac'             , 0     , @isnumeric);
+            p.addParamValue('soundVel'              , 0     , @isnumeric);
+            p.addParamValue('phononDamping'         , 0     , @isnumeric);
+            p.addParamValue('optPenDepth'           , 0     , @isnumeric);
+            p.addParamValue('optRefIndex'           , [0,0] , @(x) (isnumeric(x) && numel(x) == 2));
+            p.addParamValue('optRefIndexPerStrain'  , [0,0] , @(x) (isnumeric(x) && numel(x) == 2));
+            p.addParamValue('thermCond'             , 0     , @(x)(isnumeric(x) || isa(x,'function_handle') || ischar(x) || iscell(x)));
+            p.addParamValue('linThermExp'           , 0     , @(x)(isnumeric(x) || isa(x,'function_handle') || ischar(x) || iscell(x)));
+            p.addParamValue('heatCapacity'          , 0     , @(x)(isnumeric(x) || isa(x,'function_handle') || ischar(x) || iscell(x)));
+            p.addParamValue('subSystemCoupling'     , 0     , @(x)(isnumeric(x) || isa(x,'function_handle') || ischar(x) || iscell(x)));
+            % parse the input
+            p.parse(ID,name,cAxis,varargin{:});
+            % assign parser results to object properties            
+            obj.ID      = genvarname(p.Results.ID);
+            obj.name    = p.Results.name;
+            obj.cAxis   = p.Results.cAxis;
+            % if no aAxis and/or bAxis are given, they automatically set
+            if p.Results.aAxis == 0
+                obj.aAxis = obj.cAxis;
+            else
+                obj.aAxis = p.Results.aAxis;
+            end
+            if p.Results.bAxis == 0
+                obj.bAxis = obj.aAxis;
+            else
+                obj.bAxis = p.Results.bAxis;
+            end
+            obj.debWalFac               = p.Results.debWalFac;
+            obj.soundVel                = p.Results.soundVel;
+            obj.phononDamping           = p.Results.phononDamping;
+            obj.optPenDepth             = p.Results.optPenDepth;
+            obj.optRefIndex             = p.Results.optRefIndex;
+            obj.optRefIndexPerStrain    = p.Results.optRefIndexPerStrain;
+            obj.heatCapacity            = obj.checkCellArrayInput(p.Results.heatCapacity);
+            obj.thermCond               = obj.checkCellArrayInput(p.Results.thermCond);
+            obj.linThermExp             = obj.checkCellArrayInput(p.Results.linThermExp);
+            obj.subSystemCoupling       = obj.checkCellArrayInput(p.Results.subSystemCoupling);
+            
+            if isequal(length(obj.heatCapacity),length(obj.thermCond),length(obj.linThermExp),length(obj.subSystemCoupling))
+                obj.numSubSystems = length(obj.heatCapacity);
+            else
+                error('Heat capacity, thermal conductivity, linear thermal expansion and subsystem coupling have not the same number of elements!');
+            end%if           
+            
+            % calculate the area of the unit cell
+            obj.area   = obj.aAxis * obj.bAxis;
+            obj.volume = obj.area * obj.cAxis;
+        end%function
+        
+        %% clone2multiple
+        % Returns a cloned unit cell N time repeated. Accordingly, all
+        % physical properties are adapted, *despite of any specific function
+        % handle of the atomic position in the unit cell and higher orders 
+        % of spring constants!*
+        % If no _ID_ or _name_ is given for the cloned unit cell, the name
+        % of the current unit cell is taken plus $N$.
+        function clone = clone2multiple(obj,N,varargin)
+            % initialize input parser and define defaults and validators
+            p = inputParser;
+            p.addRequired('N'                                       , @isnumeric);
+            p.addParamValue('ID'            , [obj.ID num2str(N)]   , @ischar);
+            p.addParamValue('name'          , [obj.name num2str(N)] , @ischar);
+            % parse the input
+            p.parse(N,varargin{:});
+            % assign parser results
+            N       = p.Results.N;
+            newID   = p.Results.ID;
+            newName = p.Results.name;            
+            % initialize the cloned object with required inputs
+            clone = unitCell(obj.ID,obj.name,obj.cAxis);
+            % copy all properties from the current to the cloned object
+            props = properties(obj);
+            for i = 1:length(props)
+                clone.(props{i}) = obj.(props{i});
+            end%for
+            % reset some _N_-dependent properties
+            clone.ID = newID;
+            clone.name = newName;
+            clone.cAxis = N*obj.cAxis;
+            clone.volume = N*obj.volume;
+            % reset all atom-dependent properties
+            clone.atoms = {};
+            clone.mass = 0;
+            clone.density = 0;
+            clone.springConst = 0;
+            clone.numAtoms = 0;
+            % add all atoms to cloned unit cell, but the position handle is
+            % transfered!
+            for i = 0:N-1
+               for j = 1:obj.numAtoms
+                  clone.addAtom(obj.atoms{j,1},obj.atoms{j,2}(0)/N+i/N); 
+               end%for
+            end%for
+        end%function
+        
+        %% Display
+        % This method is called to display informations of the instance.
+        function disp(obj)
+            u = units;
+            disp('Unit Cell with the following properties')
+            disp(['ID                            : ' obj.ID]);
+            disp(['name                          : ' obj.name]);
+            disp(['a-axis [Ang]                  : ' num2str(obj.aAxis/u.ang)]);
+            disp(['b-axis [Ang]                  : ' num2str(obj.bAxis/u.ang)]);
+            disp(['c-axis [Ang]                  : ' num2str(obj.cAxis/u.ang)]);
+            disp(['area [Ang^2]                  : ' num2str(obj.area/u.ang^2)]);
+            disp(['volume [Ang^3]                : ' num2str(obj.volume/u.ang^3)]);
+            disp(['mass [kg]                     : ' num2str(obj.mass/u.kg)]);
+            disp(['density [kg/m^3]              : ' num2str(obj.density/(u.kg/u.m^3))]);
+            disp(['Debye Waller Factor [m^2]     : ' num2str(obj.debWalFac/u.m^2)]);
+            disp(['sound velocity [nm/ps]        : ' num2str(obj.soundVel/(u.nm/u.ps))]);
+            disp(['spring constant [kg/s^2]      : ' num2str(obj.springConst)]);
+            disp(['phonon damping [kg/s]         : ' num2str(obj.phononDamping)]);
+            disp(['opt. pen. depth [nm]          : ' num2str(obj.optPenDepth/u.nm)]);
+            disp(['opt. refractive index         : ' num2str(obj.optRefIndex)]);
+            disp(['opt. ref. index/strain        : ' num2str(obj.optRefIndexPerStrain)]);
+            disp( 'thermal conduct. [W/m K]      :');
+            for i = 1:length(obj.thermCond)
+                fprintf('\t\t\t\t\t\t\t%s\n', func2str(obj.thermCond{i}));
+            end%for
+            disp( 'linear thermal expansion [1/K]: ')
+            for i = 1:length(obj.linThermExp)
+                fprintf('\t\t\t\t\t\t\t%s\n', func2str(obj.linThermExp{i}));
+            end%for
+            disp( 'heat capacity [J/kg K]        : ')
+            for i = 1:length(obj.heatCapacity)
+                fprintf('\t\t\t\t\t\t\t%s\n', func2str(obj.heatCapacity{i}));
+            end%for
+            disp( 'subsystem coupling [W/m^3]    : ')
+            for i = 1:length(obj.heatCapacity)
+                fprintf('\t\t\t\t\t\t\t%s\n', func2str(obj.subSystemCoupling{i}));
+            end%for
+            % display the constituents
+            disp([num2str(obj.numAtoms) ' Constituents:']);
+            for i = 1:obj.numAtoms
+                fprintf('%s \t %0.2f \t %s\n', obj.atoms{i,1}.name, obj.atoms{i,2}(0), func2str(obj.atoms{i,2}));
+            end%for
+        end%function
+        
+        %% visualize
+        % plots the atoms in the unitCell for a given strain. You can input
+        % a figure handle.
+        function visualize(obj,varargin)
+            % initialize input parser and define defaults and validators
+            p = inputParser;
+            p.addRequired('obj'     , @(x)isa(x,'unitCell'));
+            p.addParamValue('strain', 0     , @isnumeric);
+            p.addParamValue('pause' , 0.05  , @isnumeric);
+            p.addParamValue('handle', ''    , @ishandle);
+            % parse the input
+            p.parse(obj,varargin{:});
+            % assign parser results to object properties 
+            if isempty(p.Results.handle)
+                h = figure;
+            else
+                h = p.Results.handle;
+            end
+            strain = p.Results.strain;
+            figure(h);
+            colors = colormap(lines(obj.numAtoms));
+            atomIDs = obj.getAtomIDs();
+            atomsPlotted = zeros(size(atomIDs));
+            for i = 1:length(strain)
+                for j = 1:obj.numAtoms
+                    l = plot(j,obj.atoms{j,2}(strain(i)),'Marker', 'o', 'MarkerSize', 15, 'MarkerEdgeColor', [0 0 0], 'MarkerFaceColor', colors(strcmp(obj.atoms{j,1}.ID, atomIDs),:), 'LineStyle', 'none');
+                    % check if atom has already been plotted
+                    if atomsPlotted(strcmp(obj.atoms{j,1}.ID, atomIDs))
+                        % do not show the atom in the legend
+                        hasbehavior(l,'legend',false);
+                    else
+                        % set that the atom had been plotted
+                        atomsPlotted(strcmp(obj.atoms{j,1}.ID, atomIDs)) = true;
+                    end%if
+                    hold on;
+                end%for
+                axis([0.1 obj.numAtoms+0.9 -0.1 (1.1+max(strain))]); grid on; box on; 
+                title(sprintf('Strain: %.2f%%',strain(i)), 'FontSize', 18);
+                ylabel('relative Position');
+                xlabel('# Atoms');
+                hold off   
+                pause(p.Results.pause)
+            end%for
+            legend(atomIDs,'Location','NorthWest');
+        end%function
+        
+        %% getParameterStruct
+        % Returns a struct with all parameters. objects or cell arrays and
+        % objects are converted to strings. if a type is gven only these
+        % properties are returned.
+        function S = getPropertyStruct(obj,varargin)
+            % initialize input parser and define defaults and validators
+            types = {'all', 'heat', 'phonon', 'XRD', 'optical'};
+            propertiesByTypes = {
+                    'heat'      , {'cAxis' 'area' 'volume' 'optPenDepth' 'thermCond' 'heatCapacity' 'intHeatCapacity' 'subSystemCoupling' 'numSubSystems'};
+                    'phonon'    , {'numSubSystems' 'intLinThermExp' 'cAxis' 'mass' 'springConst' 'phononDamping'};
+                    'XRD'       , {'numAtoms' 'atoms' 'area' 'debWalFac' 'cAxis'};
+                    'optical'   , {'cAxis' 'optPenDepth' 'optRefIndex' 'optRefIndexPerStrain'};
+                    };
+                
+            p = inputParser;
+            p.addOptional('type', 'all' , @(x)(ischar(x) && find(strcmp(types,x))));
+            % parse the input
+            p.parse(varargin{:});
+            % assign parser results to object properties            
+            type      = p.Results.type;
+            
+            % define the property names by the given type
+            if strcmp(type, 'all')
+                mc = metaclass(obj);
+                probs = cellfun(@(x)(x.Name), mc.Properties, 'UniformOutput', false);
+            else
+                probs = propertiesByTypes{strcmp(propertiesByTypes(:,1),type),2}';
+            end%if
+            
+            % assign the values of the properties to the output struct
+            for i=1:length(probs)
+                n = probs{i};
+                S.(n) = obj.(n);
+            end%for
+        end%function
+        
+        %% checkCellArrayInput
+        % Checks the input for inputs which are cell arrays of function 
+        % handles, such as the heat capacity which is a cell array of N 
+        % function handles.
+        function output = checkCellArrayInput(obj,input)
+            output = {}; % the output is a cell array
+            % if the input is no cell array, we convert it to one
+            if ~iscell(input)
+                input = {input};
+            end%if
+            % traverse each cell element and convert it to a function handle
+            for i=1:length(input)
+                if isa(input{i},'function_handle')
+                    output{i} = str2func(vectorize(input{i}));
+                elseif ischar(input{i})
+                    try
+                        output{i} = str2func(input{i});
+                    catch err
+                        error(['String input for unit cell property ' input{i} ' cannot be converted to function handle!']);
+                    end%try
+                elseif isnumeric(input{i})
+                    output{i} = str2func(['@(T)(' num2str(input{i}) '.*T./T)']);
+                else
+                    error('Unit cell property input has to be a single or cell array of numerics, function handles or strings which can be converted into a function handle!');
+                end%if
+            end%for
+        end%function
+        
+        %% getIntHeatCapacity
+        % Returns the anti-derrivative of the temperature-dependent heat 
+        % $c(T)$ capacity function. If the _intHeatCapacity_ property is 
+        % not set, the symbolic integration is performed.
+        function h = get.intHeatCapacity(obj)
+            if iscell(obj.intHeatCapacity)
+                h = obj.intHeatCapacity;
+            elseif exist('syms')
+                % symbolic math toolbox is installed
+                syms T;
+                h = cell(length(obj.heatCapacity),1);
+                for i=1:length(obj.heatCapacity)
+                    fstr = strrep(func2str(obj.heatCapacity{i}),'@(T)','');
+                    fstr = strrep(fstr,'.*','*');
+                    fstr = strrep(fstr,'./','/');
+                    fstr = strrep(fstr,'.^','^');
+                    h{i} = str2func(['@(T)(' vectorize(int(sym(fstr),'T')) ')']);
+                end%for
+                obj.intHeatCapacity = h;
+                clear T;
+            else
+                error('The MATLAB Symbolic Math Toolbox is not installed. Please set the analytical anti-derivative of the heat capacity of your unit cells as anonymous function of the temperature T by typing UC.intHeatCapacity = @(T)(c(T)); where UC is the name of the unit cell object.');
+            end%if
+        end%function
+        
+        %% setIntHeatCapacity
+        % Set the integrated heat capacity manually when no Smybolic Math
+        % Toolbox is installed.
+        function set.intHeatCapacity(obj,value)
+            obj.intHeatCapacity = obj.checkCellArrayInput(value);
+        end%function
+        
+        %% getIntLinThermExp
+        % Returns the anti-derrivative of theintegrated temperature-dependent 
+        % linear thermal expansion function. If the _intHeatCapacity_ 
+        % property is not set, the symbolic integration is performed.
+        function h = get.intLinThermExp(obj)
+            if iscell(obj.intLinThermExp)
+                h = obj.intLinThermExp;
+            elseif exist('syms')
+                % symbolic math toolbox is installed
+                syms T;
+                h = cell(length(obj.linThermExp),1);
+                for i=1:length(obj.linThermExp)
+                    fstr = strrep(func2str(obj.linThermExp{i}),'@(T)','');
+                    fstr = strrep(fstr,'.*','*');
+                    fstr = strrep(fstr,'./','/');
+                    fstr = strrep(fstr,'.^','^');
+                    h{i} = str2func(['@(T)(' vectorize(int(sym(fstr),'T')) ')']);
+                end%for
+                obj.intLinThermExp = h;
+                clear T;
+            else
+                error('The MATLAB Symbolic Math Toolbox is not installed. Please set the analytical anti-derivative of the linear thermal expansion coefficient of your unit cells as anonymous function of the temperature T by typing UC.intLinThermExp = @(T)(a(T)); where UC is the name of the unit cell object.');
+            end%if
+        end%function
+        
+        %% setIntLinThermExp
+        % Set the integrated linear thermal expansion coefficient manually 
+        % when no Smybolic Math Toolbox is installed.
+        function set.intLinThermExp(obj,value)
+            obj.intLinThermExp = obj.checkCellArrayInput(value);
+        end%function
+        
+        %% addAtom
+        % Adds an atomBase/atomMixed at a relative position of the unit
+        % cell.
+        function addAtom(obj,atom,position)
+            % test the input type of the position
+            if isa(position,'function_handle')
+                % alrighty
+            elseif ischar(position)
+                try
+                    position = str2func(position);
+                catch err
+                    error(['String input for unit cell property ' position ' cannot be converted to function handle!']);
+                end%try
+            elseif isnumeric(position)
+                position = str2func(['@(strain)(' num2str(position) '*(strain+1))']);
+            else
+                error('Atom position input has to be a scalar, function handle or string which can be converted into a function handle!');
+            end%if
+            %add the atom at the end of the array
+            obj.atoms(end+1,:) =  {atom position};
+            % increase the number of atoms
+            obj.numAtoms = obj.numAtoms + 1;
+            %%%
+            % Update the mass, density and spring constant of the unit cell
+            % automatically:
+            %
+            % $$ \kappa = m \cdot (v_s / c)^2 $$
+            obj.mass        = obj.mass + atom.mass;
+            obj.density     = obj.mass / obj.volume;
+            obj.calcSpringConst();
+        end%function
+        
+        %% addMultipleAtoms
+        % Adds multiple atomBase/atomMixed at a relative position of the unit
+        % cell.
+        function addMultipleAtoms(obj,atom,position,Nb)
+            for i = 1:Nb
+               obj.addAtom(atom,position); 
+            end%for
+        end%function
+        
+        %% calcSpringConst
+        % Calculates the spring constant of the unit cell from the mass,
+        % sound velocity and c-axis
+        %
+        % $$ k = m \, \left(\frac{v}{c}\right)^2 $$
+        function calcSpringConst(obj)
+            obj.springConst(1)  = obj.mass *(obj.soundVel/obj.cAxis)^2;
+        end%function
+        
+        %% set.soundVel
+        % If the sound velocity is set, the spring constant is
+        % (re)calculated.
+        function set.soundVel(obj,soundVel)
+            obj.soundVel = soundVel;
+            obj.calcSpringConst();
+        end%function
+        
+        %% setHOspringConstants
+        % Set the higher orders of the spring constant for anharmonic 
+        % phonon simulations.
+        function setHOspringConstants(obj,HO)
+            p = inputParser;
+            p.addRequired('HO', @(x)(isnumeric(x) && isvector(x)));
+            % parse the input
+            p.parse(HO);
+            % assign parser results to object properties            
+            HO      = p.Results.HO;
+            % check if HO is column vector and transpose it in this case
+            if size(HO,1) > 1
+                HO = HO';
+            end%if         
+            obj.springConst(2:end) = []; % reset old higher order spring constants
+            obj.springConst(2:1+numel(HO)) = HO;
+        end%function
+        
+        %% getAtomIDs
+        % Returns a cell array of all atom IDs in the unit cell.
+        function IDs = getAtomIDs(obj)
+            IDs = {}; %cell(obj.numAtoms,1);
+            for i = 1:obj.numAtoms
+                if ~ismember(obj.atoms{i,1}.ID, IDs)
+                    IDs{end+1} = obj.atoms{i,1}.ID;
+                end%if
+            end%for
+        end%function
+        
+        %% getAtomPositions
+        % Returns a vector of all relative postion of the atoms in the unit
+        % cell.
+        function p = getAtomPositions(obj,strain)
+            if nargin < 2
+                strain = 0;
+            end%if
+            strains = num2cell(strain*ones(obj.numAtoms,1));
+            p = real(cellfun(@feval,obj.atoms(:,2),strains));
+        end%function
+    end%methods        
+end%classdef
+##### SOURCE END #####
+--></body></html>
