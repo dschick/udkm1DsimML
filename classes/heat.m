@@ -671,7 +671,11 @@ classdef heat < simulation
                     ql = ones(dim);                    
                 otherwise % isolator
                     pl = zeros(dim);
-                    ql = ones(dim);
+                    if verLessThan('matlab', '8.3')
+                        ql = ones(size(dim));
+                    else                        
+                        ql = ones(dim);
+                    end%if
             end%switch
             
             % check the type of the right boundary condition
@@ -684,7 +688,11 @@ classdef heat < simulation
                     qr = ones(dim);                    
                 otherwise % isolator
                     pr = zeros(dim);
-                    qr = ones(dim);
+                    if verLessThan('matlab', '8.3')
+                        qr = ones(size(dim));
+                    else                        
+                        qr = ones(dim);
+                    end%if
             end%switch        
         end%function      
     end%methods
