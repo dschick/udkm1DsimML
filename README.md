@@ -37,11 +37,11 @@ the command:
    
 In order to use the udkm1Dsim documentation
 before MATLAB 2013a (8.1) 
-    - open the MATLAB Preferences from the File menu. 
-    - click Help, and then select the All Products button.
+- open the MATLAB Preferences from the File menu. 
+- click Help, and then select the All Products button.
 since MATLAB 2013a (8.1)
-    - open the MATLAB Help and click on "Supplemental Software" on the lower 
-      left of the help start page
+- open the MATLAB Help and click on "Supplemental Software" on the lower 
+  left of the help start page
 
 Open the MATLAB Product Help and open the udkm1Dsim
 toolbox documentation from the content listing.
