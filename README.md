@@ -20,7 +20,7 @@ Please cite the following article if you use the udkm1Dsim toolbox for your own 
 
 D. Schick, A. Bojahr, M. Herzog, R. Shayduk, C. von Korff Schmising & M. Bargheer,
 udkm1Dsim - A Simulation Toolkit for 1D Ultrafast Dynamics in Condensed Matter,
-[Comput. Phys. Commun. 185, 651 (2014)](http://doi.org/10.1016/j.cpc.2013.10.009) [preprint](http://www.udkm.physik.uni-potsdam.de/medien/udkm1Dsim/udkm1DsimManuscriptPrePrint.pdf).
+[Comput. Phys. Commun. 185, 651 (2014)](http://doi.org/10.1016/j.cpc.2013.10.009) [(preprint)](http://www.udkm.physik.uni-potsdam.de/medien/udkm1Dsim/udkm1DsimManuscriptPrePrint.pdf).
 
 # Installation
 
@@ -46,4 +46,4 @@ Follow the Getting Started to get familar with the
 simulation workflow.
 
 In order to run the example files change your current 
-MATLAB directory to 'path2udkm1Dsim/examples/'.
+MATLAB directory to `path2udkm1Dsim/examples/`.
