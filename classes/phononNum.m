@@ -222,15 +222,12 @@ classdef phononNum < phonon
         % $$F_i^{damp} = \gamma_i(\dot{x}_i-\dot{x}_{i-1})$$
         %
         function F = calcForceFromDamping(obj,v)
-            % v = diff(v,1);
             persistent damping masses;
             if isempty(damping)
                 damping = obj.S.getUnitCellPropertyVector('phononDamping');
                 masses  = obj.S.getUnitCellPropertyVector('mass');
-%                 disp(size(damping));
-%                 disp(size(masses));
             end%if
-            % F = damping.*[v(1);diff(v,1);v(end)];
+            
             F = masses.*damping.*[diff(v,1); 0];            
         end%function        
     end%methods
