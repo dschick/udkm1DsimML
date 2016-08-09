@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>phononNum</title><meta name="generator" content="MATLAB 7.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-07-31"><meta name="DC.source" content="phononNum.m"><style type="text/css">
+      --><title>phononNum</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-08-09"><meta name="DC.source" content="phononNum.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -23,7 +23,7 @@ a:visited { color:#004aa0; text-decoration:none; }
 
 p { padding:0px; margin:0px 0px 20px; }
 img { padding:0px; margin:0px 0px 20px; border:none; }
-p img, pre img, tt img, li img { margin-bottom:0px; } 
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
 
 ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
 ul li { padding:0px; margin:0px 0px 7px 0px; }
@@ -38,11 +38,12 @@ ol li ul li { list-style:square; }
 
 .content { font-size:1.2em; line-height:140%; padding: 20px; }
 
-pre, tt, code { font-size:12px; }
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
 pre { margin:0px 0px 20px; }
-pre.error { color:red; }
 pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
 pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
 
 @media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
 
@@ -54,6 +55,16 @@ span.syscmd { color:#B28C00 }
 
 .footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
 .footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
 
   </style></head><body><div class="content"><h1>phononNum</h1><!--introduction--><p>The phononNum class simulates phonon dynamics numerically on a 1D sample structure.</p><p>Copyright (c) 2013, Daniel Schick, Andr&eacute; Bojahr, Marc Herzog, Roman Shayduk, Clemens von Korff Schmising All rights reserved.</p><p>License: BSD (use/copy/change/redistribute on own risk, mention the authors)</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Classdef</a></li><li><a href="#2">Properties</a></li><li><a href="#3">Methods</a></li><li><a href="#4">Constructor</a></li><li><a href="#5">Display</a></li><li><a href="#6">getStrainMap</a></li><li><a href="#7">calcStrainMap</a></li><li><a href="#8">odeFunc</a></li><li><a href="#9">calcFromForceHeat</a></li><li><a href="#10">calcForceFromSpring</a></li><li><a href="#11">calcForceFromDamping</a></li><li><a href="#14">References</a></li></ul></div><h2>Classdef<a name="1"></a></h2><p>Each phononNum instance and all inherited class objects are inherted from the phonon class which follows handle semantics. Hence a copy of such object will not copy the object itself, but only a handle to that object.</p><pre class="codeinput"><span class="keyword">classdef</span> phononNum &lt; phonon
 </pre><h2>Properties<a name="2"></a></h2><pre class="codeinput">    properties (SetAccess=public,GetAccess=public)
@@ -72,7 +83,7 @@ span.syscmd { color:#B28C00 }
             <span class="comment">% call the parent display method</span>
             disp@phonon(obj);
         <span class="keyword">end</span><span class="comment">%function</span>
-</pre><h2>getStrainMap<a name="6"></a></h2><p>Returns a <i>strainMap</i> for the sample structure. If no <i>strainMap</i> is saved it is caluclated.</p><pre class="codeinput">        <span class="keyword">function</span> [strainMap sticksSubSystems velocities] = getStrainMap(obj,time,tempMap,deltaTempMap)
+</pre><h2>getStrainMap<a name="6"></a></h2><p>Returns a <i>strainMap</i> for the sample structure. If no <i>strainMap</i> is saved it is caluclated.</p><pre class="codeinput">        <span class="keyword">function</span> [strainMap, sticksSubSystems, velocities] = getStrainMap(obj,time,tempMap,deltaTempMap)
             <span class="comment">% create a unique hash</span>
             hash = obj.getHash(time,tempMap,deltaTempMap);
             <span class="comment">% create the file name to look for</span>
@@ -83,12 +94,12 @@ span.syscmd { color:#B28C00 }
                 obj.dispMessage([<span class="string">'_strainMap_ loaded from file '</span> filename]);
             <span class="keyword">else</span>
                 <span class="comment">% file does not exist so calculate and save</span>
-                [strainMap sticksSubSystems velocities] = obj.calcStrainMap(time,tempMap,deltaTempMap);
+                [strainMap, sticksSubSystems, velocities] = obj.calcStrainMap(time,tempMap,deltaTempMap);
                 save(filename, <span class="string">'strainMap'</span>, <span class="string">'sticksSubSystems'</span>, <span class="string">'velocities'</span>);
                 obj.dispMessage([<span class="string">'_strainMap_ saved to file '</span> filename]);
             <span class="keyword">end</span><span class="comment">%if</span>
         <span class="keyword">end</span><span class="comment">%function</span>
-</pre><h2>calcStrainMap<a name="7"></a></h2><p>Calculates the <i>strainMap</i> of the sample structure for a given <i>tempMap</i> and <i>deltaTempMap</i> and <i>time</i> vector. Further details are given in Ref. [1]. We solve the coupled differential equations for each oscillator in a linear chain of masses and spring:</p><p><img src="phononNum_eq54889.png" alt="$$ m_i\ddot{x}_i = -k_i(x_i-x_{i-1})-k_{i+1}(x_i-x_{i+1})&#xA; + m_i\gamma_i(\dot{x}_i-\dot{x}_{i-1})&#xA; + F_i^{heat}(t) $$"></p><p>where <img src="phononNum_eq66241.png" alt="$x_i(t) = z_{i}(t) - z_i^0$"> is the shift of each unit cell. <img src="phononNum_eq12824.png" alt="$m_i$"> is the mass and <img src="phononNum_eq34953.png" alt="$k_i = m_i\, v_i^2/c_i^2$"> is the spring constant of each unit cell. Furthermore we introduce an empirical damping term <img src="phononNum_eq08565.png" alt="$F_i^{damp} = \gamma_i(\dot{x}_i-\dot{x}_{i-1})$"> and the external force (thermal stress) <img src="phononNum_eq07391.png" alt="$F_i^{heat}(t)$">. The thermal stresses are modelled as spacer sticks which are calculated from the linear thermal expansion coefficients. The equation of motion can be reformulated as:</p><p><img src="phononNum_eq77116.png" alt="$$ m_i\ddot{x}_i = F_i^{spring} + F_i^{damp} + F_i^{heat}(t) $$"></p><p>The numerical solution also allows for non-harmonic inter-atomic potentials of up to the order <img src="phononNum_eq53292.png" alt="$M$">. Accordingly <img src="phononNum_eq20145.png" alt="$k_i = (k_i^1 \ldots k_i^{M-1})$"> can be a vector accounting for higher orders of the potential which is in the harmonic case purely quadratic (<img src="phononNum_eq67132.png" alt="$k_i = k_i^1$">). The resulting force from the displacement of the springs</p><p><img src="phononNum_eq84267.png" alt="$$F_i^{spring} = -k_i(x_i-x_{i-1})-k_{i+1}(x_i-x_{i+1})$$"></p><p>includes:</p><p><img src="phononNum_eq54572.png" alt="$$ k_i(x_i-x_{i-1}) = \sum_{j=1}^{M-1} k_i^j (x_i-x_{i-1})^j $$"></p><pre class="codeinput">        <span class="keyword">function</span> [strainMap sticksSubSystems velocities] = calcStrainMap(obj,time,tempMap,deltaTempMap)
+</pre><h2>calcStrainMap<a name="7"></a></h2><p>Calculates the <i>strainMap</i> of the sample structure for a given <i>tempMap</i> and <i>deltaTempMap</i> and <i>time</i> vector. Further details are given in Ref. [1]. We solve the coupled differential equations for each oscillator in a linear chain of masses and spring:</p><p><img src="phononNum_eq54889.png" alt="$$ m_i\ddot{x}_i = -k_i(x_i-x_{i-1})-k_{i+1}(x_i-x_{i+1})&#xA; + m_i\gamma_i(\dot{x}_i-\dot{x}_{i-1})&#xA; + F_i^{heat}(t) $$"></p><p>where <img src="phononNum_eq66241.png" alt="$x_i(t) = z_{i}(t) - z_i^0$"> is the shift of each unit cell. <img src="phononNum_eq12824.png" alt="$m_i$"> is the mass and <img src="phononNum_eq34953.png" alt="$k_i = m_i\, v_i^2/c_i^2$"> is the spring constant of each unit cell. Furthermore we introduce an empirical damping term <img src="phononNum_eq08565.png" alt="$F_i^{damp} = \gamma_i(\dot{x}_i-\dot{x}_{i-1})$"> and the external force (thermal stress) <img src="phononNum_eq07391.png" alt="$F_i^{heat}(t)$">. The thermal stresses are modelled as spacer sticks which are calculated from the linear thermal expansion coefficients. The equation of motion can be reformulated as:</p><p><img src="phononNum_eq77116.png" alt="$$ m_i\ddot{x}_i = F_i^{spring} + F_i^{damp} + F_i^{heat}(t) $$"></p><p>The numerical solution also allows for non-harmonic inter-atomic potentials of up to the order <img src="phononNum_eq53292.png" alt="$M$">. Accordingly <img src="phononNum_eq20145.png" alt="$k_i = (k_i^1 \ldots k_i^{M-1})$"> can be a vector accounting for higher orders of the potential which is in the harmonic case purely quadratic (<img src="phononNum_eq67132.png" alt="$k_i = k_i^1$">). The resulting force from the displacement of the springs</p><p><img src="phononNum_eq84267.png" alt="$$F_i^{spring} = -k_i(x_i-x_{i-1})-k_{i+1}(x_i-x_{i+1})$$"></p><p>includes:</p><p><img src="phononNum_eq54572.png" alt="$$ k_i(x_i-x_{i-1}) = \sum_{j=1}^{M-1} k_i^j (x_i-x_{i-1})^j $$"></p><pre class="codeinput">        <span class="keyword">function</span> [strainMap, sticksSubSystems, velocities] = calcStrainMap(obj,time,tempMap,deltaTempMap)
             tic
             <span class="comment">% initialize</span>
             N       = obj.S.getNumberOfUnitCells; <span class="comment">% nb of unit cells</span>
@@ -180,17 +191,17 @@ span.syscmd { color:#B28C00 }
             F = sum(coeff2.*temp2,2)-sum(coeff1.*temp1,2);
         <span class="keyword">end</span><span class="comment">%function</span>
 </pre><h2>calcForceFromDamping<a name="11"></a></h2><p>Calculates the force acting on each mass in a linear spring due to damping (<img src="phononNum_eq59149.png" alt="$\gamma_i$">) according to the shift velocity difference <img src="phononNum_eq70352.png" alt="$v_{i}-v_{i-1}$"> with <img src="phononNum_eq81279.png" alt="$v_i(t) = \dot{x}_i(t)$">:</p><p><img src="phononNum_eq55328.png" alt="$$F_i^{damp} = \gamma_i(\dot{x}_i-\dot{x}_{i-1})$$"></p><pre class="codeinput">        <span class="keyword">function</span> F = calcForceFromDamping(obj,v)
-            v = diff(v,1);
-            <span class="keyword">persistent</span> damping;
+            <span class="keyword">persistent</span> damping masses;
             <span class="keyword">if</span> isempty(damping)
                 damping = obj.S.getUnitCellPropertyVector(<span class="string">'phononDamping'</span>);
+                masses  = obj.S.getUnitCellPropertyVector(<span class="string">'mass'</span>);
             <span class="keyword">end</span><span class="comment">%if</span>
-            F = damping.*[v(1);diff(v,1);v(end)];
+
+            F = masses.*damping.*[diff(v,1); 0];
         <span class="keyword">end</span><span class="comment">%function</span>
 </pre><pre class="codeinput">    <span class="keyword">end</span><span class="comment">%methods</span>
 </pre><pre class="codeinput"><span class="keyword">end</span><span class="comment">%classdef</span>
-</pre><h2>References<a name="14"></a></h2><div><ol><li>A. Bojahr, M. Herzog, D. Schick, I. Vrejoiu, &amp; M. Bargheer (2012). <i>Calibrated real-time detection of nonlinearly propagating strain waves</i>. Physical Review B, 86(14), 144306. doi:10.1103/PhysRevB.86.144306</li></ol></div><p class="footer"><br>
-      Published with MATLAB&reg; 7.14<br></p></div><!--
+</pre><h2>References<a name="14"></a></h2><div><ol><li>A. Bojahr, M. Herzog, D. Schick, I. Vrejoiu, &amp; M. Bargheer (2012). <i>Calibrated real-time detection of nonlinearly propagating strain waves</i>. Physical Review B, 86(14), 144306. doi:10.1103/PhysRevB.86.144306</li></ol></div><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% phononNum
 % The phononNum class simulates phonon dynamics numerically on a 1D sample 
@@ -235,7 +246,7 @@ classdef phononNum < phonon
         %% getStrainMap
         % Returns a _strainMap_ for the sample structure. If no _strainMap_
         % is saved it is caluclated.
-        function [strainMap sticksSubSystems velocities] = getStrainMap(obj,time,tempMap,deltaTempMap)
+        function [strainMap, sticksSubSystems, velocities] = getStrainMap(obj,time,tempMap,deltaTempMap)
             % create a unique hash
             hash = obj.getHash(time,tempMap,deltaTempMap);
             % create the file name to look for
@@ -246,7 +257,7 @@ classdef phononNum < phonon
                 obj.dispMessage(['_strainMap_ loaded from file ' filename]);
             else
                 % file does not exist so calculate and save
-                [strainMap sticksSubSystems velocities] = obj.calcStrainMap(time,tempMap,deltaTempMap);
+                [strainMap, sticksSubSystems, velocities] = obj.calcStrainMap(time,tempMap,deltaTempMap);
                 save(filename, 'strainMap', 'sticksSubSystems', 'velocities');
                 obj.dispMessage(['_strainMap_ saved to file ' filename]);
             end%if
@@ -287,7 +298,7 @@ classdef phononNum < phonon
         %
         % $$ k_i(x_i-x_{i-1}) = \sum_{j=1}^{M-1} k_i^j (x_i-x_{i-1})^j $$
         %
-        function [strainMap sticksSubSystems velocities] = calcStrainMap(obj,time,tempMap,deltaTempMap)
+        function [strainMap, sticksSubSystems, velocities] = calcStrainMap(obj,time,tempMap,deltaTempMap)
             tic
             % initialize
             N       = obj.S.getNumberOfUnitCells; % nb of unit cells
@@ -416,12 +427,13 @@ classdef phononNum < phonon
         % $$F_i^{damp} = \gamma_i(\dot{x}_i-\dot{x}_{i-1})$$
         %
         function F = calcForceFromDamping(obj,v)
-            v = diff(v,1);
-            persistent damping;
+            persistent damping masses;
             if isempty(damping)
                 damping = obj.S.getUnitCellPropertyVector('phononDamping');
+                masses  = obj.S.getUnitCellPropertyVector('mass');
             end%if
-            F = damping.*[v(1);diff(v,1);v(end)];
+            
+            F = masses.*damping.*[diff(v,1); 0];            
         end%function        
     end%methods
 end%classdef

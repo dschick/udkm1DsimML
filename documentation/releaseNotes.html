@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Release Notes</title><meta name="generator" content="MATLAB 7.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-07-31"><meta name="DC.source" content="releaseNotes.m"><style type="text/css">
+      --><title>Release Notes</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-08-09"><meta name="DC.source" content="releaseNotes.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -23,7 +23,7 @@ a:visited { color:#004aa0; text-decoration:none; }
 
 p { padding:0px; margin:0px 0px 20px; }
 img { padding:0px; margin:0px 0px 20px; border:none; }
-p img, pre img, tt img, li img { margin-bottom:0px; } 
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
 
 ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
 ul li { padding:0px; margin:0px 0px 7px 0px; }
@@ -38,11 +38,12 @@ ol li ul li { list-style:square; }
 
 .content { font-size:1.2em; line-height:140%; padding: 20px; }
 
-pre, tt, code { font-size:12px; }
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
 pre { margin:0px 0px 20px; }
-pre.error { color:red; }
 pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
 pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
 
 @media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
 
@@ -54,11 +55,30 @@ span.syscmd { color:#B28C00 }
 
 .footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
 .footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
 
-  </style></head><body><div class="content"><h1>Release Notes</h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Version 1.023 - 2013/07/31</a></li><li><a href="#2">Version 1.022 - 2013/05/17</a></li><li><a href="#3">Version 1.020 - 2013/05/10</a></li><li><a href="#4">Version 1.018 - 2013/05/02</a></li></ul></div><h2>Version 1.023 - 2013/07/31<a name="1"></a></h2><div><ul><li>changed unitCell.m in order to avoid the need for MATLAB Symbolic Math Toolbox in order to get the intHeatCapacity and intLinThermExp properties of unit cell objects</li></ul></div><h2>Version 1.022 - 2013/05/17<a name="2"></a></h2><div><ul><li>renamed XRDdyn.parallelInhomogeneousReflectivity to getInhomogeneousReflectivity</li><li>renamed optical penetration depth from <img src="releaseNotes_eq23351.png" alt="$\lambda$"> to <img src="releaseNotes_eq47634.png" alt="$\zeta$"> in documentation</li></ul></div><h2>Version 1.020 - 2013/05/10<a name="3"></a></h2><div><ul><li>bug fix in unitCell.clone2multiple method because of heat capacity</li><li>added copyright in class files</li><li>removed unnecessary helper functions from the package</li></ul></div><h2>Version 1.018 - 2013/05/02<a name="4"></a></h2><div><ul><li>initial release to public</li><li>main change to experimental version: heat capacity is in [J/kg K] now</li></ul></div><p class="footer"><br>
-      Published with MATLAB&reg; 7.14<br></p></div><!--
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Release Notes</h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Migration to GitHub</a></li><li><a href="#2">Version 1.024 - 2016/05/01</a></li><li><a href="#3">Version 1.023 - 2013/07/31</a></li><li><a href="#4">Version 1.022 - 2013/05/17</a></li><li><a href="#5">Version 1.020 - 2013/05/10</a></li><li><a href="#6">Version 1.018 - 2013/05/02</a></li></ul></div><h2>Migration to GitHub<a name="1"></a></h2><div><ul><li>all changes later than version 1.024 are tracked by GitHub</li><li>please visist <a href="https://github.com/dschick/udkm1Dsim/commits/master">https://github.com/dschick/udkm1Dsim/commits/master</a> for details</li></ul></div><h2>Version 1.024 - 2016/05/01<a name="2"></a></h2><div><ul><li>bugfix in heat.m relating to the boundary conditions</li></ul></div><h2>Version 1.023 - 2013/07/31<a name="3"></a></h2><div><ul><li>changed unitCell.m in order to avoid the need for MATLAB Symbolic Math Toolbox in order to get the intHeatCapacity and intLinThermExp properties of unit cell objects</li></ul></div><h2>Version 1.022 - 2013/05/17<a name="4"></a></h2><div><ul><li>renamed XRDdyn.parallelInhomogeneousReflectivity to getInhomogeneousReflectivity</li><li>renamed optical penetration depth from <img src="releaseNotes_eq23351.png" alt="$\lambda$"> to <img src="releaseNotes_eq47634.png" alt="$\zeta$"> in documentation</li></ul></div><h2>Version 1.020 - 2013/05/10<a name="5"></a></h2><div><ul><li>bug fix in unitCell.clone2multiple method because of heat capacity</li><li>added copyright in class files</li><li>removed unnecessary helper functions from the package</li></ul></div><h2>Version 1.018 - 2013/05/02<a name="6"></a></h2><div><ul><li>initial release to public</li><li>main change to experimental version: heat capacity is in [J/kg K] now</li></ul></div><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Release Notes
+%
+%% Migration to GitHub
+%
+% * all changes later than version 1.024 are tracked by GitHub
+% * please visist <https://github.com/dschick/udkm1Dsim/commits/master> for
+% details
+%
+%% Version 1.024 - 2016/05/01
+%
+% * bugfix in heat.m relating to the boundary conditions
 %
 %% Version 1.023 - 2013/07/31
 %

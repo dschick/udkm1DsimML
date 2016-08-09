@@ -17,13 +17,23 @@ X-ray theory.
 The udkm1Dsim toolbox is highly modular and allows to introduce 
 user-defined results at any step in the simulation procedure.
 
+The udkm1Dsim toolbox was developed in the Ultrafast Dynamics 
+in Condensed Matter group of Prof. Matias Bargheer at the 
+University of Potsdam, Germany. 
+The toolbox is currently maintained by Daniel Schick.
+
 # Citation
 
 Please cite the following article if you use the udkm1Dsim toolbox for your own publications:
 
 D. Schick, A. Bojahr, M. Herzog, R. Shayduk, C. von Korff Schmising & M. Bargheer,
 udkm1Dsim - A Simulation Toolkit for 1D Ultrafast Dynamics in Condensed Matter,
-[Comput. Phys. Commun. 185, 651 (2014)](http://doi.org/10.1016/j.cpc.2013.10.009) [(preprint)](http://www.udkm.physik.uni-potsdam.de/medien/udkm1Dsim/udkm1DsimManuscriptPrePrint.pdf).
+[Comput. Phys. Commun. 185, 651 (2014)](http://doi.org/10.1016/j.cpc.2013.10.009) 
+[(preprint)](http://www.udkm.physik.uni-potsdam.de/medien/udkm1Dsim/udkm1DsimManuscriptPrePrint.pdf).
+
+# Compatibility
+
+The udkm1Dsim toolbox was tested on MATLAB 2010a (7.10) - 2016a (9.0)
 
 # Installation
 

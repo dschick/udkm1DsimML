@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>heat</title><meta name="generator" content="MATLAB 7.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-07-31"><meta name="DC.source" content="heat.m"><style type="text/css">
+      --><title>heat</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-08-09"><meta name="DC.source" content="heat.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -23,7 +23,7 @@ a:visited { color:#004aa0; text-decoration:none; }
 
 p { padding:0px; margin:0px 0px 20px; }
 img { padding:0px; margin:0px 0px 20px; border:none; }
-p img, pre img, tt img, li img { margin-bottom:0px; } 
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
 
 ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
 ul li { padding:0px; margin:0px 0px 7px 0px; }
@@ -38,11 +38,12 @@ ol li ul li { list-style:square; }
 
 .content { font-size:1.2em; line-height:140%; padding: 20px; }
 
-pre, tt, code { font-size:12px; }
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
 pre { margin:0px 0px 20px; }
-pre.error { color:red; }
 pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
 pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
 
 @media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
 
@@ -54,6 +55,16 @@ span.syscmd { color:#B28C00 }
 
 .footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
 .footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
 
   </style></head><body><div class="content"><h1>heat</h1><!--introduction--><p>The heat class simulates optical excitation by heating the sample and heat diffusion on a 1D sample structure.</p><p>Copyright (c) 2013, Daniel Schick, Andr&eacute; Bojahr, Marc Herzog, Roman Shayduk, Clemens von Korff Schmising All rights reserved.</p><p>License: BSD (use/copy/change/redistribute on own risk, mention the authors)</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Classdef</a></li><li><a href="#2">Properties</a></li><li><a href="#3">Methods</a></li><li><a href="#4">Constructor</a></li><li><a href="#5">Display</a></li><li><a href="#6">getHash</a></li><li><a href="#7">setBoundaryCondition</a></li><li><a href="#8">checkInitialTemperature</a></li><li><a href="#9">checkExcitation</a></li><li><a href="#11">getAbsorptionProfile</a></li><li><a href="#12">getTemperatureAfterDeltaExcitation</a></li><li><a href="#13">getTempMap</a></li><li><a href="#14">calcTempMap</a></li><li><a href="#15">calcHeatDiffusion</a></li><li><a href="#16">generateSource</a></li><li><a href="#17">pdeHeatEquation</a></li><li><a href="#18">pdeBoundaryConditions</a></li></ul></div><h2>Classdef<a name="1"></a></h2><p>Each heat instance and all inherited class objects follow handle semantics. Hence a copy of such object will not copy the object itself, but only a handle to that object.</p><pre class="codeinput"><span class="keyword">classdef</span> heat &lt; simulation
 </pre><h2>Properties<a name="2"></a></h2><pre class="codeinput">    properties (SetAccess=public,GetAccess=public)
@@ -319,8 +330,8 @@ span.syscmd { color:#B28C00 }
             intHeatCapacity = obj.S.getUnitCellPropertyVector(<span class="string">'intHeatCapacity'</span>);
             cAxises         = obj.S.getUnitCellPropertyVector(<span class="string">'cAxis'</span>);
             masses          = obj.S.getUnitCellPropertyVector(<span class="string">'mass'</span>);
-            areas           = obj.S.getUnitCellPropertyVector(<span class="string">'area'</span>);
-            E0              = fluence*areas(1);
+<span class="comment">%             areas           = obj.S.getUnitCellPropertyVector('area');</span>
+            E0              = fluence*1*units.ang^2; <span class="comment">%areas(1); mass are normalized to 1Ang^2</span>
 
             initTemp = obj.checkInitialTemperature(initTemp); <span class="comment">% check the intial temperature</span>
             finalTemp = initTemp;
@@ -348,12 +359,12 @@ span.syscmd { color:#B28C00 }
                 obj.dispMessage([<span class="string">'_tempMap_ loaded from file '</span> filename]);
             <span class="keyword">else</span>
                 <span class="comment">% file does not exist so calculate and save</span>
-                [tempMap deltaTempMap checkedEx] = obj.calcTempMap(time, excitation, initTemp);
+                [tempMap, deltaTempMap, checkedEx] = obj.calcTempMap(time, excitation, initTemp);
                 save(filename,<span class="string">'tempMap'</span>, <span class="string">'deltaTempMap'</span>, <span class="string">'checkedEx'</span>);
                 obj.dispMessage([<span class="string">'_tempMap_ saved to file '</span> filename]);
             <span class="keyword">end</span>
         <span class="keyword">end</span><span class="comment">%function</span>
-</pre><h2>calcTempMap<a name="14"></a></h2><p>Calculates the tempMap and tempMap difference for a given time vector, exciation and initial temperature. Heat diffusion can be included if <i>heatDiffusion = true</i>.</p><pre class="codeinput">        <span class="keyword">function</span> [tempMap deltaTempMap checkedEx] = calcTempMap(obj,time,excitation,initTemp)
+</pre><h2>calcTempMap<a name="14"></a></h2><p>Calculates the tempMap and tempMap difference for a given time vector, exciation and initial temperature. Heat diffusion can be included if <i>heatDiffusion = true</i>.</p><pre class="codeinput">        <span class="keyword">function</span> [tempMap, deltaTempMap, checkedEx] = calcTempMap(obj,time,excitation,initTemp)
             t1 = tic;
             <span class="comment">% initialize</span>
             N = obj.S.getNumberOfUnitCells; <span class="comment">% nb of unit cells</span>
@@ -376,9 +387,13 @@ span.syscmd { color:#B28C00 }
                 pulseWidth  = checkedEx{3,i};
                 fluence     = checkedEx{4,i};
 
-                <span class="keyword">if</span> obj.heatDiffusion &amp;&amp; length(subTime) &gt; 2 &amp;&amp; (sum(fluence) == 0 || (sum(fluence) &gt; 0 &amp;&amp; sum(pulseWidth) &gt; 0))
+                <span class="comment">% determine if a temperature gradient is present and if</span>
+                <span class="comment">% heat diffusion is required</span>
+                tempGradient = sum(sum(abs(diff(tempMap(end,:,:),1,2))));
+
+                <span class="keyword">if</span> obj.heatDiffusion &amp;&amp; length(subTime) &gt; 2 &amp;&amp; ((sum(fluence) == 0 &amp;&amp; tempGradient ~= 0) || (sum(fluence) &gt; 0 &amp;&amp; sum(pulseWidth) &gt; 0))
                     <span class="comment">% heat diffusion enabled and more than 2 time steps AND</span>
-                    <span class="comment">% either no excitation or excitation with finite pulse</span>
+                    <span class="comment">% either no excitation with temperature gradient or excitation with finite pulse</span>
                     <span class="comment">% duration</span>
                     <span class="keyword">if</span> sum(fluence) == 0
                         obj.dispMessage(<span class="string">'Calculating _heatDiffusion_ ...'</span>);
@@ -558,7 +573,11 @@ span.syscmd { color:#B28C00 }
                     ql = ones(dim);
                 <span class="keyword">otherwise</span> <span class="comment">% isolator</span>
                     pl = zeros(dim);
-                    ql = ones(size(dim));
+                    <span class="keyword">if</span> verLessThan(<span class="string">'matlab'</span>, <span class="string">'8.3'</span>)
+                        ql = ones(size(dim));
+                    <span class="keyword">else</span>
+                        ql = ones(dim);
+                    <span class="keyword">end</span><span class="comment">%if</span>
             <span class="keyword">end</span><span class="comment">%switch</span>
 
             <span class="comment">% check the type of the right boundary condition</span>
@@ -571,13 +590,16 @@ span.syscmd { color:#B28C00 }
                     qr = ones(dim);
                 <span class="keyword">otherwise</span> <span class="comment">% isolator</span>
                     pr = zeros(dim);
-                    qr = ones(size(dim));
+                    <span class="keyword">if</span> verLessThan(<span class="string">'matlab'</span>, <span class="string">'8.3'</span>)
+                        qr = ones(size(dim));
+                    <span class="keyword">else</span>
+                        qr = ones(dim);
+                    <span class="keyword">end</span><span class="comment">%if</span>
             <span class="keyword">end</span><span class="comment">%switch</span>
         <span class="keyword">end</span><span class="comment">%function</span>
 </pre><pre class="codeinput">    <span class="keyword">end</span><span class="comment">%methods</span>
 </pre><pre class="codeinput"><span class="keyword">end</span><span class="comment">%classdef</span>
-</pre><p class="footer"><br>
-      Published with MATLAB&reg; 7.14<br></p></div><!--
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% heat
 % The heat class simulates optical excitation by heating the sample
@@ -935,8 +957,8 @@ classdef heat < simulation
             intHeatCapacity = obj.S.getUnitCellPropertyVector('intHeatCapacity');
             cAxises         = obj.S.getUnitCellPropertyVector('cAxis');
             masses          = obj.S.getUnitCellPropertyVector('mass');
-            areas           = obj.S.getUnitCellPropertyVector('area');
-            E0              = fluence*areas(1);
+%             areas           = obj.S.getUnitCellPropertyVector('area');
+            E0              = fluence*1*units.ang^2; %areas(1); mass are normalized to 1Ang^2
             
             initTemp = obj.checkInitialTemperature(initTemp); % check the intial temperature
             finalTemp = initTemp;
@@ -968,7 +990,7 @@ classdef heat < simulation
                 obj.dispMessage(['_tempMap_ loaded from file ' filename]);
             else
                 % file does not exist so calculate and save
-                [tempMap deltaTempMap checkedEx] = obj.calcTempMap(time, excitation, initTemp);
+                [tempMap, deltaTempMap, checkedEx] = obj.calcTempMap(time, excitation, initTemp);
                 save(filename,'tempMap', 'deltaTempMap', 'checkedEx');
                 obj.dispMessage(['_tempMap_ saved to file ' filename]);
             end                
@@ -978,7 +1000,7 @@ classdef heat < simulation
         % Calculates the tempMap and tempMap difference for a given time
         % vector, exciation and initial temperature. Heat diffusion can be
         % included if _heatDiffusion = true_. 
-        function [tempMap deltaTempMap checkedEx] = calcTempMap(obj,time,excitation,initTemp)
+        function [tempMap, deltaTempMap, checkedEx] = calcTempMap(obj,time,excitation,initTemp)
             t1 = tic;
             % initialize
             N = obj.S.getNumberOfUnitCells; % nb of unit cells
@@ -1001,9 +1023,13 @@ classdef heat < simulation
                 pulseWidth  = checkedEx{3,i};
                 fluence     = checkedEx{4,i};
                 
-                if obj.heatDiffusion && length(subTime) > 2 && (sum(fluence) == 0 || (sum(fluence) > 0 && sum(pulseWidth) > 0))
+                % determine if a temperature gradient is present and if
+                % heat diffusion is required
+                tempGradient = sum(sum(abs(diff(tempMap(end,:,:),1,2))));                
+                
+                if obj.heatDiffusion && length(subTime) > 2 && ((sum(fluence) == 0 && tempGradient ~= 0) || (sum(fluence) > 0 && sum(pulseWidth) > 0))
                     % heat diffusion enabled and more than 2 time steps AND
-                    % either no excitation or excitation with finite pulse
+                    % either no excitation with temperature gradient or excitation with finite pulse
                     % duration
                     if sum(fluence) == 0 
                         obj.dispMessage('Calculating _heatDiffusion_ ...');
@@ -1248,7 +1274,11 @@ classdef heat < simulation
                     ql = ones(dim);                    
                 otherwise % isolator
                     pl = zeros(dim);
-                    ql = ones(size(dim));
+                    if verLessThan('matlab', '8.3')
+                        ql = ones(size(dim));
+                    else                        
+                        ql = ones(dim);
+                    end%if
             end%switch
             
             % check the type of the right boundary condition
@@ -1261,7 +1291,11 @@ classdef heat < simulation
                     qr = ones(dim);                    
                 otherwise % isolator
                     pr = zeros(dim);
-                    qr = ones(size(dim));
+                    if verLessThan('matlab', '8.3')
+                        qr = ones(size(dim));
+                    else                        
+                        qr = ones(dim);
+                    end%if
             end%switch        
         end%function      
     end%methods

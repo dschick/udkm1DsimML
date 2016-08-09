@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>XRD</title><meta name="generator" content="MATLAB 7.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-07-31"><meta name="DC.source" content="XRD.m"><style type="text/css">
+      --><title>XRD</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-08-09"><meta name="DC.source" content="XRD.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -23,7 +23,7 @@ a:visited { color:#004aa0; text-decoration:none; }
 
 p { padding:0px; margin:0px 0px 20px; }
 img { padding:0px; margin:0px 0px 20px; border:none; }
-p img, pre img, tt img, li img { margin-bottom:0px; } 
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
 
 ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
 ul li { padding:0px; margin:0px 0px 7px 0px; }
@@ -38,11 +38,12 @@ ol li ul li { list-style:square; }
 
 .content { font-size:1.2em; line-height:140%; padding: 20px; }
 
-pre, tt, code { font-size:12px; }
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
 pre { margin:0px 0px 20px; }
-pre.error { color:red; }
 pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
 pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
 
 @media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
 
@@ -54,6 +55,16 @@ span.syscmd { color:#B28C00 }
 
 .footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
 .footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
 
   </style></head><body><div class="content"><h1>XRD</h1><!--introduction--><p>The XRD class is the base class for 1D X-ray diffraction simulations. Besides the 1D structure it holds various simulation parameters and provides several general helper functions.</p><p>Copyright (c) 2013, Daniel Schick, Andr&eacute; Bojahr, Marc Herzog, Roman Shayduk, Clemens von Korff Schmising All rights reserved.</p><p>License: BSD (use/copy/change/redistribute on own risk, mention the authors)</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Classdef</a></li><li><a href="#2">Properties</a></li><li><a href="#3">Methods</a></li><li><a href="#4">Constructor</a></li><li><a href="#5">Display</a></li><li><a href="#6">setQz</a></li><li><a href="#7">setQzByTheta</a></li><li><a href="#8">getPolarizationFactor</a></li><li><a href="#9">convWithTemporalResolution</a></li><li><a href="#10">convWithInstrumentFunction</a></li><li><a href="#12">convWithFunction</a></li></ul></div><h2>Classdef<a name="1"></a></h2><p>Each XRD instance and all inherited class objects follow handle semantics. Hence a copy of such object will not copy the object itself, but only a handle to that object.</p><pre class="codeinput"><span class="keyword">classdef</span> XRD &lt; simulation
 </pre><h2>Properties<a name="2"></a></h2><pre class="codeinput">    properties (SetAccess=public,GetAccess=public)
@@ -116,11 +127,11 @@ span.syscmd { color:#B28C00 }
 </pre><h2>convWithFunction<a name="12"></a></h2><p>Convolutes the matrix <img src="XRD_eq39797.png" alt="$Z(x,y)$"> with a function given by the <i>handle</i> on the argument vector <img src="XRD_eq44020.png" alt="$y$">. The length of <img src="XRD_eq44020.png" alt="$y$"> must be the same as the second dimension of <img src="XRD_eq14833.png" alt="$Z$">.</p><pre class="codeinput">        <span class="keyword">function</span> [Zc yc] = convWithFunction(Z,y,handle)
             <span class="comment">% interpolate y on a linear grid</span>
             dy = min(diff(y));
+
             <span class="keyword">if</span> dy &lt;= 0
                 error(<span class="string">'The argument vector is not sequenced in strict monotonic order.'</span>);
             <span class="keyword">end</span>
             ylin = min(y):dy:max(y);
-
             <span class="comment">% center of argument x</span>
             yc = (max(ylin)-min(ylin))/2 + min(ylin);
             <span class="comment">% extend the argument to avoid edge effects</span>
@@ -139,12 +150,11 @@ span.syscmd { color:#B28C00 }
                 Zc(i,:) = interp1(ylin,temp,y);
             <span class="keyword">end</span><span class="comment">%for</span>
             <span class="comment">% finaly remove NaN entries due to the interpolation</span>
-            Zc(isnan(Zc)) = 0;
+<span class="comment">%             Zc(isnan(Zc)) = 0;</span>
         <span class="keyword">end</span><span class="comment">%function</span>
 </pre><pre class="codeinput">    <span class="keyword">end</span><span class="comment">%methods</span>
 </pre><pre class="codeinput"><span class="keyword">end</span><span class="comment">%classdef</span>
-</pre><p class="footer"><br>
-      Published with MATLAB&reg; 7.14<br></p></div><!--
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% XRD
 % The XRD class is the base class for 1D X-ray diffraction simulations.
@@ -271,11 +281,11 @@ classdef XRD < simulation
         function [Zc yc] = convWithFunction(Z,y,handle)
             % interpolate y on a linear grid
             dy = min(diff(y));
+            
             if dy <= 0
                 error('The argument vector is not sequenced in strict monotonic order.');
             end
-            ylin = min(y):dy:max(y);
-            
+            ylin = min(y):dy:max(y);       
             % center of argument x  
             yc = (max(ylin)-min(ylin))/2 + min(ylin); 
             % extend the argument to avoid edge effects
@@ -294,7 +304,7 @@ classdef XRD < simulation
                 Zc(i,:) = interp1(ylin,temp,y);
             end%for
             % finaly remove NaN entries due to the interpolation
-            Zc(isnan(Zc)) = 0;
+%             Zc(isnan(Zc)) = 0;
         end%function        
     end%methods
 end%classdef

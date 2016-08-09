@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>udkm1Dsim Toolbox</title><meta name="generator" content="MATLAB 7.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-07-31"><meta name="DC.source" content="udkm1DsimProductPage.m"><style type="text/css">
+      --><title>udkm1Dsim Toolbox</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-08-09"><meta name="DC.source" content="udkm1DsimProductPage.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -23,7 +23,7 @@ a:visited { color:#004aa0; text-decoration:none; }
 
 p { padding:0px; margin:0px 0px 20px; }
 img { padding:0px; margin:0px 0px 20px; border:none; }
-p img, pre img, tt img, li img { margin-bottom:0px; } 
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
 
 ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
 ul li { padding:0px; margin:0px 0px 7px 0px; }
@@ -38,11 +38,12 @@ ol li ul li { list-style:square; }
 
 .content { font-size:1.2em; line-height:140%; padding: 20px; }
 
-pre, tt, code { font-size:12px; }
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
 pre { margin:0px 0px 20px; }
-pre.error { color:red; }
 pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
 pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
 
 @media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
 
@@ -54,9 +55,18 @@ span.syscmd { color:#B28C00 }
 
 .footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
 .footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
 
-  </style></head><body><div class="content"><h1>udkm1Dsim Toolbox</h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Introduction</a></li><li><a href="#2">Compatibility</a></li><li><a href="#3">License</a></li></ul></div><h2>Introduction<a name="1"></a></h2><p>The <b>udkm1Dsim toolbox</b> is a collection of classes and routines to simulate the structural dynamics and the according X-ray diffraction response in one-dimensional sample structures after ultrafast excitation. The toolbox provides the capabilities to define arbitrary layered structures on the atomic level including a rich database of element-specific physical properties. The excitation of ultrafast dynamics is represented by an N-temperature-model which is commonly applied for ultrafast optical excitations. Structural dynamics due to thermal stresses are calculated by a linear-chain model of masses and springs. The resulting X-ray diffraction response is computed by dynamical X-ray theory. The udkm1Dsim Toolbox is highly modular and allows to introduce user-defined results at any step in the simulation procedure.</p><p>The <b>udkm1Dsim toolbox</b> was developed in the Ultrafast Dynamics in Condensed Matter group of Prof. Matias Bargheer at the University of Potsdam, Germany. Please cite the following article if you use the <b>udkm1Dsim toolbox</b> for your own publications:</p><p>D. Schick, A. Bojahr, M. Herzog, R. Shayduk, C. von Korff Schmising &amp; M. Bargheer, <i>udkm1Dsim - A Simulation Toolkit for 1D Ultrafast Dynamics in Condensed Matter</i>, Comput. Phys. Commun. 185, 651 (2014).</p><p>You can find the latest version of the toolbox under the following link: <a href="http://www.udkm.physik.uni-potsdam.de/udkm1dsim">http://www.udkm.physik.uni-potsdam.de/udkm1dsim</a></p><div><ul><li>Please read the <a href="releaseNotes.html">Release Notes</a> carefully to avoid conflicts with older versions of the <b>udkm1Dsim toolbox</b></li><li>In order to get started with the <b>udkm1Dsim toolbox</b> follow the examples in the <a href="gettingStarted.html">Getting Started</a> section</li><li>For more information follow the <a href="detailedExamples.html">Detailed Examples</a></li><li>Details on the programming routines and mathematics can be found in the <a href="userGuide.html">User Guide</a></li></ul></div><h2>Compatibility<a name="2"></a></h2><p>The <b>udkm1Dsim toolbox</b> was tested on MATLAB 2010a (7.10) - 2013a (8.1)</p><h2>License<a name="3"></a></h2><p>The <b>udkm1Dsim toolbox</b> is distributed under BSD license.</p><p>Copyright (c) 2013, Daniel Schick, Andr&eacute; Bojahr, Marc Herzog, Roman Shayduk, Clemens von Korff Schmising</p><p>All rights reserved.</p><p class="footer"><br>
-      Published with MATLAB&reg; 7.14<br></p></div><!--
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>udkm1Dsim Toolbox</h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Introduction</a></li><li><a href="#2">Compatibility</a></li><li><a href="#3">License</a></li></ul></div><h2>Introduction<a name="1"></a></h2><p>The <b>udkm1Dsim toolbox</b> is a collection of classes and routines to simulate the structural dynamics and the according X-ray diffraction response in one-dimensional sample structures after ultrafast excitation. The toolbox provides the capabilities to define arbitrary layered structures on the atomic level including a rich database of element-specific physical properties. The excitation of ultrafast dynamics is represented by an N-temperature-model which is commonly applied for ultrafast optical excitations. Structural dynamics due to thermal stresses are calculated by a linear-chain model of masses and springs. The resulting X-ray diffraction response is computed by dynamical X-ray theory. The udkm1Dsim Toolbox is highly modular and allows to introduce user-defined results at any step in the simulation procedure.</p><p>The <b>udkm1Dsim toolbox</b> was developed in the Ultrafast Dynamics in Condensed Matter group of Prof. Matias Bargheer at the University of Potsdam, Germany. The toolbox is currently maintained by Daniel Schick.</p><p>Please cite the following article if you use the <b>udkm1Dsim toolbox</b> for your own publications:</p><p>D. Schick, A. Bojahr, M. Herzog, R. Shayduk, C. von Korff Schmising &amp; M. Bargheer, <i>udkm1Dsim - A Simulation Toolkit for 1D Ultrafast Dynamics in Condensed Matter</i>, Comput. Phys. Commun. 185, 651 (2014).</p><p>You can find the latest version of the toolbox under the following link: <a href="https://github.com/dschick/udkm1Dsim">https://github.com/dschick/udkm1Dsim</a></p><div><ul><li>Please read the <a href="releaseNotes.html">Release Notes</a> carefully to avoid conflicts with older versions of the <b>udkm1Dsim toolbox</b></li><li>In order to get started with the <b>udkm1Dsim toolbox</b> follow the examples in the <a href="gettingStarted.html">Getting Started</a> section</li><li>For more information follow the <a href="detailedExamples.html">Detailed Examples</a></li><li>Details on the programming routines and mathematics can be found in the <a href="userGuide.html">User Guide</a></li></ul></div><h2>Compatibility<a name="2"></a></h2><p>The <b>udkm1Dsim toolbox</b> was tested on MATLAB 2010a (7.10) - 2016a (9.0)</p><h2>License<a name="3"></a></h2><p>The <b>udkm1Dsim toolbox</b> is distributed under BSD license.</p><p>Copyright (c) 2013, Daniel Schick, Andr&eacute; Bojahr, Marc Herzog, Roman Shayduk, Clemens von Korff Schmising</p><p>All rights reserved.</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% udkm1Dsim Toolbox
 
@@ -78,15 +88,17 @@ span.syscmd { color:#B28C00 }
 % The *udkm1Dsim toolbox* was developed in the Ultrafast Dynamics in
 % Condensed Matter group of Prof. Matias Bargheer at the University of
 % Potsdam, Germany.
+% The toolbox is currently maintained by Daniel Schick.
+%
 % Please cite the following article if you use the *udkm1Dsim toolbox* for
 % your own publications:
 %
 % D. Schick, A. Bojahr, M. Herzog, R. Shayduk, C. von Korff Schmising & M.
-% Bargheer (2013), _udkm1Dsim - A Simulation Toolkit for 1D Ultrafast 
-% Dynamics in Condensed Matter_, Comput. Phys. Commun., under review
+% Bargheer, _udkm1Dsim - A Simulation Toolkit for 1D Ultrafast 
+% Dynamics in Condensed Matter_, Comput. Phys. Commun. 185, 651 (2014).
 %
 % You can find the latest version of the toolbox under the following link:
-% <http://www.udkm.physik.uni-potsdam.de/udkm1dsim>
+% <https://github.com/dschick/udkm1Dsim>
 %
 % * Please read the <releaseNotes.html Release Notes> carefully to avoid
 % conflicts with older versions of the *udkm1Dsim toolbox*
@@ -97,7 +109,8 @@ span.syscmd { color:#B28C00 }
 % <userGuide.html User Guide>
 %
 %% Compatibility
-% The *udkm1Dsim toolbox* was tested on MATLAB 2010a (7.10) - 2013a (8.1)
+% The *udkm1Dsim toolbox* was tested on MATLAB 2010a (7.10) - 2016a (9.0)
+%
 %% License
 % The *udkm1Dsim toolbox* is distributed under BSD license.
 % 
