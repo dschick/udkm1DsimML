@@ -45,6 +45,8 @@ SRO.addAtom(Sr,0);
 SRO.addAtom(O,0.5);
 SRO.addAtom(O,0.5);
 SRO.addAtom(Ru,0.5);
+SRO.intHeatCapacity    = @(T)(455.2.*T + 0.112.*T.^2 - 2.1935e6./T);
+SRO.intLinThermExp    = @(T)(1.03e-5.*T);
 
 propSTOsub.aAxis           = cSTOsub;           % aAxis
 propSTOsub.bAxis           = cSTOsub;           % bAxis
@@ -61,6 +63,8 @@ STOsub.addAtom(Sr,0);
 STOsub.addAtom(O,0.5);
 STOsub.addAtom(O,0.5);
 STOsub.addAtom(Ti,0.5);
+STOsub.intHeatCapacity    = @(T)(733.73.*T + 0.0248.*T.^2 - 6.531e6./T);
+STOsub.intLinThermExp    = @(T)(1e-5.*T);
 
 S = structure('Single Layer');
 S.addSubStructure(SRO,100);    % add 100 layers of SRO to sample
@@ -198,7 +202,7 @@ theta = (22:0.01:24)*u.deg;
 D.setQzByTheta(theta);
 % This is the parallel calculation of the transient XRD for the given 
 % _strainMap_ 
-R = D.getInhomogeneousReflectivity(strainMap,strainVectors, 'parallel');
+R = D.getInhomogeneousReflectivity(strainMap,strainVectors, 'sequential');
 
 %%
 % plot the results:
