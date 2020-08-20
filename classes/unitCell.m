@@ -60,7 +60,7 @@ classdef unitCell < handle
             p.addRequired('cAxis'                   , @isnumeric);
             p.addParamValue('aAxis'                 , cAxis , @isnumeric);
             p.addParamValue('bAxis'                 , cAxis , @isnumeric);
-            p.addParamValue('debWalFac'             , 0     , @isnumeric);
+            p.addParamValue('debWalFac'             , 0     , @(x)(isnumeric(x) || isa(x,'function_handle') || ischar(x)));
             p.addParamValue('soundVel'              , 0     , @isnumeric);
             p.addParamValue('phononDamping'         , 0     , @isnumeric);
             p.addParamValue('optPenDepth'           , 0     , @isnumeric);
@@ -87,7 +87,8 @@ classdef unitCell < handle
             else
                 obj.bAxis = p.Results.bAxis;
             end
-            obj.debWalFac               = p.Results.debWalFac;
+            debWallCell = obj.checkCellArrayInput(p.Results.debWalFac);
+            obj.debWalFac               = debWallCell{1};
             obj.soundVel                = p.Results.soundVel;
             obj.phononDamping           = p.Results.phononDamping;
             obj.optPenDepth             = p.Results.optPenDepth;
@@ -169,7 +170,7 @@ classdef unitCell < handle
             disp(['volume [Ang^3]                : ' num2str(obj.volume/u.ang^3)]);
             disp(['mass [kg]                     : ' num2str(obj.mass/u.kg)]);
             disp(['density [kg/m^3]              : ' num2str(obj.density/(u.kg/u.m^3))]);
-            disp(['Debye Waller Factor [m^2]     : ' num2str(obj.debWalFac/u.m^2)]);
+            disp(['Debye Waller Factor [m^2]     : ' func2str(obj.debWalFac)]);
             disp(['sound velocity [nm/ps]        : ' num2str(obj.soundVel/(u.nm/u.ps))]);
             disp(['spring constant [kg/s^2]      : ' num2str(obj.springConst)]);
             disp(['phonon damping [kg/s]         : ' num2str(obj.phononDamping)]);
