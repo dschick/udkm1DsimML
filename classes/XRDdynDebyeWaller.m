@@ -93,7 +93,11 @@ classdef XRDdynDebyeWaller < XRDdyn
                 tempMap     = p.Results.tempMap;
                 job           = p.Results.job;
                 numWorker     = p.Results.numWorker;
-                                
+                N = obj.S.getNumberOfUnitCells; % nb of unit cells
+                M = size(tempMap, 1);               % nb of time steps
+                K = obj.S.numSubSystems;        % nb of subsystems
+                tempMap = reshape(tempMap, [M, N, K]);
+                
                 % select the type of computation
                 switch type
                     case 'parallel'
@@ -150,7 +154,7 @@ classdef XRDdynDebyeWaller < XRDdyn
                 ppm.increment();
                 % get the inhomogenous reflectivity of the sample
                 % structure for each time step of the strain map
-                R(i,:) = obj.calcInhomogeneousReflectivity(strainMap(i,:),tempMap(i,:));
+                R(i,:) = obj.calcInhomogeneousReflectivity(strainMap(i,:),tempMap(i,:,:));
             end%parfor
         end%function
         
@@ -170,7 +174,7 @@ classdef XRDdynDebyeWaller < XRDdyn
             for i = 1:N
                 % get the inhomogenous reflectivity of the sample
                 % structure for each time step of the strain map
-                R(i,:) = obj.calcInhomogeneousReflectivity(strainMap(i,:),tempMap(i,:));
+                R(i,:) = obj.calcInhomogeneousReflectivity(strainMap(i,:),tempMap(i,:,:));
                 % print the progress to console
                 obj.progressBar(i/N*100);
             end%for
@@ -195,7 +199,7 @@ classdef XRDdynDebyeWaller < XRDdyn
             % traverse all tasks
             for i = 1:taskSize:(taskSize*numWorker)
                 % create a task for each part of the strain pattern
-                createTask(Job, @obj.getInhomogeneousReflectivity, 1, {strainMap(i:(i+taskSize-1),:) tempMap(i:(i+taskSize-1),:) 'sequential'});
+                createTask(Job, @obj.getInhomogeneousReflectivity, 1, {strainMap(i:(i+taskSize-1),:) tempMap(i:(i+taskSize-1),:,:) 'sequential'});
                 numTasks = numTasks+1;
             end%for
             % if there are parts left in the strain pattern, we have to
@@ -208,7 +212,7 @@ classdef XRDdynDebyeWaller < XRDdyn
                         i_end = i+taskSize;
                     end%if
                     % create a task for each part of the left strain pattern
-                    createTask(Job, @obj.parallelInhomogeneousReflectivity, 1, {strainMap(i+1:i_end,:) tempMap(i+1:i_end,:) 0});
+                    createTask(Job, @obj.parallelInhomogeneousReflectivity, 1, {strainMap(i+1:i_end,:) tempMap(i+1:i_end,:,:) 0});
                     numTasks = numTasks+1;
                 end%for
             end%if
@@ -283,7 +287,7 @@ classdef XRDdynDebyeWaller < XRDdyn
                 % current unitCell ID and applied strain. Use the
                 % _knnsearch_ funtion to find the nearest strain value.
                 uc = obj.S.getUnitCellHandle(i);
-                RT = mtimesx(RT,obj.getUCRefTransMatrix(uc,strains(i),temps(i)));
+                RT = mtimesx(RT,obj.getUCRefTransMatrix(uc,strains(i),squeeze(temps(:,i,:))));
             end%for
             % add the reflectivity of a substrate of available
             if ~isempty(obj.S.substrate)
@@ -305,8 +309,9 @@ classdef XRDdynDebyeWaller < XRDdyn
             if nargin < 3
                 strain = 0; % set the defalut strain to 0
             end
+            K = length(UC.heatCapacity);
             if nargin < 4
-                temp = 0; % set the defalut temp to 0
+                temp = zeros(K,1); % set the defalut temp to 0
             end
             N = length(obj.qz); % number of q_z
             M = UC.numAtoms; % number of atoms
@@ -327,9 +332,10 @@ classdef XRDdynDebyeWaller < XRDdyn
                 end
                 % get the reflection-transmission matrix and phase matrix
                 % from all atoms in the unit cell and multiply them
-                % together
+                % together                
+                dbf = sum(cellfun(@feval,(UC.debWalFac'),num2cell(temp)));
                 RTM = mtimesx(RTM,...
-                     obj.getAtomRefTransMatrix(UC.atoms{j,1},UC.area, UC.debWalFac(temp)));
+                     obj.getAtomRefTransMatrix(UC.atoms{j,1},UC.area, dbf));
                 RTM = mtimesx(RTM,...
                      obj.getAtomPhaseMatrix(delDist*UC.cAxis));
             end%for
