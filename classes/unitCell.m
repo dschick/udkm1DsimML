@@ -3,7 +3,7 @@
 % unit cells and also an array of atoms at different postions in the unit
 % cell.
 %
-% Copyright (c) 2013, Daniel Schick, André Bojahr, Marc Herzog, Roman Shayduk, Clemens von Korff Schmising
+% Copyright (c) 2013, Daniel Schick, AndrÃ© Bojahr, Marc Herzog, Roman Shayduk, Clemens von Korff Schmising
 % All rights reserved.
 %
 % License: BSD (use/copy/change/redistribute on own risk, mention the authors)
@@ -325,7 +325,7 @@ classdef unitCell < handle
                     fstr = strrep(fstr,'.*','*');
                     fstr = strrep(fstr,'./','/');
                     fstr = strrep(fstr,'.^','^');
-                    h{i} = str2func(['@(T)(' vectorize(int(sym(fstr),'T')) ')']);
+                    h{i} = str2func(['@(T)(' vectorize(int(str2sym(fstr),'T')) ')']);
                 end%for
                 obj.intHeatCapacity = h;
                 clear T;
@@ -357,7 +357,7 @@ classdef unitCell < handle
                     fstr = strrep(fstr,'.*','*');
                     fstr = strrep(fstr,'./','/');
                     fstr = strrep(fstr,'.^','^');
-                    h{i} = str2func(['@(T)(' vectorize(int(sym(fstr),'T')) ')']);
+                    h{i} = str2func(['@(T)(' vectorize(int(str2sym(fstr),'T')) ')']);
                 end%for
                 obj.intLinThermExp = h;
                 clear T;
