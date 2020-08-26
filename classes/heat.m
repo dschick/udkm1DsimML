@@ -694,6 +694,27 @@ classdef heat < simulation
                         qr = ones(dim);
                     end%if
             end%switch        
-        end%function      
+        end%function
+        
+        function energyMap = calcEnergyMap(obj,tempMap)            
+            disp('Calculating energy distribution ...')
+            tic
+
+            energyMap       = zeros(size(tempMap));
+            intHeatCapacity = obj.S.getUnitCellPropertyVector('intHeatCapacity');
+            normMasses      = obj.S.getUnitCellPropertyVector('mass');            % generates vector of unit cell mass per ang^2 !!
+            aAxes           = obj.S.getUnitCellPropertyVector('aAxis');
+            bAxes           = obj.S.getUnitCellPropertyVector('bAxis');
+            UCmasses        = normMasses.*(aAxes/1e-10).*(bAxes/1e-10);             % calculates vector of unit cell masses
+
+            for k=1:obj.S.numSubSystems
+                for i=1:size(tempMap,1)
+                    energyMap(i,:,k) = UCmasses.*(cellfun(@feval,intHeatCapacity(:,k),num2cell(squeeze(tempMap(i,:,k))'))- cellfun(@feval,intHeatCapacity(:,k),num2cell(squeeze(tempMap(1,:,k))')));
+                end
+            end
+
+            elapsedTime = toc;
+            disp(['Elapsed time for _energyMap_: ' num2str(elapsedTime)])
+        end%function
     end%methods
 end%classdef
