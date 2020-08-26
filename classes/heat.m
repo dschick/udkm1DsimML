@@ -696,10 +696,10 @@ classdef heat < simulation
             end%switch        
         end%function
         
-        function energyMap = calcEnergyMap(obj,tempMap)            
+        function energyMap = calcEnergyMap(obj,tempMap,initTemp)            
             disp('Calculating energy distribution ...')
             tic
-
+            initTemp        = obj.checkInitialTemperature(initTemp); % check the intial temperature
             energyMap       = zeros(size(tempMap));
             intHeatCapacity = obj.S.getUnitCellPropertyVector('intHeatCapacity');
             normMasses      = obj.S.getUnitCellPropertyVector('mass');            % generates vector of unit cell mass per ang^2 !!
@@ -708,8 +708,8 @@ classdef heat < simulation
             UCmasses        = normMasses.*(aAxes/1e-10).*(bAxes/1e-10);             % calculates vector of unit cell masses
 
             for k=1:obj.S.numSubSystems
-                for i=1:size(tempMap,1)
-                    energyMap(i,:,k) = UCmasses.*(cellfun(@feval,intHeatCapacity(:,k),num2cell(squeeze(tempMap(i,:,k))'))- cellfun(@feval,intHeatCapacity(:,k),num2cell(squeeze(tempMap(1,:,k))')));
+                parfor i=1:size(tempMap,1)
+                    energyMap(i,:,k) = UCmasses.*(cellfun(@feval,intHeatCapacity(:,k),num2cell(squeeze(tempMap(i,:,k))'))- cellfun(@feval,intHeatCapacity(:,k),num2cell(squeeze(initTemp(:,k)))));
                 end
             end
 
