@@ -2,7 +2,7 @@
 % The heat class simulates optical excitation by heating the sample
 % and heat diffusion on a 1D sample structure.
 %
-% Copyright (c) 2013, Daniel Schick, André Bojahr, Marc Herzog, Roman Shayduk, Clemens von Korff Schmising
+% Copyright (c) 2013, Daniel Schick, AndrÃ© Bojahr, Marc Herzog, Roman Shayduk, Clemens von Korff Schmising
 % All rights reserved.
 %
 % License: BSD (use/copy/change/redistribute on own risk, mention the authors)
@@ -696,25 +696,53 @@ classdef heat < simulation
             end%switch        
         end%function
         
-        function energyMap = calcEnergyMap(obj,tempMap,initTemp)            
-            disp('Calculating energy distribution ...')
+        %% getEnergyMap
+        % Returns an energy profile for the sample structure after
+        % optical excitation.
+        function energyMap = getEnergyMap(obj,time,excitation,initTemp,tempMap)
+            % create a unique hash
+            hash = obj.getHash(time,excitation,initTemp);
+            % create the file name to look for
+            filename = fullfile(obj.cacheDir, ['energyMap_' hash '.mat']);
+            if exist(filename,'file') && ~obj.forceRecalc
+                % file exists so load it 
+                load(filename);
+                obj.dispMessage(['_energyMap_ loaded from file ' filename]);
+            else
+                % file does not exist so calculate and save
+                energyMap = obj.calcEnergyMap(tempMap,initTemp);
+                save(filename,'energyMap');
+                obj.dispMessage(['_energyMap_ saved to file ' filename]);
+            end                
+        end%function
+        
+        %% calcEnergyMap
+        % Calculates the energy profile for the sample structure after
+        % optical excitation.
+        function energyMap = calcEnergyMap(obj,tempMap,initTemp)
+            
+            disp('Calculating _energyMap_ ...')
             tic
-            initTemp        = obj.checkInitialTemperature(initTemp); % check the intial temperature
+    
             energyMap       = zeros(size(tempMap));
             intHeatCapacity = obj.S.getUnitCellPropertyVector('intHeatCapacity');
-            normMasses      = obj.S.getUnitCellPropertyVector('mass');            % generates vector of unit cell mass per ang^2 !!
+            normMasses      = obj.S.getUnitCellPropertyVector('mass');              % generates vector of unit cell mass per ang^2 !!
             aAxes           = obj.S.getUnitCellPropertyVector('aAxis');
             bAxes           = obj.S.getUnitCellPropertyVector('bAxis');
             UCmasses        = normMasses.*(aAxes/1e-10).*(bAxes/1e-10);             % calculates vector of unit cell masses
 
-            for k=1:obj.S.numSubSystems
-                parfor i=1:size(tempMap,1)
-                    energyMap(i,:,k) = UCmasses.*(cellfun(@feval,intHeatCapacity(:,k),num2cell(squeeze(tempMap(i,:,k))'))- cellfun(@feval,intHeatCapacity(:,k),num2cell(squeeze(initTemp(:,k)))));
+            for s=1:obj.S.numSubSystems
+                for d=1:size(tempMap,1)
+                    for i=1:obj.S.getNumberOfUnitCells
+                        energyMap(d,i,s) = UCmasses(i)*( intHeatCapacity{i,s}(tempMap(d,i,s)) - intHeatCapacity{i,s}(initTemp) );
+                    end
                 end
             end
-
+    
             elapsedTime = toc;
             disp(['Elapsed time for _energyMap_: ' num2str(elapsedTime)])
+            
         end%function
+        
     end%methods
 end%classdef
