@@ -731,9 +731,10 @@ classdef heat < simulation
             aAxes           = obj.S.getUnitCellPropertyVector('aAxis');
             bAxes           = obj.S.getUnitCellPropertyVector('bAxis');
             UCmasses        = normMasses.*(aAxes/1e-10).*(bAxes/1e-10);             % calculates vector of unit cell masses
+            Cells           = obj.S.getNumberOfUnitCells;
 
             for k=1:obj.S.numSubSystems
-                for i=1:size(tempMap,1)
+                parfor i=1:size(tempMap,1)
                     for n=1:obj.S.getNumberOfUnitCells
                         energyMap(i,n,k) = UCmasses(n)*( intHeatCapacity{n,k}(tempMap(i,n,k)) - intHeatCapacity{n,k}(initTemp(n,k)) );
                     end
