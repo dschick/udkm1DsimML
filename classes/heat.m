@@ -731,10 +731,10 @@ classdef heat < simulation
             bAxes           = obj.S.getUnitCellPropertyVector('bAxis');
             UCmasses        = normMasses.*(aAxes/1e-10).*(bAxes/1e-10);             % calculates vector of unit cell masses
 
-            for s=1:obj.S.numSubSystems
-                for d=1:size(tempMap,1)
-                    for i=1:obj.S.getNumberOfUnitCells
-                        energyMap(d,i,s) = UCmasses(i)*( intHeatCapacity{i,s}(tempMap(d,i,s)) - intHeatCapacity{i,s}(initTemp) );
+            for k=1:obj.S.numSubSystems
+                for i=1:size(tempMap,1)
+                    for n=1:obj.S.getNumberOfUnitCells
+                        energyMap(i,n,k) = UCmasses(n)*( intHeatCapacity{n,k}(tempMap(i,n,k)) - intHeatCapacity{n,k}(initTemp) );
                     end
                 end
             end
@@ -791,11 +791,11 @@ classdef heat < simulation
             volumes             = obj.S.getUnitCellPropertyVector('volume');
             areas               = obj.S.getUnitCellPropertyVector('area');
 
-            for s=1:obj.S.numSubSystems
-                for d=1:length(time)
-                    for i=1:obj.S.getNumberOfUnitCells
-                        energyFluxMap(d,i,s,1) = UCmasses(i) .* heatCapacity{i,s}(tempMap(d,i,s)) .* deltaTempMap(d,i,s) ./ diffTime(d);
-                        energyFluxMap(d,i,s,2) = volumes(i) .* subSystemCoupling{i,s}([tempMap(d,i,1), tempMap(d,i,2)]);
+            for k=1:obj.S.numSubSystems
+                for i=1:length(time)
+                    for n=1:obj.S.getNumberOfUnitCells
+                        energyFluxMap(i,n,k,1) = UCmasses(n) .* heatCapacity{n,k}(tempMap(i,n,k)) .* deltaTempMap(i,n,k) ./ diffTime(i);
+                        energyFluxMap(i,n,k,2) = volumes(n) .* subSystemCoupling{n,k}([tempMap(i,n,1), tempMap(i,n,2)]);
                     end
                 end
             end
