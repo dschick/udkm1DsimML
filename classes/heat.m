@@ -744,5 +744,67 @@ classdef heat < simulation
             
         end%function
         
+        %% getEnergyFluxMap
+        % Returns the local energy flux profile in a 2TM-context for the sample structure after optical excitation 
+        % both due to electron-phonon coupling and diffusion. For this, the various terms in
+        % the 2TM are evaluated using the previously calculated temperature map.
+        function energyFluxMap = getEnergyFluxMap(obj,time,excitation,initTemp,tempMap,deltaTempMap)
+            % create a unique hash
+            hash = obj.getHash(time,excitation,initTemp);
+            % create the file name to look for
+            filename = fullfile(obj.cacheDir, ['energyFluxMap_' hash '.mat']);
+            if exist(filename,'file') && ~obj.forceRecalc
+                % file exists so load it 
+                load(filename);
+                obj.dispMessage(['_energyFluxMap_ loaded from file ' filename]);
+            else
+                % file does not exist so calculate and save
+                energyFluxMap = obj.calcEnergyFluxMap(time,tempMap,deltaTempMap);
+                save(filename,'energyFluxMap');
+                obj.dispMessage(['_energyFluxMap_ saved to file ' filename]);
+            end                
+        end%function
+
+        %% calcEnergyFluxMap
+        % Calculates the energy flux profile for the sample structure after
+        % optical excitation within a two-temperature-model context such as
+        % electron-phonon coupling.
+        % dimension 4, index 1 - total energy flux into the respective subsystems
+        % dimension 4, index 2 - energy flux due to electron-phonon coupling (i.e. subsystem coupling)
+        % dimension 4, index 3 - energy flux due to diffusion in each respective subsystems
+        function energyFluxMap = calcEnergyFluxMap(obj,time,tempMap,deltaTempMap)
+            
+            disp('Calculating _energyFluxMap_ ...')
+            tic
+    
+            diffTimeInit = diff(time);
+            diffTime = [diffTimeInit(1) diffTimeInit];
+
+            energyFluxMap       = zeros([size(tempMap) 3]);
+            heatCapacity        = obj.S.getUnitCellPropertyVector('heatCapacity');
+            intHeatCapacity     = obj.S.getUnitCellPropertyVector('intHeatCapacity');
+            subSystemCoupling   = obj.S.getUnitCellPropertyVector('subSystemCoupling');
+            normMasses          = obj.S.getUnitCellPropertyVector('mass');            % generates vector of unit cell mass per ang^2 !!
+            aAxes               = obj.S.getUnitCellPropertyVector('aAxis');
+            bAxes               = obj.S.getUnitCellPropertyVector('bAxis');
+            UCmasses            = normMasses.*(aAxes/1e-10).*(bAxes/1e-10);             % calculates vector of unit cell masses
+            volumes             = obj.S.getUnitCellPropertyVector('volume');
+            areas               = obj.S.getUnitCellPropertyVector('area');
+
+            for s=1:obj.S.numSubSystems
+                for d=1:length(time)
+                    for i=1:obj.S.getNumberOfUnitCells
+                        energyFluxMap(d,i,s,1) = UCmasses(i) .* heatCapacity{i,s}(tempMap(d,i,s)) .* deltaTempMap(d,i,s) ./ diffTime(d);
+                        energyFluxMap(d,i,s,2) = volumes(i) .* subSystemCoupling{i,s}([tempMap(d,i,1), tempMap(d,i,2)]);
+                    end
+                end
+            end
+            energyFluxMap(:,:,:,3) = energyFluxMap(:,:,:,1) - energyFluxMap(:,:,:,2);
+            
+            elapsedTime = toc;
+            disp(['Elapsed time for _energyFluxMap_: ' num2str(elapsedTime)])
+            
+        end%function
+
     end%methods
 end%classdef
