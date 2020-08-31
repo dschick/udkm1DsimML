@@ -325,7 +325,13 @@ classdef unitCell < handle
                     fstr = strrep(fstr,'.*','*');
                     fstr = strrep(fstr,'./','/');
                     fstr = strrep(fstr,'.^','^');
-                    h{i} = str2func(['@(T)(' vectorize(int(str2sym(fstr),'T')) ')']);
+                    if verLessThan('matlab','9')
+                        % -- Code to run in MATLAB R2015b and earlier here --
+                        h{i} = str2func(['@(T)(' vectorize(int(sym(fstr),'T')) ')']);
+                    else
+                        % -- Code to run in MATLAB R2016a and later here --
+                        h{i} = str2func(['@(T)(' vectorize(int(str2sym(fstr),'T')) ')']);
+                    end
                 end%for
                 obj.intHeatCapacity = h;
                 clear T;
@@ -357,7 +363,13 @@ classdef unitCell < handle
                     fstr = strrep(fstr,'.*','*');
                     fstr = strrep(fstr,'./','/');
                     fstr = strrep(fstr,'.^','^');
-                    h{i} = str2func(['@(T)(' vectorize(int(str2sym(fstr),'T')) ')']);
+                    if verLessThan('matlab','9')
+                        % -- Code to run in MATLAB R2015b and earlier here --
+                        h{i} = str2func(['@(T)(' vectorize(int(sym(fstr),'T')) ')']);
+                    else
+                        % -- Code to run in MATLAB R2016a and later here --
+                        h{i} = str2func(['@(T)(' vectorize(int(str2sym(fstr),'T')) ')']);
+                    end
                 end%for
                 obj.intLinThermExp = h;
                 clear T;
