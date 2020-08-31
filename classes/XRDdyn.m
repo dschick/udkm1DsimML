@@ -477,7 +477,7 @@ classdef XRDdyn < XRD
         %% unit cell methods
         % These methods are unit cell specific.
         
-        %% getUCRefTransMatrix
+                %% getUCRefTransMatrix
         % Returns the reflection-transmission matrix of a unit cell:
         %
         % $$ M_{RT} = \prod_i H_i \, L_i $$
@@ -485,9 +485,13 @@ classdef XRDdyn < XRD
         % where $H_i$ and $L_i$ are the atomic reflection-transmission 
         % matrix and the phase matrix for the atomic distances, 
         % respectively.
-        function RTM = getUCRefTransMatrix(obj,UC,strain)
+        function RTM = getUCRefTransMatrix(obj,UC,strain,temp)
             if nargin < 3
                 strain = 0; % set the defalut strain to 0
+            end
+            K = length(UC.heatCapacity);
+            if nargin < 4
+                temp = 300*ones(K,1); % set the defalut temp to 0
             end
             N = length(obj.qz); % number of q_z
             M = UC.numAtoms; % number of atoms
@@ -509,8 +513,12 @@ classdef XRDdyn < XRD
                 % get the reflection-transmission matrix and phase matrix
                 % from all atoms in the unit cell and multiply them
                 % together
+                dbf = sum(cellfun(@feval,(UC.debWalFac'),num2cell(temp)));
+                if isnan(dbf)
+                    dbf = 0;
+                end
                 RTM = mtimesx(RTM,...
-                     obj.getAtomRefTransMatrix(UC.atoms{j,1},UC.area,UC.debWalFac));
+                     obj.getAtomRefTransMatrix(UC.atoms{j,1},UC.area, dbf));
                 RTM = mtimesx(RTM,...
                      obj.getAtomPhaseMatrix(delDist*UC.cAxis));
             end%for
