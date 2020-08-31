@@ -325,7 +325,7 @@ classdef unitCell < handle
                     fstr = strrep(fstr,'.*','*');
                     fstr = strrep(fstr,'./','/');
                     fstr = strrep(fstr,'.^','^');
-                    h{i} = str2func(['@(T)(' vectorize(int(sym(fstr),'T')) ')']);
+                    h{i} = str2func(['@(T)(' vectorize(int(str2sym(fstr),'T')) ')']);
                 end%for
                 obj.intHeatCapacity = h;
                 clear T;
@@ -357,7 +357,7 @@ classdef unitCell < handle
                     fstr = strrep(fstr,'.*','*');
                     fstr = strrep(fstr,'./','/');
                     fstr = strrep(fstr,'.^','^');
-                    h{i} = str2func(['@(T)(' vectorize(int(sym(fstr),'T')) ')']);
+                    h{i} = str2func(['@(T)(' vectorize(int(str2sym(fstr),'T')) ')']);
                 end%for
                 obj.intLinThermExp = h;
                 clear T;
