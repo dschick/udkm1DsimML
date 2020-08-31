@@ -733,10 +733,22 @@ classdef heat < simulation
             UCmasses        = normMasses.*(aAxes/1e-10).*(bAxes/1e-10);             % calculates vector of unit cell masses
             Cells           = obj.S.getNumberOfUnitCells;
 
-            for k=1:obj.S.numSubSystems
-                parfor i=1:size(tempMap,1)
-                    for n=1:Cells
-                        energyMap(i,n,k) = UCmasses(n)*( intHeatCapacity{n,k}(tempMap(i,n,k)) - intHeatCapacity{n,k}(initTemp(n,k)) );
+            if verLessThan('matlab','9')
+                % -- Code to run in MATLAB R2015b and earlier here --
+                for k=1:obj.S.numSubSystems
+                    parfor i=1:size(tempMap,1)
+                        for n=1:Cells
+                            energyMap(i,n,k) = UCmasses(n)*( intHeatCapacity{n,k}(tempMap(i,n,k)) - intHeatCapacity{n,k}(initTemp(n,k)) );
+                        end
+                    end
+                end
+            else
+                % -- Code to run in MATLAB R2016a and later here --
+                for k=1:obj.S.numSubSystems
+                    for i=1:size(tempMap,1)
+                        for n=1:Cells
+                            energyMap(i,n,k) = UCmasses(n)*( intHeatCapacity{n,k}(tempMap(i,n,k)) - intHeatCapacity{n,k}(initTemp(n,k)) );
+                        end
                     end
                 end
             end
