@@ -44,7 +44,7 @@ classdef heat < simulation
             obj.heatDiffusion   = p.Results.heatDiffusion;
             obj.intpAtInterface = p.Results.intpAtInterface;
             % set default ode options after initialization of parent class
-            obj.odeOptions.RelTol = 1e-3;
+            obj.odeOptions.RelTol = 1e-4;
         end%function
         
         %% Display
