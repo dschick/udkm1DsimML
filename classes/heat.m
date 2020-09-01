@@ -734,7 +734,7 @@ classdef heat < simulation
             Cells           = obj.S.getNumberOfUnitCells;
 
             for k=1:obj.S.numSubSystems
-                parfor i=1:size(tempMap,1)
+                for i=1:size(tempMap,1)
                     for n=1:Cells
                         energyMap(i,n,k) = UCmasses(n)*( intHeatCapacity{n,k}(tempMap(i,n,k)) - intHeatCapacity{n,k}(initTemp(n,k)) );
                     end
