@@ -183,7 +183,10 @@ classdef phonon < simulation
                     % current temperature for each subsystem                        
                     % traverse subsystems
                     for j=1:K
-                        intAlphaT(:,j) = cellfun(@feval,intLinThermExps(:,j),num2cell(squeeze(tempMap(i,:,j))'));
+                        % traverse unit cells
+                        for n=1:N
+                            intAlphaT(n,j) = intLinThermExps{n,j}(tempMap(i,n,j));      % cellfun(@feval,intLinThermExps(:,j),num2cell(squeeze(tempMap(i,:,j))'));
+                        end
                     end%for
 
                     % calculate the length of the sticks of each subsystem and sum
