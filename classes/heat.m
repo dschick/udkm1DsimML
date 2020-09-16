@@ -44,7 +44,7 @@ classdef heat < simulation
             obj.heatDiffusion   = p.Results.heatDiffusion;
             obj.intpAtInterface = p.Results.intpAtInterface;
             % set default ode options after initialization of parent class
-            obj.odeOptions.RelTol = 1e-3;
+            obj.odeOptions.RelTol = 1e-4;
         end%function
         
         %% Display
@@ -635,7 +635,7 @@ classdef heat < simulation
             index = finderb(z,dStart);
             unitCell = handles{index}; % this is the handle to the corresponding unitCell
             
-            k = cellfun(@feval,(unitCell.thermCond)',num2cell(T));            
+            k = cellfun(@feval,(unitCell.thermCond)',repmat({T},K,1));            
             % these are the parameters of the differential equation as they
             % are defined in matlab for the pdesolver
             
@@ -731,11 +731,10 @@ classdef heat < simulation
             aAxes           = obj.S.getUnitCellPropertyVector('aAxis');
             bAxes           = obj.S.getUnitCellPropertyVector('bAxis');
             UCmasses        = normMasses.*(aAxes/1e-10).*(bAxes/1e-10);             % calculates vector of unit cell masses
-            Cells           = obj.S.getNumberOfUnitCells;
 
             for k=1:obj.S.numSubSystems
-                parfor i=1:size(tempMap,1)
-                    for n=1:Cells
+                for i=1:size(tempMap,1)
+                    for n=1:obj.S.getNumberOfUnitCells
                         energyMap(i,n,k) = UCmasses(n)*( intHeatCapacity{n,k}(tempMap(i,n,k)) - intHeatCapacity{n,k}(initTemp(n,k)) );
                     end
                 end
