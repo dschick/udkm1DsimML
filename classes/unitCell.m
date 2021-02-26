@@ -87,7 +87,7 @@ classdef unitCell < handle
             else
                 obj.bAxis = p.Results.bAxis;
             end
-            obj.debWalFac               = obj.checkCellArrayInput(p.Results.debWalFac);
+            debWalFacInit               = obj.checkCellArrayInput(p.Results.debWalFac);
             obj.soundVel                = p.Results.soundVel;
             obj.phononDamping           = p.Results.phononDamping;
             obj.optPenDepth             = p.Results.optPenDepth;
@@ -103,6 +103,15 @@ classdef unitCell < handle
             else
                 error('Heat capacity, thermal conductivity, linear thermal expansion and subsystem coupling have not the same number of elements!');
             end%if           
+            
+            % convert debWalFac into N-dimensional cell array of function handles in case only a single value is given (for downward compatibility)
+            if length(debWalFacInit) ~= length(obj.heatCapacity)
+                for k=1:obj.numSubSystems
+                    disp('WARNING: One of the chosen Debye-Waller factors has not the correct dimensionality! Its numerical value is now used in the 2nd subsystem assuming that this is associated to the lattice!')
+                    obj.debWalFac{k} = str2func('@(T)(0.*T./T)');
+                    obj.debWalFac(2) = debWalFacInit;
+                end%for
+            end%if
             
             % calculate the area of the unit cell
             obj.area   = obj.aAxis * obj.bAxis;
