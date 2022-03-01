@@ -111,6 +111,8 @@ classdef unitCell < handle
                     obj.debWalFac{k} = str2func('@(T)(0.*T./T)');
                     obj.debWalFac(2) = debWalFacInit;
                 end%for
+            else
+                obj.debWalFac = debWalFacInit;
             end%if
             
             % calculate the area of the unit cell
