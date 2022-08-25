@@ -699,7 +699,7 @@ classdef heat < simulation
         %% getEnergyMap
         % Returns an energy profile for the sample structure after
         % optical excitation.
-        function energyMap = getEnergyMap(obj,time,excitation,initTemp,tempMap)
+        function energyMap = getEnergyMap(obj,time,excitation,initTemp,tempMap,includeSubstrate)
             % create a unique hash
             hash = obj.getHash(time,excitation,initTemp);
             % create the file name to look for
@@ -710,7 +710,7 @@ classdef heat < simulation
                 obj.dispMessage(['_energyMap_ loaded from file ' filename]);
             else
                 % file does not exist so calculate and save
-                energyMap = obj.calcEnergyMap(tempMap,initTemp);
+                energyMap = obj.calcEnergyMap(tempMap,initTemp,includeSubstrate);
                 save(filename,'energyMap');
                 obj.dispMessage(['_energyMap_ saved to file ' filename]);
             end                
@@ -719,7 +719,7 @@ classdef heat < simulation
         %% calcEnergyMap
         % Calculates the energy profile for the sample structure after
         % optical excitation.
-        function energyMap = calcEnergyMap(obj,tempMap,initTemp)
+        function energyMap = calcEnergyMap(obj,tempMap,initTemp,includeSubstrate)
             
             disp('Calculating _energyMap_ ...')
             tic
@@ -731,10 +731,15 @@ classdef heat < simulation
             aAxes           = obj.S.getUnitCellPropertyVector('aAxis');
             bAxes           = obj.S.getUnitCellPropertyVector('bAxis');
             UCmasses        = normMasses.*(aAxes/1e-10).*(bAxes/1e-10);             % calculates vector of unit cell masses
+            if includeSubstrate == true
+                Cells           = obj.S.getNumberOfUnitCells;
+            else
+                Cells           = obj.S.getNumberOfUnitCells - length(obj.S.getAllPositionsPerUniqueUnitCell{end});
+            end
 
             for k=1:obj.S.numSubSystems
                 for i=1:size(tempMap,1)
-                    for n=1:obj.S.getNumberOfUnitCells
+                    for n=1:Cells
                         energyMap(i,n,k) = UCmasses(n)*( intHeatCapacity{n,k}(tempMap(i,n,k)) - intHeatCapacity{n,k}(initTemp(n,k)) );
                     end
                 end
