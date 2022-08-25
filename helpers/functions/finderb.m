@@ -1,6 +1,6 @@
 %% finderb
 % Binary search algorithm for sorted lists.
-% Searches for the first index _i_ of list where _key_ >= _list(i)_.
+% Searches for the first index _i_ of list where _key_ <= _list(i)_.
 % _key_ can be a scalar or a vector of keys. 
 % _list_ must be a sorted vector.
 % author: André Bojahr
