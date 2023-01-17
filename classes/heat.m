@@ -731,7 +731,7 @@ classdef heat < simulation
             aAxes           = obj.S.getUnitCellPropertyVector('aAxis');
             bAxes           = obj.S.getUnitCellPropertyVector('bAxis');
             UCmasses        = normMasses.*(aAxes/1e-10).*(bAxes/1e-10);             % calculates vector of unit cell masses
-            if includeSubstrate == true
+            if includeSubstrate
                 Cells           = obj.S.getNumberOfUnitCells;
             else
                 Cells           = obj.S.getNumberOfUnitCells - length(obj.S.getAllPositionsPerUniqueUnitCell{end});
