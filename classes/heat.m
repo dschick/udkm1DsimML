@@ -635,7 +635,8 @@ classdef heat < simulation
             index = finderb(z,dStart);
             unitCell = handles{index}; % this is the handle to the corresponding unitCell
             
-            k = cellfun(@feval,(unitCell.thermCond)',repmat({T},K,1));            
+            k = cellfun(@feval,(unitCell.thermCond)',repmat({T},K,1));  % NTM
+%             k = cellfun(@feval,(unitCell.thermCond)',num2cell(T));      % 1TM
             % these are the parameters of the differential equation as they
             % are defined in matlab for the pdesolver
             
