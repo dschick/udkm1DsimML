@@ -1,3 +1,10 @@
+# Python Version Available
+
+Please consider using the
+[newer Python version](https://github.com/dschick/udkm1Dsim)
+of the udkm1Dsim toolbox since the MATLAB version is no longer
+maintained.
+
 # Introduction
 
 The udkm1Dsim toolbox is a collection of classes and routines 
